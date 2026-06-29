@@ -1,1 +1,1437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة الأعداد ضمن عشرات الألوف - الصف الرابع</title>
+<style>
+  @import url('data:text/css,');
+  
+  :root {
+    --primary: #7C3AED;
+    --secondary: #F59E0B;
+    --success: #10B981;
+    --danger: #EF4444;
+    --bg: #F0F4FF;
+    --card: #FFFFFF;
+    --text: #1E1B4B;
+    --accent1: #EC4899;
+    --accent2: #06B6D4;
+    --accent3: #84CC16;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; padding: 10px; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ===== WELCOME ===== */
+  #welcome-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    text-align: center;
+    color: white;
+  }
+  .welcome-mascot { font-size: 80px; animation: bounce 1s infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-15px); } }
+  .welcome-title { font-size: 2.2em; font-weight: 900; margin: 15px 0 5px; text-shadow: 2px 2px 6px rgba(0,0,0,0.3); }
+  .welcome-sub { font-size: 1.1em; opacity: 0.9; margin-bottom: 20px; }
+  .btn-start {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: white; font-size: 1.4em; font-weight: 700;
+    padding: 16px 50px; border: none; border-radius: 50px;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  .btn-start:hover { transform: scale(1.08); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+
+  /* ===== GAME HEADER ===== */
+  .game-header {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: white; padding: 10px 16px;
+    border-radius: 20px; width: 100%; max-width: 700px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .mascot-small { font-size: 28px; }
+  .stage-info { flex: 1; }
+  .stage-name { font-size: 0.85em; opacity: 0.85; }
+  .stage-title { font-size: 1em; font-weight: 700; }
+  .score-box {
+    background: rgba(255,255,255,0.25); border-radius: 12px;
+    padding: 5px 14px; text-align: center;
+  }
+  .score-label { font-size: 0.7em; }
+  .score-val { font-size: 1.3em; font-weight: 900; }
+  .hearts { font-size: 1.2em; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-wrap { width: 100%; max-width: 700px; margin-bottom: 10px; }
+  .progress-bar {
+    background: rgba(255,255,255,0.3); border-radius: 20px;
+    height: 12px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 20px;
+    background: linear-gradient(90deg, #F59E0B, #10B981);
+    transition: width 0.5s ease;
+  }
+  .progress-text { color: white; font-size: 0.8em; text-align: center; margin-top: 3px; }
+
+  /* ===== CARD ===== */
+  .card {
+    background: white; border-radius: 24px;
+    padding: 22px; width: 100%; max-width: 700px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  }
+  .q-title {
+    font-size: 1.1em; font-weight: 700; color: var(--primary);
+    margin-bottom: 16px; text-align: center;
+    background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+    padding: 10px; border-radius: 12px;
+  }
+
+  /* ===== PLACE VALUE TABLE ===== */
+  .place-table {
+    width: 100%; border-collapse: collapse; margin: 12px 0;
+    direction: rtl;
+  }
+  .place-table th {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: white; padding: 10px 6px; text-align: center;
+    font-size: 0.9em; border: 2px solid #DDD;
+  }
+  .place-table td {
+    padding: 12px 6px; text-align: center;
+    font-size: 1.4em; font-weight: 700; border: 2px solid #DDD;
+    color: var(--text);
+  }
+  .place-table td.highlight { background: #FFF7ED; color: var(--accent1); }
+
+  /* ===== ABACUS ===== */
+  .abacus-wrap { display: flex; justify-content: center; margin: 14px 0; }
+  .abacus {
+    background: linear-gradient(180deg, #E0F2FE, #BAE6FD);
+    border-radius: 16px; padding: 14px 10px 8px;
+    border: 3px solid #0EA5E9;
+    display: flex; gap: 8px; direction: ltr;
+  }
+  .abacus-col { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 46px; }
+  .abacus-label {
+    font-size: 0.65em; font-weight: 700; color: #0C4A6E;
+    margin-top: 5px; text-align: center; direction: rtl;
+  }
+  .abacus-rod {
+    width: 4px; height: 120px; background: #475569;
+    border-radius: 4px; position: relative;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 4px 0; gap: 2px;
+    cursor: pointer;
+  }
+  .bead {
+    width: 22px; height: 16px; border-radius: 50%;
+    background: linear-gradient(135deg, #F43F5E, #BE123C);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    border: 2px solid #9F1239;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
+  }
+  .bead.active { background: linear-gradient(135deg, #FBBF24, #D97706); border-color: #92400E; }
+  .bead.inactive { opacity: 0.3; background: linear-gradient(135deg, #94A3B8, #64748B); }
+  .bead-spacer { flex: 1; }
+  .abacus-base {
+    height: 14px; background: linear-gradient(135deg, #06B6D4, #0284C7);
+    border-radius: 6px; width: 100%; margin-top: 4px;
+    border: 2px solid #0369A1;
+  }
+
+  /* ===== CHOICES ===== */
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .choice-btn {
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    border: 3px solid #C7D2FE; border-radius: 16px;
+    padding: 14px 10px; font-size: 1em; font-weight: 600;
+    color: var(--text); cursor: pointer;
+    transition: all 0.2s; text-align: center;
+    direction: rtl;
+  }
+  .choice-btn:hover { border-color: var(--primary); background: linear-gradient(135deg, #DDD6FE, #C7D2FE); transform: translateY(-2px); }
+  .choice-btn.correct { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); border-color: var(--success); color: #065F46; }
+  .choice-btn.wrong { background: linear-gradient(135deg, #FEE2E2, #FECACA); border-color: var(--danger); color: #991B1B; }
+  .choice-btn:disabled { cursor: not-allowed; }
+
+  /* ===== INPUT ANSWER ===== */
+  .answer-input {
+    width: 100%; padding: 14px; font-size: 1.3em; font-weight: 700;
+    border: 3px solid #C7D2FE; border-radius: 16px; text-align: center;
+    outline: none; transition: border 0.2s;
+    direction: ltr; letter-spacing: 4px;
+  }
+  .answer-input:focus { border-color: var(--primary); }
+  .answer-input.correct { border-color: var(--success); background: #D1FAE5; }
+  .answer-input.wrong { border-color: var(--danger); background: #FEE2E2; }
+  .btn-check {
+    width: 100%; margin-top: 12px; padding: 14px;
+    background: linear-gradient(135deg, var(--primary), #EC4899);
+    color: white; font-size: 1.1em; font-weight: 700;
+    border: none; border-radius: 16px; cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .btn-check:hover { transform: scale(1.02); }
+
+  /* ===== DRAG AND DROP ===== */
+  .drag-area { margin: 12px 0; }
+  .drag-digits { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 14px; }
+  .drag-digit {
+    width: 50px; height: 50px; border-radius: 14px;
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: white; font-size: 1.5em; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    cursor: grab; user-select: none;
+    box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+    transition: transform 0.15s;
+  }
+  .drag-digit:active { cursor: grabbing; transform: scale(1.15) rotate(5deg); }
+  .drag-digit.used { opacity: 0.3; cursor: default; }
+  .drop-zones { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .drop-zone-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .drop-zone {
+    width: 54px; height: 54px; border-radius: 14px;
+    border: 3px dashed #A78BFA; background: #F5F3FF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5em; font-weight: 900; color: var(--text);
+    transition: all 0.2s; cursor: pointer;
+  }
+  .drop-zone.over { background: #DDD6FE; border-color: var(--primary); transform: scale(1.05); }
+  .drop-zone.filled { background: linear-gradient(135deg, #EDE9FE, #DDD6FE); border-style: solid; border-color: var(--primary); cursor: pointer; }
+  .drop-zone.correct { background: #D1FAE5; border-color: var(--success); border-style: solid; }
+  .drop-zone.wrong { background: #FEE2E2; border-color: var(--danger); border-style: solid; }
+  .drop-label { font-size: 0.68em; font-weight: 700; color: #6D28D9; text-align: center; }
+
+  /* ===== ABACUS INTERACTIVE ===== */
+  .abacus-interactive { cursor: pointer; }
+  .abacus-interactive .bead:hover { transform: scale(1.15); }
+  .abacus-count { 
+    font-size: 1.8em; font-weight: 900; color: var(--primary);
+    text-align: center; letter-spacing: 4px; margin: 10px 0;
+    background: #EEF2FF; border-radius: 12px; padding: 8px;
+  }
+
+  /* ===== FEEDBACK ===== */
+  .feedback {
+    text-align: center; font-size: 1.1em; font-weight: 700;
+    padding: 10px; border-radius: 12px; margin-top: 10px;
+    display: none;
+  }
+  .feedback.success { background: #D1FAE5; color: #065F46; display: block; }
+  .feedback.error { background: #FEE2E2; color: #991B1B; display: block; }
+
+  /* ===== NEXT BUTTON ===== */
+  .btn-next {
+    width: 100%; margin-top: 12px; padding: 14px;
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white; font-size: 1.1em; font-weight: 700;
+    border: none; border-radius: 16px; cursor: pointer;
+    transition: transform 0.2s; display: none;
+  }
+  .btn-next:hover { transform: scale(1.02); }
+  .btn-next.visible { display: block; }
+
+  /* ===== STARS ANIMATION ===== */
+  .stars-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 999; overflow: hidden;
+  }
+  .star-particle {
+    position: absolute; font-size: 24px;
+    animation: starFly 1.5s ease-out forwards;
+  }
+  @keyframes starFly {
+    0% { transform: translateY(0) scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-200px) scale(1.5) rotate(360deg); opacity: 0; }
+  }
+
+  /* ===== STAGE COMPLETE ===== */
+  .stage-complete {
+    text-align: center; padding: 20px;
+  }
+  .big-star { font-size: 70px; animation: spin 2s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .stage-complete h2 { font-size: 1.8em; color: var(--primary); margin: 10px 0; }
+  .stage-complete p { color: #6B7280; margin-bottom: 20px; }
+
+  /* ===== RESULT SCREEN ===== */
+  #result-screen {
+    background: linear-gradient(135deg, #7C3AED, #EC4899);
+    color: white; text-align: center;
+  }
+  .result-emoji { font-size: 80px; margin-bottom: 10px; }
+  .result-title { font-size: 2em; font-weight: 900; margin-bottom: 10px; }
+  .result-score { font-size: 3em; font-weight: 900; }
+  .result-msg { font-size: 1.1em; opacity: 0.9; margin: 10px 0 20px; }
+  .btn-restart {
+    background: white; color: var(--primary);
+    font-size: 1.2em; font-weight: 700; padding: 14px 40px;
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+
+  /* ===== MATCH GAME ===== */
+  .match-wrap { display: flex; gap: 10px; direction: rtl; }
+  .match-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .match-item {
+    padding: 10px; border-radius: 12px; text-align: center;
+    font-weight: 700; cursor: pointer; transition: all 0.2s;
+    border: 3px solid transparent; font-size: 0.9em;
+  }
+  .match-left { background: #EEF2FF; border-color: #C7D2FE; color: var(--text); }
+  .match-right { background: #FFF7ED; border-color: #FED7AA; color: var(--text); }
+  .match-item.selected { border-color: var(--primary); background: #DDD6FE; transform: scale(1.03); }
+  .match-item.matched { background: #D1FAE5; border-color: var(--success); cursor: default; }
+  .match-item.wrong-match { background: #FEE2E2; border-color: var(--danger); animation: shake 0.4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* ===== ORDER GAME ===== */
+  .order-numbers { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 12px 0; }
+  .order-num {
+    padding: 12px 18px; border-radius: 14px; font-size: 1.3em; font-weight: 700;
+    background: linear-gradient(135deg, #EEF2FF, #DDD6FE);
+    border: 3px solid #C7D2FE; cursor: pointer;
+    transition: all 0.2s; direction: ltr;
+  }
+  .order-num:hover { transform: scale(1.05); border-color: var(--primary); }
+  .order-num.selected-order { background: linear-gradient(135deg, #7C3AED, #EC4899); color: white; border-color: var(--primary); }
+  .order-target { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+  .order-slot {
+    min-width: 80px; padding: 12px 18px; border-radius: 14px;
+    border: 3px dashed #A78BFA; background: #F5F3FF;
+    font-size: 1.3em; font-weight: 700; text-align: center;
+    direction: ltr; cursor: pointer; transition: all 0.2s;
+  }
+  .order-slot.filled { background: #DDD6FE; border-style: solid; border-color: var(--primary); }
+  .order-slot.correct { background: #D1FAE5; border-color: var(--success); border-style: solid; }
+  .order-slot.wrong { background: #FEE2E2; border-color: var(--danger); border-style: solid; }
+
+  /* ===== MASCOT SPEECH ===== */
+  .mascot-wrap { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
+  .mascot-char { font-size: 40px; animation: bounce 1.5s infinite alternate; }
+  .speech-bubble {
+    background: white; border: 3px solid #C7D2FE;
+    border-radius: 16px 16px 16px 4px; padding: 10px 14px;
+    font-size: 0.9em; color: var(--text); max-width: 300px;
+    position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  /* ===== STAGE INTRO ===== */
+  .stage-intro-badge {
+    background: linear-gradient(135deg, #F59E0B, #EF4444);
+    color: white; font-size: 0.85em; font-weight: 700;
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 8px;
+    display: inline-block;
+  }
+
+  /* NUMBER DISPLAY */
+  .big-number {
+    font-size: 2.2em; font-weight: 900; color: var(--primary);
+    text-align: center; letter-spacing: 6px;
+    background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+    padding: 14px; border-radius: 16px; margin: 10px 0;
+    direction: ltr;
+  }
+
+  .num-arabic { font-size: 0.75em; letter-spacing: 2px; }
+
+  /* responsive */
+  @media (max-width: 480px) {
+    .choices { grid-template-columns: 1fr; }
+    .abacus { gap: 4px; }
+    .abacus-col { width: 36px; }
+    .bead { width: 18px; height: 14px; }
+    .match-wrap { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-container" id="starsContainer"></div>
+
+<!-- ===== WELCOME ===== -->
+<div class="screen active" id="welcome-screen">
+  <div class="welcome-mascot">🦉</div>
+  <div class="welcome-title">الأعداد ضمن عشرات الألوف</div>
+  <div class="welcome-sub">الوحدة الأولى — مجموعة الأعداد الكلية<br>الصف الرابع الابتدائي</div>
+  <br>
+  <div style="background:rgba(255,255,255,0.2);border-radius:16px;padding:14px;margin-bottom:20px;color:white;font-size:0.9em;max-width:380px;text-align:right">
+    🎯 <strong>٧ مراحل</strong> تفاعلية مشوّقة<br>
+    ⭐ نجوم وتشجيع عند كل إجابة صحيحة<br>
+    🏆 تحدٍّ نهائي من تدريبات الكتاب
+  </div>
+  <button class="btn-start" onclick="startGame()">ابدأ اللعبة! 🚀</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div class="screen" id="game-screen">
+  <div class="game-header">
+    <div class="mascot-small">🦉</div>
+    <div class="stage-info">
+      <div class="stage-name" id="stageName">المرحلة ١</div>
+      <div class="stage-title" id="stageTitle">اكتشاف المنازل</div>
+    </div>
+    <div class="hearts" id="heartsDisplay">❤️❤️❤️</div>
+    <div class="score-box">
+      <div class="score-label">النقاط</div>
+      <div class="score-val" id="scoreDisplay">٠</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">المرحلة ١ من ٧</div>
+  </div>
+
+  <div class="card" id="gameCard">
+    <!-- Dynamic content injected here -->
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div class="screen" id="result-screen">
+  <div class="result-emoji" id="resultEmoji">🏆</div>
+  <div class="result-title">أحسنت!</div>
+  <div class="result-score" id="resultScore">١٠٠</div>
+  <div class="result-msg" id="resultMsg">نقطة — أداء رائع!</div>
+  <button class="btn-restart" onclick="restartGame()">العب مجدداً 🔄</button>
+</div>
+
+<script>
+// ===================== AUDIO ENGINE =====================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let ctx;
+function getCtx() { if (!ctx) ctx = new AudioCtx(); return ctx; }
+
+function playSuccess() {
+  try {
+    const c = getCtx();
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.value = f; o.type = 'sine';
+      g.gain.setValueAtTime(0.3, c.currentTime + i*0.12);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + i*0.12 + 0.2);
+      o.start(c.currentTime + i*0.12);
+      o.stop(c.currentTime + i*0.12 + 0.2);
+    });
+  } catch(e){}
+}
+
+function playError() {
+  try {
+    const c = getCtx();
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.setValueAtTime(300, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(150, c.currentTime + 0.3);
+    o.type = 'sawtooth';
+    g.gain.setValueAtTime(0.2, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.3);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.3);
+  } catch(e){}
+}
+
+function playClick() {
+  try {
+    const c = getCtx();
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.value = 800; o.type = 'sine';
+    g.gain.setValueAtTime(0.15, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.1);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.1);
+  } catch(e){}
+}
+
+// ===================== HELPERS =====================
+const toHindi = n => String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const fromHindi = s => s.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+
+function showStars(count = 7) {
+  const c = document.getElementById('starsContainer');
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const s = document.createElement('div');
+      s.className = 'star-particle';
+      s.textContent = ['⭐','🌟','✨','💫'][Math.floor(Math.random()*4)];
+      s.style.left = Math.random()*90+'%';
+      s.style.top = (60 + Math.random()*30)+'%';
+      s.style.animationDelay = (Math.random()*0.3)+'s';
+      c.appendChild(s);
+      setTimeout(()=>s.remove(), 1800);
+    }, i*80);
+  }
+}
+
+// ===================== GAME STATE =====================
+let score = 0, hearts = 3, currentStage = 0, currentQ = 0;
+const STAGES = [
+  { name:'المرحلة ١', title:'اكتشاف المنازل', icon:'🏠' },
+  { name:'المرحلة ٢', title:'العدّاد التفاعلي', icon:'🎯' },
+  { name:'المرحلة ٣', title:'القيمة المكانية', icon:'🔍' },
+  { name:'المرحلة ٤', title:'قراءة الأعداد', icon:'📖' },
+  { name:'المرحلة ٥', title:'كتابة الأعداد', icon:'✏️' },
+  { name:'المرحلة ٦', title:'لوحة المنازل', icon:'🗂️' },
+  { name:'المرحلة ٧', title:'التحدي النهائي', icon:'🏆' },
+];
+
+function startGame() {
+  document.getElementById('welcome-screen').classList.remove('active');
+  document.getElementById('game-screen').classList.add('active');
+  score = 0; hearts = 3; currentStage = 0; currentQ = 0;
+  updateHeader();
+  renderStage();
+}
+
+function restartGame() {
+  document.getElementById('result-screen').classList.remove('active');
+  document.getElementById('welcome-screen').classList.add('active');
+}
+
+function updateHeader() {
+  const st = STAGES[currentStage];
+  document.getElementById('stageName').textContent = st.name;
+  document.getElementById('stageTitle').textContent = st.title;
+  document.getElementById('scoreDisplay').textContent = toHindi(score);
+  document.getElementById('heartsDisplay').textContent = '❤️'.repeat(hearts) + '🖤'.repeat(3-hearts);
+  const pct = (currentStage / 7) * 100;
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `المرحلة ${toHindi(currentStage+1)} من ٧`;
+}
+
+function addScore(pts) {
+  score += pts;
+  document.getElementById('scoreDisplay').textContent = toHindi(score);
+}
+
+function loseHeart() {
+  hearts = Math.max(0, hearts - 1);
+  updateHeader();
+  if (hearts === 0) endGame();
+}
+
+function nextStage() {
+  currentStage++;
+  currentQ = 0;
+  if (currentStage >= 7) { endGame(); return; }
+  updateHeader();
+  renderStage();
+}
+
+function endGame() {
+  document.getElementById('game-screen').classList.remove('active');
+  document.getElementById('result-screen').classList.add('active');
+  const pct = Math.round((score / 550) * 100);
+  document.getElementById('resultScore').textContent = toHindi(score);
+  if (pct >= 80) {
+    document.getElementById('resultEmoji').textContent = '🏆';
+    document.getElementById('resultMsg').textContent = 'نقطة — ممتاز جداً! أنت بطل الأعداد! 🌟';
+  } else if (pct >= 60) {
+    document.getElementById('resultEmoji').textContent = '⭐';
+    document.getElementById('resultMsg').textContent = 'نقطة — عمل رائع! استمر! 👍';
+  } else {
+    document.getElementById('resultEmoji').textContent = '💪';
+    document.getElementById('resultMsg').textContent = 'نقطة — حاول مجدداً وستتحسن! 😊';
+  }
+  showStars(15);
+}
+
+// ===================== MASCOT =====================
+const mascotSayings = {
+  intro1: 'مرحباً! هيا نتعلم المنازل الخمس!',
+  intro2: 'حرّك الخرزات لتمثيل الأعداد!',
+  intro3: 'ما القيمة المكانية لكل رقم؟',
+  intro4: 'كيف نقرأ هذا العدد بالعربية؟',
+  intro5: 'اكتب العدد بالأرقام الهندية!',
+  intro6: 'اسحب كل رقم إلى منزلته الصحيحة!',
+  intro7: 'التحدي النهائي — هل أنت مستعد؟',
+  correct: ['أحسنت! 🎉', 'رائع جداً! ⭐', 'ممتاز! 🌟', 'بطل! 🏆', 'صحيح تماماً! 💯'],
+  wrong: ['حاول مرة أخرى! 💪', 'لا بأس، تعلمنا! 😊', 'قريب جداً! 🤏'],
+};
+function randFrom(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function mascotHTML(msg) {
+  return `<div class="mascot-wrap"><div class="mascot-char">🦉</div><div class="speech-bubble">${msg}</div></div>`;
+}
+
+// ===================== FEEDBACK HELPER =====================
+function showFeedback(correct, msg) {
+  const fb = document.getElementById('feedback');
+  if (!fb) return;
+  fb.className = 'feedback ' + (correct ? 'success' : 'error');
+  fb.textContent = msg;
+}
+function showNext() {
+  const btn = document.getElementById('btnNext');
+  if (btn) btn.classList.add('visible');
+}
+
+// ===================== STAGE RENDER =====================
+function renderStage() {
+  switch(currentStage) {
+    case 0: renderStage1(); break;
+    case 1: renderStage2(); break;
+    case 2: renderStage3(); break;
+    case 3: renderStage4(); break;
+    case 4: renderStage5(); break;
+    case 5: renderStage6(); break;
+    case 6: renderStage7(); break;
+  }
+}
+
+// ======================================================
+// STAGE 1: اكتشاف المنازل
+// ======================================================
+const stage1Questions = [
+  { digits: [2,7,5,3,6], target: 1, question: 'أي منزلة يقع فيها الرقم ٧ في العدد ٢٧٥٣٦؟', answer: 2 },
+  { digits: [2,7,5,3,6], target: 3, question: 'أي منزلة يقع فيها الرقم ٥ في العدد ٢٧٥٣٦؟', answer: 1 },
+  { digits: [1,5,4,2,0], target: 1, question: 'أي منزلة يقع فيها الرقم ١ في العدد ١٥٤٢٠؟', answer: 4 },
+  { digits: [1,5,4,2,0], target: 0, question: 'أي منزلة يقع فيها الرقم ٠ في العدد ١٥٤٢٠؟', answer: 0 },
+  { digits: [9,9,9,9,null], target: null, question: 'اكتمل: الرقم ٩ في منزلة الآحاد يساوي:', answer: 'آحاد', choices: true },
+];
+
+const places = ['آحاد','عشرات','مئات','آلاف','عشرات الألوف'];
+const placesColors = ['#EF4444','#F59E0B','#10B981','#3B82F6','#7C3AED'];
+
+let s1q = 0;
+const s1data = [
+  { number: '٢٧٥٣٦', digits: ['٢','٧','٥','٣','٦'], ask: 1, askDigit: '٧', answer: 3 },
+  { number: '٢٧٥٣٦', digits: ['٢','٧','٥','٣','٦'], ask: 2, askDigit: '٥', answer: 2 },
+  { number: '١٥٤٢٠', digits: ['١','٥','٤','٢','٠'], ask: 0, askDigit: '١', answer: 4 },
+  { number: '١٥٤٢٠', digits: ['١','٥','٤','٢','٠'], ask: 4, askDigit: '٠', answer: 0 },
+];
+
+function renderStage1() {
+  if (s1q >= s1data.length) { showStageComplete(1); return; }
+  const q = s1data[s1q];
+  const card = document.getElementById('gameCard');
+
+  // digits[0]=عشراتألوف, digits[1]=آلاف, digits[2]=مئات, digits[3]=عشرات, digits[4]=آحاد
+  // places[0]=آحاد, places[4]=عشراتألوف
+  // placesColors[0]=أحمر(آحاد) ... placesColors[4]=بنفسجي(عشراتألوف)
+  // نريد عرض: آحاد يميناً، عشرات الألوف يساراً
+  // نبني الخانات من i=4 (آحاد) إلى i=0 (عشراتألوف) بترتيب RTL
+  const boxesHTML = [4,3,2,1,0].map(i => {
+    const placeIdx = 4 - i; // places[placeIdx] = الاسم الصحيح للمنزلة
+    // digits[i] = الرقم في هذه المنزلة
+    const isAsked = (q.digits[i] === q.askDigit);
+    return `<div style="
+      background:${placesColors[placeIdx]};
+      color:white;border-radius:12px;padding:8px 10px;
+      text-align:center;min-width:52px;
+      ${isAsked ? 'box-shadow:0 0 0 4px #FFF,0 0 0 7px #FCD34D;transform:scale(1.1)' : ''}
+    ">
+      <div style="font-size:1.6em;font-weight:900">${q.digits[i]}</div>
+      <div style="font-size:0.58em;margin-top:2px">${places[placeIdx]}</div>
+    </div>`;
+  }).join('');
+
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro1)}
+    <div class="stage-intro-badge">المرحلة ١ — اكتشاف المنازل 🏠</div>
+    <div class="q-title">في أي منزلة يقع الرقم <span style="color:#EC4899;font-size:1.3em">${q.askDigit}</span> في العدد ${q.number}؟</div>
+    <div class="big-number">${q.number}</div>
+    <div style="display:flex;flex-direction:row;gap:6px;justify-content:center;margin:12px 0;direction:rtl">
+      ${boxesHTML}
+    </div>
+    <div style="font-size:0.72em;color:#6B7280;text-align:center;margin-bottom:8px">عشرات الألوف ← &nbsp;&nbsp;&nbsp;&nbsp; → آحاد</div>
+    <div class="choices" id="choices1"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS1()">التالي ←</button>
+  `;
+  const correct = q.answer;
+  const allIdx = [0,1,2,3,4];
+  const wrong = allIdx.filter(i=>i!==correct).sort(()=>Math.random()-0.5).slice(0,3);
+  const options = [correct,...wrong].sort(()=>Math.random()-0.5);
+  const div = document.getElementById('choices1');
+  options.forEach(idx => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = places[idx];
+    btn.onclick = () => checkS1(idx === correct, btn);
+    div.appendChild(btn);
+  });
+}
+
+function checkS1(correct, btn) {
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if (correct) {
+    btn.classList.add('correct');
+    playSuccess(); showStars(); addScore(10);
+    showFeedback(true, randFrom(mascotSayings.correct));
+    s1q++;
+  } else {
+    btn.classList.add('wrong');
+    playError(); loseHeart();
+    showFeedback(false, randFrom(mascotSayings.wrong));
+    // highlight correct
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.textContent === places[s1data[s1q].answer]) b.classList.add('correct');
+    });
+    s1q++;
+  }
+  showNext();
+}
+function nextS1() { renderStage1(); }
+
+// ======================================================
+// STAGE 2: العدّاد التفاعلي
+// ======================================================
+const s2numbers = [9999, 10000, 15420, 27536, 32100];
+let s2idx = 0;
+let s2beads = [0,0,0,0,0]; // آحاد عشرات مئات آلاف عشراتألوف
+
+function renderStage2() {
+  if (s2idx >= s2numbers.length) { showStageComplete(2); return; }
+  const target = s2numbers[s2idx];
+  const targetDigits = getDigits(target);
+  s2beads = [0,0,0,0,0];
+  
+  const card = document.getElementById('gameCard');
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro2)}
+    <div class="stage-intro-badge">المرحلة ٢ — العدّاد التفاعلي 🎯</div>
+    <div class="q-title">مثّل العدد <span style="color:#EC4899;font-size:1.3em">${toHindi(target)}</span> على العدّاد</div>
+    <div class="abacus-wrap" id="abacusWrap"></div>
+    <div class="abacus-count" id="abacusReading" style="direction:ltr">٠</div>
+    <div style="font-size:0.8em;color:#6B7280;text-align:center;margin-bottom:6px">اضغط + لإضافة خرزة، أو اضغط − لإزالتها • الخرزات الملوّنة = العدد النشط</div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-check" onclick="checkS2(${target})">تحقق ✓</button>
+    <button class="btn-next" id="btnNext" onclick="nextS2()">التالي ←</button>
+  `;
+  drawAbacus();
+}
+
+function getDigits(n) {
+  const s = String(n).padStart(5,'0');
+  return [+s[4],+s[3],+s[2],+s[1],+s[0]]; // آحاد...عشراتألوف
+}
+
+function drawAbacus() {
+  const wrap = document.getElementById('abacusWrap');
+  if (!wrap) return;
+  // الترتيب: عشرات الألوف يساراً، آحاد يميناً
+  // s2beads[0]=آحاد, [1]=عشرات, [2]=مئات, [3]=آلاف, [4]=عشراتألوف
+  // نعرض من اليمين إلى اليسار: index 0,1,2,3,4
+  const labels = ['آحاد','عشرات','مئات','آلاف','عشرات\nالألوف'];
+  const colors = ['#EF4444','#F59E0B','#10B981','#3B82F6','#7C3AED'];
+  const MAX = 9;
+
+  let html = `<div class="abacus abacus-interactive" style="direction:rtl;display:flex;gap:10px;padding:14px 12px 10px;background:linear-gradient(180deg,#E0F2FE,#BAE6FD);border-radius:16px;border:3px solid #0EA5E9;align-items:flex-end">`;
+
+  // عرض من index 0 (آحاد يميناً) إلى 4 (عشرات الألوف يساراً)
+  for (let col = 0; col < 5; col++) {
+    const count = s2beads[col];
+    html += `<div class="abacus-col" style="display:flex;flex-direction:column;align-items:center;gap:2px;width:52px">`;
+    // زر إضافة خرزة
+    html += `<button onclick="addBead(${col})" style="width:36px;height:24px;border-radius:8px;border:none;background:${colors[col]};color:white;font-size:1em;font-weight:900;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);line-height:1">+</button>`;
+    // عمود الخرزات
+    html += `<div style="width:4px;position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;min-height:${MAX*22}px;background:#475569;border-radius:4px">`;
+    for (let b = MAX-1; b >= 0; b--) {
+      const active = b < count;
+      html += `<div style="width:28px;height:18px;border-radius:50%;position:absolute;top:${(MAX-1-b)*22+2}px;left:-12px;
+        background:${active ? `linear-gradient(135deg,${colors[col]},${colors[col]}99)` : 'linear-gradient(135deg,#94A3B8,#CBD5E1)'};
+        border:2px solid ${active ? colors[col] : '#94A3B8'};
+        box-shadow:${active ? '0 2px 6px rgba(0,0,0,0.3)' : 'none'};
+        opacity:${active ? '1' : '0.3'};
+        transition:all 0.15s;
+        cursor:pointer;" onclick="clickBead(${col},${b})"></div>`;
+    }
+    html += `</div>`;
+    // قاعدة العدّاد
+    html += `<div style="height:14px;background:linear-gradient(135deg,#06B6D4,#0284C7);border-radius:6px;width:52px;border:2px solid #0369A1;margin-top:6px"></div>`;
+    // زر إزالة خرزة
+    html += `<button onclick="removeBead(${col})" style="width:36px;height:24px;border-radius:8px;border:none;background:#64748B;color:white;font-size:1.1em;font-weight:900;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);line-height:1">−</button>`;
+    // التسمية والعدد
+    html += `<div style="font-size:0.65em;font-weight:700;color:#0C4A6E;text-align:center;margin-top:3px;white-space:pre-line">${labels[col]}</div>`;
+    html += `<div style="font-size:1.1em;font-weight:900;color:${colors[col]};background:white;border-radius:8px;padding:2px 8px;min-width:28px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.15)">${toHindi(count)}</div>`;
+    html += `</div>`;
+  }
+  html += `</div>`;
+  wrap.innerHTML = html;
+  updateAbacusReading();
+}
+
+function addBead(col) {
+  if (s2beads[col] < 9) { s2beads[col]++; playClick(); drawAbacus(); }
+}
+function removeBead(col) {
+  if (s2beads[col] > 0) { s2beads[col]--; playClick(); drawAbacus(); }
+}
+function clickBead(col, b) {
+  // النقر على خرزة: إذا كانت مفعّلة احذف حتى هذا المستوى، وإلا أضف حتى هذا المستوى
+  if (b < s2beads[col]) {
+    s2beads[col] = b; // احذف هذه الخرزة وما فوقها
+  } else {
+    s2beads[col] = b + 1; // فعّل هذه الخرزة
+  }
+  playClick(); drawAbacus();
+}
+
+function updateAbacusReading() {
+  const num = s2beads[4]*10000 + s2beads[3]*1000 + s2beads[2]*100 + s2beads[1]*10 + s2beads[0];
+  const el = document.getElementById('abacusReading');
+  if (el) el.textContent = toHindi(num);
+}
+
+function checkS2(target) {
+  const current = s2beads[4]*10000 + s2beads[3]*1000 + s2beads[2]*100 + s2beads[1]*10 + s2beads[0];
+  if (current === target) {
+    playSuccess(); showStars(); addScore(15);
+    showFeedback(true, randFrom(mascotSayings.correct));
+    s2idx++;
+    showNext();
+  } else {
+    playError(); loseHeart();
+    showFeedback(false, `الرقم الحالي ${toHindi(current)} — المطلوب ${toHindi(target)}`);
+  }
+}
+function nextS2() { renderStage2(); }
+
+// ======================================================
+// STAGE 3: القيمة المكانية
+// ======================================================
+const s3data = [
+  { num: 27536, digit: 7, question: 'ما القيمة المكانية للرقم ٧ في العدد ٢٧٥٣٦؟', answer: 7000, choices: [700, 7000, 70, 70000] },
+  { num: 27536, digit: 3, question: 'ما القيمة المكانية للرقم ٣ في العدد ٢٧٥٣٦؟', answer: 30, choices: [300, 3, 30, 3000] },
+  { num: 15420, digit: 5, question: 'ما القيمة المكانية للرقم ٥ في العدد ١٥٤٢٠؟', answer: 5000, choices: [500, 5000, 50000, 50] },
+  { num: 15420, digit: 4, question: 'ما القيمة المكانية للرقم ٤ في العدد ١٥٤٢٠؟', answer: 400, choices: [40, 4000, 400, 4] },
+  { num: 45327, digit: 4, question: 'ما القيمة المكانية للرقم ٤ في العدد ٤٥٣٢٧؟', answer: 40000, choices: [4000, 40, 400, 40000] },
+  { num: 45372, digit: 7, question: 'في عدد ٤٥٣٧٢، الرقم ٧ في منزلة:', answer: 'عشرات', choices: ['آحاد','عشرات','مئات','آلاف'] },
+];
+let s3idx = 0;
+function renderStage3() {
+  if (s3idx >= s3data.length) { showStageComplete(3); return; }
+  const q = s3data[s3idx];
+  const numStr = toHindi(q.num);
+  const digitsArr = numStr.split('');
+  
+  const card = document.getElementById('gameCard');
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro3)}
+    <div class="stage-intro-badge">المرحلة ٣ — القيمة المكانية 🔍</div>
+    <div class="big-number">${numStr}</div>
+    <table class="place-table" style="direction:ltr">
+      <tr>
+        <th>عشرات الألوف</th><th>آلاف</th><th>مئات</th><th>عشرات</th><th>آحاد</th>
+      </tr>
+      <tr>
+        ${digitsArr.map((d,i) => `<td ${numStr[i]===toHindi(q.digit)?'class="highlight"':''}>${d}</td>`).join('')}
+      </tr>
+    </table>
+    <div style="font-size:0.72em;color:#6B7280;text-align:center;margin-top:2px">عشرات الألوف → &nbsp;&nbsp;&nbsp;&nbsp; ← آحاد</div>
+    <div class="q-title">${q.question}</div>
+    <div class="choices" id="choices3"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS3()">التالي ←</button>
+  `;
+  const div = document.getElementById('choices3');
+  const opts = [...q.choices].sort(()=>Math.random()-0.5);
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = typeof opt === 'number' ? toHindi(opt) : opt;
+    btn.onclick = () => checkS3(opt, q.answer, btn);
+    div.appendChild(btn);
+  });
+}
+function checkS3(chosen, answer, btn) {
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if (chosen === answer) {
+    btn.classList.add('correct'); playSuccess(); showStars(); addScore(10); s3idx++;
+    showFeedback(true, randFrom(mascotSayings.correct));
+  } else {
+    btn.classList.add('wrong'); playError(); loseHeart(); s3idx++;
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      const v = isNaN(b.textContent) ? b.textContent : +fromHindi(b.textContent);
+      if (v === answer || b.textContent === answer) b.classList.add('correct');
+    });
+    showFeedback(false, randFrom(mascotSayings.wrong));
+  }
+  showNext();
+}
+function nextS3() { renderStage3(); }
+
+// ======================================================
+// STAGE 4: قراءة الأعداد
+// ======================================================
+const s4data = [
+  { num: '١٠٠٠٠', reading: 'عشرة آلاف', choices: ['عشرة آلاف','ألف','مئة ألف','عشرون ألفاً'] },
+  { num: '٢٧٥٣٦', reading: 'سبعة وعشرون ألفاً وخمسمئة وستة وثلاثون', choices: ['سبعة وعشرون ألفاً وخمسمئة وستة وثلاثون','سبعة وعشرون ألفاً وخمسة وثلاثون','عشرون ألفاً وسبعمئة وستة وثلاثون','سبعة وعشرون ألفاً وخمسمئة وثلاثة وستون'] },
+  { num: '١٥٤٢٠', reading: 'خمسة عشر ألفاً وأربعمئة وعشرون', choices: ['خمسة عشر ألفاً وأربعمئة وعشرون','خمسة عشر ألفاً وأربعة وعشرون','خمسة وعشرون ألفاً وأربعمئة','خمسة عشر ألفاً وأربعمئة واثنان'] },
+  { num: '١٠٥٠٠', reading: 'عشرة آلاف وخمسمئة', choices: ['عشرة آلاف وخمسمئة','عشرة آلاف وخمسون','ألف وخمسمئة','عشرة آلاف وخمسة'] },
+  { num: '١٢١٣٠', reading: 'اثنا عشر ألفاً ومئة وثلاثون', choices: ['اثنا عشر ألفاً ومئة وثلاثون','اثنا عشر ألفاً وثلاثون','اثنا عشر ألفاً ومئة وثلاثة','ألفان ومئة وثلاثون'] },
+];
+let s4idx = 0;
+function renderStage4() {
+  if (s4idx >= s4data.length) { showStageComplete(4); return; }
+  const q = s4data[s4idx];
+  const card = document.getElementById('gameCard');
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro4)}
+    <div class="stage-intro-badge">المرحلة ٤ — قراءة الأعداد 📖</div>
+    <div class="big-number">${q.num}</div>
+    <div class="q-title">كيف نقرأ هذا العدد؟</div>
+    <div class="choices" style="grid-template-columns:1fr" id="choices4"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS4()">التالي ←</button>
+  `;
+  const div = document.getElementById('choices4');
+  const opts = [...q.choices].sort(()=>Math.random()-0.5);
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.style.textAlign = 'right';
+    btn.textContent = opt;
+    btn.onclick = () => checkS4(opt === q.reading, btn, q.reading);
+    div.appendChild(btn);
+  });
+}
+function checkS4(correct, btn, answer) {
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  if (correct) {
+    btn.classList.add('correct'); playSuccess(); showStars(); addScore(10); s4idx++;
+    showFeedback(true, randFrom(mascotSayings.correct));
+  } else {
+    btn.classList.add('wrong'); playError(); loseHeart(); s4idx++;
+    document.querySelectorAll('.choice-btn').forEach(b => { if (b.textContent === answer) b.classList.add('correct'); });
+    showFeedback(false, randFrom(mascotSayings.wrong));
+  }
+  showNext();
+}
+function nextS4() { renderStage4(); }
+
+// ======================================================
+// STAGE 5: كتابة الأعداد
+// ======================================================
+const s5data = [
+  { word: 'عشرة آلاف وخمسمئة', answer: '10500' },
+  { word: 'اثنا عشر ألفاً ومئة وثلاثون', answer: '12130' },
+  { word: 'ثلاثة وعشرون ألفاً وخمسة عشر', answer: '23015' },
+  { word: 'سبعة وستون ألفاً وأربعون', answer: '67040' },
+  { word: 'خمسة عشر ألفاً وأربعمئة وعشرون', answer: '15420' },
+];
+let s5idx = 0;
+function renderStage5() {
+  if (s5idx >= s5data.length) { showStageComplete(5); return; }
+  const q = s5data[s5idx];
+  const card = document.getElementById('gameCard');
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro5)}
+    <div class="stage-intro-badge">المرحلة ٥ — كتابة الأعداد ✏️</div>
+    <div class="q-title">اكتب هذا العدد بالأرقام الهندية:</div>
+    <div style="background:linear-gradient(135deg,#FFF7ED,#FEF3C7);border-radius:16px;padding:16px;margin:12px 0;text-align:center;font-size:1.15em;font-weight:700;color:#92400E;border:3px solid #FDE68A">
+      ${q.word}
+    </div>
+    <input class="answer-input" type="text" id="answerInput" placeholder="اكتب العدد هنا..." maxlength="6" inputmode="numeric">
+    <button class="btn-check" onclick="checkS5('${q.answer}')">تحقق ✓</button>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS5()">التالي ←</button>
+  `;
+  document.getElementById('answerInput').focus();
+  document.getElementById('answerInput').addEventListener('keydown', e => { if (e.key==='Enter') checkS5(q.answer); });
+}
+function checkS5(answer) {
+  const inp = document.getElementById('answerInput');
+  const val = fromHindi(inp.value.trim());
+  if (val === answer) {
+    inp.classList.add('correct'); playSuccess(); showStars(); addScore(15); s5idx++;
+    showFeedback(true, randFrom(mascotSayings.correct));
+    document.querySelector('.btn-check').disabled = true;
+  } else {
+    inp.classList.add('wrong'); playError(); loseHeart();
+    showFeedback(false, `الصحيح: ${toHindi(+answer)}`);
+    setTimeout(() => { inp.classList.remove('wrong'); inp.value=''; inp.focus(); }, 1200);
+    s5idx++;
+    document.querySelector('.btn-check').disabled = true;
+  }
+  showNext();
+}
+function nextS5() { renderStage5(); }
+
+// ======================================================
+// STAGE 6: لوحة المنازل — Drag & Drop
+// ======================================================
+const s6data = [
+  { num: 27536, digits: [2,7,5,3,6] },
+  { num: 15420, digits: [1,5,4,2,0] },
+  { num: 10500, digits: [1,0,5,0,0] },
+  { num: 62104, digits: [6,2,1,0,4] },
+];
+let s6idx = 0, s6dropped = [null,null,null,null,null], s6dragging = null;
+
+function renderStage6() {
+  if (s6idx >= s6data.length) { showStageComplete(6); return; }
+  const q = s6data[s6idx];
+  s6dropped = [null,null,null,null,null];
+  s6droppedSrc = [null,null,null,null,null];
+  const card = document.getElementById('gameCard');
+  // ترتيب العرض: آحاد يميناً (i=4) ← مئات ← آلاف ← عشرات الألوف يساراً (i=0)
+  // نعكس المصفوفة فيصبح i=4 (آحاد) هو الأول في RTL أي يميناً
+  const placeNames = ['عشرات الألوف','آلاف','مئات','عشرات','آحاد']; // [0]=عشراتألوف [4]=آحاد
+  const placeNamesRev = [...placeNames].reverse();   // [0]=آحاد [4]=عشراتألوف
+  // correctDigits[0]=عشراتألوف...correctDigits[4]=آحاد
+  // خانة dz_{i} تقابل placeNamesRev[i] → آحاد هي dz_0، عشرات الألوف هي dz_4
+  // عند التحقق نقيس: s6dropped[i] يجب = correctDigits[4-i]
+
+  card.innerHTML = `
+    ${mascotHTML(mascotSayings.intro6)}
+    <div class="stage-intro-badge">المرحلة ٦ — لوحة المنازل 🗂️</div>
+    <div class="q-title">اسحب أرقام العدد <span style="color:#EC4899">${toHindi(q.num)}</span> إلى المنازل الصحيحة</div>
+    <div class="drag-digits" id="dragDigits">
+      ${[...q.digits].sort(()=>Math.random()-0.5).map((d,i)=>
+        `<div class="drag-digit" draggable="true" data-val="${d}" id="dd${i}" 
+          ondragstart="startDrag(this)" ontouchstart="touchStart(event,this)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+          ${toHindi(d)}</div>`
+      ).join('')}
+    </div>
+    <div style="font-size:0.72em;color:#6B7280;text-align:center;margin-bottom:4px">عشرات الألوف ← &nbsp;&nbsp;&nbsp;&nbsp; → آحاد</div>
+    <div class="drop-zones" id="dropZones" style="direction:rtl">
+      ${placeNamesRev.map((pl,i)=>`
+        <div class="drop-zone-wrap">
+          <div class="drop-zone" id="dz${i}" data-idx="${i}"
+            ondragover="allowDrop(event)" ondrop="dropHere(event,${i})" onclick="clickDrop(${i})">
+          </div>
+          <div class="drop-label">${pl}</div>
+        </div>`
+      ).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-check" onclick="checkS6(${JSON.stringify(q.digits)})">تحقق ✓</button>
+    <button class="btn-next" id="btnNext" onclick="nextS6()">التالي ←</button>
+  `;
+}
+
+function startDrag(el) {
+  s6dragging = el;
+  el.style.opacity = '0.5';
+  event.dataTransfer.setData('text', el.dataset.val + '|' + el.id);
+}
+function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('over'); }
+function dropHere(e, idx) {
+  e.preventDefault();
+  const data = e.dataTransfer.getData('text').split('|');
+  const val = +data[0], srcId = data[1];
+  placeBead(val, srcId, idx);
+}
+let s6touchEl = null, s6touchSrc = null;
+function touchStart(e, el) { s6touchEl = el; s6touchSrc = el.id; el.style.opacity='0.6'; }
+function touchMove(e) { e.preventDefault(); }
+function touchEnd(e) {
+  if (!s6touchEl) return;
+  const touch = e.changedTouches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const zone = el && el.closest('.drop-zone');
+  if (zone) {
+    const idx = +zone.dataset.idx;
+    placeBead(+s6touchEl.dataset.val, s6touchSrc, idx);
+  }
+  s6touchEl.style.opacity = '';
+  s6touchEl = null;
+}
+
+let s6droppedSrc = [null,null,null,null,null]; // stores srcId per slot
+
+function placeBead(val, srcId, idx) {
+  // إذا كانت الخانة ممتلئة، أعد العنصر القديم
+  if (s6dropped[idx] !== null && s6droppedSrc[idx]) {
+    const oldSrc = document.getElementById(s6droppedSrc[idx]);
+    if (oldSrc) { oldSrc.classList.remove('used'); oldSrc.style.pointerEvents=''; oldSrc.style.opacity=''; }
+  }
+  s6dropped[idx] = val;
+  s6droppedSrc[idx] = srcId;
+  const zone = document.getElementById('dz'+idx);
+  zone.textContent = toHindi(val);
+  zone.classList.add('filled');
+  playClick();
+  const src = document.getElementById(srcId);
+  if (src) { src.classList.add('used'); src.style.pointerEvents='none'; src.style.opacity='0.3'; }
+}
+
+function clickDrop(idx) {
+  const zone = document.getElementById('dz'+idx);
+  if (s6dropped[idx] !== null) {
+    const srcId = s6droppedSrc[idx];
+    if (srcId) {
+      const src = document.getElementById(srcId);
+      if (src) { src.classList.remove('used'); src.style.pointerEvents=''; src.style.opacity=''; }
+    }
+    s6dropped[idx] = null; s6droppedSrc[idx] = null;
+    zone.textContent = ''; zone.classList.remove('filled','correct','wrong');
+  }
+}
+
+function checkS6(correctDigits) {
+  // correctDigits[0]=عشراتألوف ... correctDigits[4]=آحاد
+  // dz0=آحاد → correctDigits[4]، dz4=عشراتألوف → correctDigits[0]
+  let allCorrect = true;
+  for (let i=0;i<5;i++) {
+    const zone = document.getElementById('dz'+i);
+    const expected = correctDigits[4-i]; // عكس الترتيب
+    if (s6dropped[i] === expected) {
+      zone.classList.add('correct');
+    } else {
+      zone.classList.add('wrong');
+      allCorrect = false;
+    }
+  }
+  if (allCorrect) {
+    playSuccess(); showStars(10); addScore(20); s6idx++;
+    showFeedback(true, randFrom(mascotSayings.correct));
+  } else {
+    playError(); loseHeart(); s6idx++;
+    showFeedback(false, randFrom(mascotSayings.wrong));
+  }
+  document.querySelector('.btn-check').disabled = true;
+  showNext();
+}
+function nextS6() { renderStage6(); }
+
+// ======================================================
+// STAGE 7: التحدي النهائي — 15 سؤالاً متنوعاً
+// ======================================================
+const s7questions = [
+  // 1. اختيار
+  { type:'choice', q:'ما عدد منازل العدد ٢٧٥٣٦؟', answer:'٥ منازل', opts:['٤ منازل','٥ منازل','٦ منازل','٣ منازل'] },
+  // 2. كتابة عدد
+  { type:'write', q:'اكتب العدد بالأرقام الهندية: سبعة وعشرون ألفاً وخمسمئة وستة وثلاثون', answer:'27536' },
+  // 3. قيمة مكانية — اختيار
+  { type:'choice', q:'ما القيمة المكانية للرقم ٦ في العدد ١٦٢٥؟', answer:'٦٠٠', opts:['٦','٦٠','٦٠٠','٦٠٠٠'] },
+  // 4. سحب وإفلات — لوحة منازل
+  { type:'drag5', q:'ضع أرقام العدد ٦٢١٠٤ في منازلها', num:62104, digits:[6,2,1,0,4] },
+  // 5. اختيار
+  { type:'choice', q:'أي من الأعداد الآتية أكبر من ٩٩٩٩؟', answer:'١٠٠٠٠', opts:['٩٩٩٩','٨٠٠٠','١٠٠٠٠','٩٩٩'] },
+  // 6. منزلة الرقم
+  { type:'choice', q:'الرقم ٥ في العدد ٤٥٣٢٧ يقع في منزلة:', answer:'آلاف', opts:['مئات','آلاف','عشرات','عشرات الألوف'] },
+  // 7. كتابة
+  { type:'write', q:'اكتب بالأرقام: اثنا عشر ألفاً ومئة وثلاثون', answer:'12130' },
+  // 8. قراءة
+  { type:'choice', q:'كيف نقرأ العدد ٢٠٠٠٠؟', answer:'عشرون ألفاً', opts:['عشرون ألفاً','ألفان','مئتا ألف','اثنان وعشرون ألفاً'] },
+  // 9. عدّاد — اختيار العدد الممثَّل
+  { type:'abacusRead', q:'العدّاد يُظهر: عشرات الألوف=١، آلاف=٥، مئات=٤، عشرات=٢، آحاد=٠\nما العدد الممثَّل؟', answer:'١٥٤٢٠', opts:['١٥٤٢٠','١٤٥٢٠','١٥٢٤٠','٥١٤٢٠'] },
+  // 10. ترتيب
+  { type:'order', q:'رتّب الأعداد من الأصغر إلى الأكبر', nums:[27536,10000,15420,9999], correct:[9999,10000,15420,27536] },
+  // 11. كتابة
+  { type:'write', q:'اكتب بالأرقام: ثلاثة وعشرون ألفاً وخمسة عشر', answer:'23015' },
+  // 12. قيمة مكانية
+  { type:'choice', q:'في العدد ٤٧٥٣٢، الرقم ٧ يرمز إلى:', answer:'٧٠٠٠', opts:['٧','٧٠','٧٠٠','٧٠٠٠'] },
+  // 13. اختيار
+  { type:'choice', q:'ماذا تسمى منازل الأعداد ٠،١،٢،٣،...؟', answer:'الأعداد الكلية', opts:['الأعداد الكسرية','الأعداد الكلية','الأعداد السالبة','الأعداد الزوجية'] },
+  // 14. مطابقة
+  { type:'match', q:'طابق بين العدد وقراءته', pairs:[
+    {num:'٩٩٩٩', word:'تسعة آلاف وتسعمئة وتسعة وتسعون'},
+    {num:'١٠٠٠٠', word:'عشرة آلاف'},
+    {num:'٣٢١٠٠', word:'اثنان وثلاثون ألفاً ومئة'},
+  ]},
+  // 15. كتابة
+  { type:'write', q:'اكتب بالأرقام: سبعة وستون ألفاً وأربعون', answer:'67040' },
+];
+
+let s7idx = 0, s7correct = 0;
+let orderSelected = [], orderPlaced = [];
+let matchSelectedLeft = null, matchPaired = [];
+
+function renderStage7() {
+  if (s7idx >= s7questions.length) { showStageComplete(7, true); return; }
+  const q = s7questions[s7idx];
+  updateHeader();
+  
+  const card = document.getElementById('gameCard');
+  const header = `
+    ${mascotHTML(mascotSayings.intro7)}
+    <div class="stage-intro-badge">التحدي النهائي — السؤال ${toHindi(s7idx+1)} من ١٥ 🏆</div>
+  `;
+
+  switch(q.type) {
+    case 'choice': renderS7Choice(q, header); break;
+    case 'write': renderS7Write(q, header); break;
+    case 'order': renderS7Order(q, header); break;
+    case 'match': renderS7Match(q, header); break;
+    case 'drag5': renderS7Drag(q, header); break;
+    case 'abacusRead': renderS7Choice(q, header); break;
+  }
+}
+
+function renderS7Choice(q, header) {
+  const card = document.getElementById('gameCard');
+  card.innerHTML = header + `
+    <div class="q-title">${q.q}</div>
+    <div class="choices" style="${q.opts.length>2?'':'grid-template-columns:1fr'}" id="choices7"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS7()">التالي ←</button>
+  `;
+  const div = document.getElementById('choices7');
+  const opts = [...q.opts].sort(()=>Math.random()-0.5);
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.style.textAlign = 'right';
+    btn.textContent = opt;
+    btn.onclick = () => {
+      document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+      if (opt === q.answer) {
+        btn.classList.add('correct'); playSuccess(); showStars(); addScore(20); s7correct++;
+        showFeedback(true, randFrom(mascotSayings.correct));
+      } else {
+        btn.classList.add('wrong'); playError(); loseHeart();
+        document.querySelectorAll('.choice-btn').forEach(b=>{if(b.textContent===q.answer)b.classList.add('correct');});
+        showFeedback(false, `الصحيح: ${q.answer}`);
+      }
+      s7idx++; showNext();
+    };
+    div.appendChild(btn);
+  });
+}
+
+function renderS7Write(q, header) {
+  const card = document.getElementById('gameCard');
+  card.innerHTML = header + `
+    <div class="q-title">${q.q}</div>
+    <input class="answer-input" type="text" id="answerInput" placeholder="اكتب العدد..." maxlength="6" inputmode="numeric">
+    <button class="btn-check" id="checkBtn" onclick="checkS7Write('${q.answer}')">تحقق ✓</button>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS7()">التالي ←</button>
+  `;
+  document.getElementById('answerInput').focus();
+  document.getElementById('answerInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkS7Write(q.answer);});
+}
+
+function checkS7Write(answer) {
+  const inp = document.getElementById('answerInput');
+  const val = fromHindi(inp.value.trim());
+  document.getElementById('checkBtn').disabled = true;
+  if (val === answer) {
+    inp.classList.add('correct'); playSuccess(); showStars(); addScore(20); s7correct++;
+    showFeedback(true, randFrom(mascotSayings.correct));
+  } else {
+    inp.classList.add('wrong'); playError(); loseHeart();
+    showFeedback(false, `الصحيح: ${toHindi(+answer)}`);
+  }
+  s7idx++; showNext();
+}
+
+function renderS7Order(q, header) {
+  orderSelected = []; orderPlaced = [];
+  const card = document.getElementById('gameCard');
+  const numsShuffled = [...q.nums].sort(()=>Math.random()-0.5);
+  card.innerHTML = header + `
+    <div class="q-title">${q.q} (من الأصغر إلى الأكبر)</div>
+    <div class="order-numbers" id="orderNums">
+      ${numsShuffled.map(n=>`<div class="order-num" onclick="pickOrderNum(${n},this)">${toHindi(n)}</div>`).join('')}
+    </div>
+    <div style="font-size:0.85em;color:#6B7280;text-align:center;margin:4px 0">انقر على الأعداد بالترتيب الصحيح ↓</div>
+    <div class="order-target" id="orderTarget">
+      ${q.nums.map((_,i)=>`<div class="order-slot" id="os${i}"></div>`).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-check" id="checkBtn" onclick="checkS7Order(${JSON.stringify(q.correct)})">تحقق ✓</button>
+    <button class="btn-next" id="btnNext" onclick="nextS7()">التالي ←</button>
+  `;
+}
+
+function pickOrderNum(n, el) {
+  if (el.classList.contains('selected-order') || orderPlaced.length >= 4) return;
+  el.classList.add('selected-order');
+  orderPlaced.push(n);
+  const slot = document.getElementById('os'+(orderPlaced.length-1));
+  if (slot) { slot.textContent = toHindi(n); slot.classList.add('filled'); }
+  playClick();
+}
+
+function checkS7Order(correct) {
+  let ok = true;
+  for (let i=0;i<correct.length;i++) {
+    const slot = document.getElementById('os'+i);
+    if (!slot || orderPlaced[i] !== correct[i]) {
+      ok = false; if(slot) slot.classList.add('wrong');
+    } else { if(slot) slot.classList.add('correct'); }
+  }
+  document.getElementById('checkBtn').disabled=true;
+  if (ok) { playSuccess(); showStars(); addScore(20); s7correct++; showFeedback(true, randFrom(mascotSayings.correct)); }
+  else { playError(); loseHeart(); showFeedback(false, `الترتيب الصحيح: ${correct.map(n=>toHindi(n)).join(' ، ')}`); }
+  s7idx++; showNext();
+}
+
+function renderS7Match(q, header) {
+  matchSelectedLeft = null; matchPaired = [];
+  const card = document.getElementById('gameCard');
+  const shuffledRight = [...q.pairs].sort(()=>Math.random()-0.5);
+  card.innerHTML = header + `
+    <div class="q-title">${q.q}</div>
+    <div class="match-wrap">
+      <div class="match-col" id="matchLeft">
+        ${q.pairs.map((p,i)=>`<div class="match-item match-left" data-idx="${i}" onclick="matchLeft(${i},this)">${p.num}</div>`).join('')}
+      </div>
+      <div class="match-col" id="matchRight">
+        ${shuffledRight.map((p,i)=>`<div class="match-item match-right" data-word="${p.word}" onclick="matchRight('${p.word}',this)">${p.word}</div>`).join('')}
+      </div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextS7()">التالي ←</button>
+  `;
+}
+
+function matchLeft(idx, el) {
+  if (el.classList.contains('matched')) return;
+  document.querySelectorAll('.match-left').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected'); matchSelectedLeft = {idx, el};
+}
+
+function matchRight(word, el) {
+  if (!matchSelectedLeft || el.classList.contains('matched')) return;
+  const {idx, el:leftEl} = matchSelectedLeft;
+  const pairs = s7questions[s7idx].pairs;
+  const correct = pairs[idx].word === word;
+  if (correct) {
+    leftEl.classList.remove('selected'); leftEl.classList.add('matched');
+    el.classList.add('matched'); matchPaired.push(idx); playClick();
+    if (matchPaired.length === pairs.length) {
+      playSuccess(); showStars(); addScore(20); s7correct++;
+      showFeedback(true, randFrom(mascotSayings.correct));
+      s7idx++; setTimeout(()=>showNext(),500);
+    }
+  } else {
+    el.classList.add('wrong-match'); leftEl.classList.remove('selected');
+    playError();
+    setTimeout(()=>el.classList.remove('wrong-match'),500);
+  }
+  matchSelectedLeft = null;
+}
+
+let s7dragDropped = [null,null,null,null,null];
+function renderS7Drag(q, header) {
+  s7dragDropped = [null,null,null,null,null];
+  s7dragDroppedSrc = [null,null,null,null,null];
+  const card = document.getElementById('gameCard');
+  const placeNames7 = ['عشرات الألوف','آلاف','مئات','عشرات','آحاد'];
+  const placeNamesRev7 = [...placeNames7].reverse(); // [0]=آحاد ... [4]=عشراتألوف
+  card.innerHTML = header + `
+    <div class="q-title">${q.q}</div>
+    <div class="drag-digits" id="dragDigits7">
+      ${[...q.digits].sort(()=>Math.random()-0.5).map((d,i)=>
+        `<div class="drag-digit" draggable="true" data-val="${d}" id="dd7_${i}"
+          ondragstart="startDrag7(this)" ontouchstart="touchStart7(event,this)" ontouchmove="touchMove(event)" ontouchend="touchEnd7(event)">
+          ${toHindi(d)}</div>`
+      ).join('')}
+    </div>
+    <div style="font-size:0.72em;color:#6B7280;text-align:center;margin-bottom:4px">عشرات الألوف ← &nbsp;&nbsp;&nbsp;&nbsp; → آحاد</div>
+    <div class="drop-zones" id="dropZones7" style="direction:rtl">
+      ${placeNamesRev7.map((pl,i)=>`
+        <div class="drop-zone-wrap">
+          <div class="drop-zone" id="dz7_${i}" data-idx="${i}"
+            ondragover="allowDrop(event)" ondrop="dropHere7(event,${i})" onclick="clickDrop7(${i})"></div>
+          <div class="drop-label">${pl}</div>
+        </div>`).join('')}
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-check" id="checkBtn" onclick="checkS7Drag(${JSON.stringify(q.digits)})">تحقق ✓</button>
+    <button class="btn-next" id="btnNext" onclick="nextS7()">التالي ←</button>
+  `;
+}
+
+let s7dragging=null, s7touchEl2=null;
+function startDrag7(el){s7dragging=el;el.style.opacity='0.5';event.dataTransfer.setData('text',el.dataset.val+'|'+el.id);}
+function dropHere7(e,idx){e.preventDefault();const data=e.dataTransfer.getData('text').split('|');placeBead7(+data[0],data[1],idx);}
+function touchStart7(e,el){s7touchEl2=el;el.style.opacity='0.6';}
+function touchEnd7(e){
+  if(!s7touchEl2)return;
+  const t=e.changedTouches[0];
+  const el=document.elementFromPoint(t.clientX,t.clientY);
+  const zone=el&&el.closest('.drop-zone');
+  if(zone)placeBead7(+s7touchEl2.dataset.val,s7touchEl2.id,+zone.dataset.idx);
+  s7touchEl2.style.opacity='';s7touchEl2=null;
+}
+let s7dragDroppedSrc = [null,null,null,null,null];
+
+function placeBead7(val,srcId,idx){
+  // إذا الخانة ممتلئة، أعد العنصر القديم أولاً
+  if(s7dragDropped[idx]!==null && s7dragDroppedSrc[idx]){
+    const oldSrc=document.getElementById(s7dragDroppedSrc[idx]);
+    if(oldSrc){oldSrc.classList.remove('used');oldSrc.style.pointerEvents='';oldSrc.style.opacity='';}
+  }
+  s7dragDropped[idx]=val;
+  s7dragDroppedSrc[idx]=srcId;
+  const zone=document.getElementById('dz7_'+idx);
+  zone.textContent=toHindi(val);zone.classList.add('filled');playClick();
+  const src=document.getElementById(srcId);
+  if(src){src.classList.add('used');src.style.pointerEvents='none';src.style.opacity='0.3';}
+}
+function clickDrop7(idx){
+  const zone=document.getElementById('dz7_'+idx);
+  if(s7dragDropped[idx]!==null){
+    const srcId=s7dragDroppedSrc[idx];
+    if(srcId){
+      const src=document.getElementById(srcId);
+      if(src){src.classList.remove('used');src.style.pointerEvents='';src.style.opacity='';}
+    }
+    s7dragDropped[idx]=null;s7dragDroppedSrc[idx]=null;
+    zone.textContent='';zone.classList.remove('filled','correct','wrong');
+  }
+}
+function checkS7Drag(correctDigits){
+  // correctDigits[0]=عشراتألوف ... correctDigits[4]=آحاد
+  // dz7_0=آحاد → correctDigits[4]، dz7_4=عشراتألوف → correctDigits[0]
+  let ok=true;
+  for(let i=0;i<5;i++){
+    const z=document.getElementById('dz7_'+i);
+    const expected=correctDigits[4-i];
+    if(s7dragDropped[i]===expected){z.classList.add('correct');}
+    else{z.classList.add('wrong');ok=false;}
+  }
+  document.getElementById('checkBtn').disabled=true;
+  if(ok){playSuccess();showStars();addScore(20);s7correct++;showFeedback(true,randFrom(mascotSayings.correct));}
+  else{playError();loseHeart();showFeedback(false,randFrom(mascotSayings.wrong));}
+  s7idx++;showNext();
+}
+
+function nextS7() { renderStage7(); }
+
+// ======================================================
+// STAGE COMPLETE
+// ======================================================
+function showStageComplete(stageNum, isFinal=false) {
+  const card = document.getElementById('gameCard');
+  if (isFinal) {
+    endGame(); return;
+  }
+  const messages = ['','ممتاز! تعلمت المنازل!','رائع! أتقنت العدّاد!','أحسنت! فهمت القيمة المكانية!','بارك الله فيك! تقرأ الأعداد بطلاقة!','أحسنت! تكتب الأعداد بدقة!','عظيم! أتقنت لوحة المنازل!'];
+  card.innerHTML = `
+    <div class="stage-complete">
+      <div class="big-star">⭐</div>
+      <h2>أحسنت! اجتزت المرحلة ${toHindi(stageNum)}!</h2>
+      <p>${messages[stageNum] || 'رائع!'}</p>
+      <p style="font-size:1.1em;font-weight:700;color:var(--primary)">نقاطك: ${toHindi(score)} ⭐</p>
+      <br>
+      <button class="btn-start" style="font-size:1.1em" onclick="nextStage()">المرحلة التالية ${STAGES[currentStage+1]?STAGES[currentStage+1].icon:''} →</button>
+    </div>
+  `;
+  showStars(12);
+  playSuccess();
+}
+
+// Init drag over highlight removal
+document.addEventListener('dragleave', e => {
+  if (e.target.classList && e.target.classList.contains('drop-zone')) {
+    e.target.classList.remove('over');
+  }
+});
+</script>
+</body>
+</html>
