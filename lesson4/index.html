@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة مقارنة الأعداد - الصف الرابع</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap');
+
+  :root {
+    --sky: #4FC3F7;
+    --sky-dark: #0288D1;
+    --sun: #FFD54F;
+    --sun-dark: #F9A825;
+    --green: #66BB6A;
+    --green-dark: #388E3C;
+    --pink: #F48FB1;
+    --pink-dark: #C2185B;
+    --purple: #CE93D8;
+    --purple-dark: #7B1FA2;
+    --orange: #FFAB40;
+    --bg: #E3F2FD;
+    --card: #FFFFFF;
+    --text: #1A237E;
+    --shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Tajawal', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #E3F2FD 0%, #E8F5E9 50%, #FFF9C4 100%);
+    min-height: 100vh;
+    color: var(--text);
+    direction: rtl;
+  }
+
+  /* ===== HEADER ===== */
+  .game-header {
+    background: linear-gradient(135deg, #1565C0, #0D47A1);
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-title { font-size: 1.2rem; font-weight: 800; }
+  .score-box {
+    background: var(--sun);
+    color: #1A237E;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-wrap {
+    padding: 10px 20px 0;
+  }
+  .progress-label {
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .progress-bar {
+    background: #B3E5FC;
+    border-radius: 10px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #29B6F6, #0D47A1);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+
+  /* ===== MAIN CONTAINER ===== */
+  .game-main {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* ===== STAGE CARD ===== */
+  .stage-card {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    border: 3px solid #B3E5FC;
+    animation: slideIn 0.4s ease;
+  }
+  @keyframes slideIn {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  .stage-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1565C0, #0D47A1);
+    color: white;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .stage-title {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #0D47A1;
+    margin-bottom: 8px;
+  }
+
+  .stage-desc {
+    background: #E3F2FD;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    margin-bottom: 16px;
+    border-right: 4px solid #1565C0;
+  }
+
+  /* ===== MASCOT ===== */
+  .mascot-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #FFF8E1;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: 2px solid var(--sun);
+  }
+  .mascot-svg { flex-shrink: 0; width: 60px; }
+  .mascot-bubble {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    font-weight: 600;
+    color: #4E342E;
+  }
+
+  /* ===== PLACE VALUE TABLE ===== */
+  .place-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    direction: rtl;
+  }
+  .place-table th {
+    background: #1565C0;
+    color: white;
+    padding: 10px 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #0D47A1;
+  }
+  .place-table td {
+    border: 2px solid #B3E5FC;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #1A237E;
+  }
+  .place-table tr:nth-child(odd) td { background: #E3F2FD; }
+  .place-table tr:nth-child(even) td { background: #F3F8FF; }
+  .highlight-cell {
+    background: #FFD54F !important;
+    color: #E65100 !important;
+    border-radius: 6px;
+    animation: pulse 0.8s ease infinite alternate;
+  }
+  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    border: none;
+    border-radius: 16px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 12px 24px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:active { transform: scale(0.95); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1565C0, #0D47A1);
+    color: white;
+    box-shadow: 0 4px 12px rgba(13,71,161,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(13,71,161,0.4); }
+
+  .btn-green {
+    background: linear-gradient(135deg, #43A047, #2E7D32);
+    color: white;
+    box-shadow: 0 4px 12px rgba(46,125,50,0.35);
+  }
+  .btn-orange {
+    background: linear-gradient(135deg, #FB8C00, #E65100);
+    color: white;
+    box-shadow: 0 4px 12px rgba(230,81,0,0.3);
+  }
+  .btn-symbol {
+    background: white;
+    color: #1565C0;
+    border: 3px solid #1565C0;
+    font-size: 1.4rem;
+    padding: 10px 20px;
+    min-width: 70px;
+    justify-content: center;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+  .btn-symbol.selected {
+    background: #1565C0;
+    color: white;
+    transform: scale(1.1);
+  }
+  .btn-symbol:hover { background: #E3F2FD; }
+
+  /* ===== SYMBOL ROW ===== */
+  .symbol-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  /* ===== NUMBER DISPLAY ===== */
+  .numbers-compare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .num-box {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border: 3px solid #1565C0;
+    border-radius: 18px;
+    padding: 16px 24px;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #0D47A1;
+    min-width: 120px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .symbol-gap {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border: 3px dashed #90CAF9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #1565C0;
+    font-weight: 900;
+  }
+  .symbol-gap.filled {
+    border-style: solid;
+    background: #FFF9C4;
+  }
+
+  /* ===== FEEDBACK ===== */
+  .feedback {
+    border-radius: 16px;
+    padding: 14px 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 14px;
+    display: none;
+    animation: bounceIn 0.4s ease;
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0.7); opacity:0; }
+    60% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity:1; }
+  }
+  .feedback.correct {
+    background: #E8F5E9;
+    border: 2px solid #4CAF50;
+    color: #2E7D32;
+    display: block;
+  }
+  .feedback.wrong {
+    background: #FFEBEE;
+    border: 2px solid #F44336;
+    color: #C62828;
+    display: block;
+  }
+
+  /* ===== ORDERING GAME ===== */
+  .order-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .order-item {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border: 2.5px solid #1565C0;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #0D47A1;
+    text-align: center;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    direction: ltr;
+  }
+  .order-item:active { cursor: grabbing; transform: scale(1.04); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+  .order-item.dragging { opacity: 0.5; }
+  .order-item.drag-over { border-color: #F9A825; background: #FFF8E1; }
+
+  /* ===== SLOT GAME (drag to slots) ===== */
+  .slots-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .slot {
+    background: #F5F5F5;
+    border: 2.5px dashed #90CAF9;
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #999;
+    text-align: center;
+    min-height: 54px;
+    transition: all 0.2s;
+    direction: ltr;
+  }
+  .slot.filled {
+    background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+    border-style: solid;
+    border-color: #4CAF50;
+    color: #2E7D32;
+  }
+  .slot.drag-over { border-color: #F9A825; background: #FFF8E1; }
+
+  /* ===== STEP EXPLANATION ===== */
+  .steps-box {
+    background: #F3E5F5;
+    border-radius: 16px;
+    padding: 16px;
+    margin: 14px 0;
+    border-right: 5px solid #7B1FA2;
+  }
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .step-num {
+    background: #7B1FA2;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 0.95rem; font-weight: 600; line-height: 1.6; }
+
+  /* ===== EXPLORATION GAME ===== */
+  .explore-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .explore-card {
+    background: white;
+    border: 2.5px solid #B3E5FC;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .explore-card:hover { border-color: #1565C0; transform: translateY(-2px); }
+  .explore-card.selected { border-color: #4CAF50; background: #E8F5E9; }
+  .explore-card .card-num { font-size: 1.5rem; font-weight: 900; color: #0D47A1; direction: ltr; }
+  .explore-card .card-hint { font-size: 0.8rem; color: #666; margin-top: 4px; }
+
+  /* ===== CELEBRATION ===== */
+  .celebration {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    display: none;
+  }
+  .celebration.show { display: flex; }
+  .celebration-box {
+    background: white;
+    border-radius: 28px;
+    padding: 32px;
+    text-align: center;
+    max-width: 380px;
+    width: 90%;
+    animation: zoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes zoomIn { from { transform: scale(0.3); opacity:0; } to { transform: scale(1); opacity:1; } }
+  .stars-row { font-size: 2.5rem; margin: 10px 0; }
+  .celeb-title { font-size: 1.6rem; font-weight: 900; color: #0D47A1; margin-bottom: 8px; }
+  .celeb-msg { font-size: 1rem; color: #555; margin-bottom: 20px; line-height: 1.6; }
+
+  /* ===== INPUT ===== */
+  .num-input {
+    border: 3px solid #1565C0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 1.3rem;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: 800;
+    color: #0D47A1;
+    text-align: center;
+    width: 160px;
+    direction: ltr;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .num-input:focus { border-color: #F9A825; box-shadow: 0 0 0 3px rgba(249,168,37,0.25); }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    animation: confettiFall 3s ease-in forwards;
+    border-radius: 2px;
+    z-index: 1000;
+  }
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(-100px) rotateZ(0deg); }
+    100% { opacity: 0; transform: translateY(100vh) rotateZ(720deg); }
+  }
+
+  /* ===== INTRO SCREEN ===== */
+  .intro-screen {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .intro-title { font-size: 2rem; font-weight: 900; color: #0D47A1; margin-bottom: 10px; }
+  .intro-subtitle { font-size: 1.1rem; color: #555; margin-bottom: 24px; line-height: 1.7; }
+  .intro-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .intro-stage-item {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    border: 2px solid #1565C0;
+    border-radius: 14px;
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0D47A1;
+    text-align: center;
+  }
+  .intro-stage-icon { font-size: 1.6rem; margin-bottom: 4px; }
+
+  /* ===== FINAL SUMMARY ===== */
+  .summary-card {
+    text-align: center;
+    padding: 20px;
+  }
+  .summary-score-big {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #0D47A1;
+    margin: 16px 0;
+  }
+  .summary-stars { font-size: 2rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 480px) {
+    .numbers-compare { gap: 10px; }
+    .num-box { font-size: 1.3rem; padding: 12px 14px; min-width: 90px; }
+    .btn-symbol { font-size: 1.2rem; padding: 8px 14px; min-width: 55px; }
+    .explore-grid { grid-template-columns: 1fr; }
+    .stage-title { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="game-header">
+  <div class="header-title">🔢 مقارنة الأعداد</div>
+  <div class="score-box">⭐ <span id="scoreDisplay">0</span></div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">التقدم: <span id="progressLabel">المرحلة 0 من 9</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="game-main" id="gameMain"></div>
+
+<!-- CELEBRATION OVERLAY -->
+<div class="celebration" id="celebOverlay">
+  <div class="celebration-box">
+    <div class="stars-row" id="celebStars">⭐⭐⭐</div>
+    <div class="celeb-title" id="celebTitle">رائع!</div>
+    <div class="celeb-msg" id="celebMsg"></div>
+    <button class="btn btn-green" onclick="nextStage()">التالي ←</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let currentStage = -1; // -1 = intro
+let score = 0;
+let selectedSymbol = null;
+let dragSrcIndex = null;
+let orderAnswers = [];
+let triesLeft = 2;
+const TOTAL_STAGES = 9;
+
+const arabicDigits = n => String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+
+function updateProgress() {
+  const pct = currentStage < 0 ? 0 : Math.round((currentStage / TOTAL_STAGES) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    currentStage < 0 ? 'لم تبدأ بعد' : `المرحلة ${arabicDigits(currentStage)} من ${arabicDigits(TOTAL_STAGES)}`;
+  document.getElementById('scoreDisplay').textContent = arabicDigits(score);
+}
+
+function addScore(pts) {
+  score += pts;
+  document.getElementById('scoreDisplay').textContent = arabicDigits(score);
+  document.getElementById('scoreDisplay').parentElement.style.transform = 'scale(1.2)';
+  setTimeout(() => document.getElementById('scoreDisplay').parentElement.style.transform = 'scale(1)', 300);
+}
+
+function playSound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    if (type === 'correct') {
+      o.frequency.setValueAtTime(523, ctx.currentTime);
+      o.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+      o.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+      g.gain.setValueAtTime(0.3, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      o.start(); o.stop(ctx.currentTime + 0.5);
+    } else {
+      o.frequency.setValueAtTime(220, ctx.currentTime);
+      o.type = 'sawtooth';
+      g.gain.setValueAtTime(0.2, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      o.start(); o.stop(ctx.currentTime + 0.3);
+    }
+  } catch(e) {}
+}
+
+function launchConfetti() {
+  const colors = ['#FFD54F','#4FC3F7','#66BB6A','#F48FB1','#CE93D8','#FFAB40'];
+  for (let i = 0; i < 50; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*1}s;animation-duration:${2+Math.random()*2}s;transform:rotateZ(${Math.random()*360}deg);`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+function showCelebration(title, msg) {
+  document.getElementById('celebTitle').textContent = title;
+  document.getElementById('celebMsg').textContent = msg;
+  document.getElementById('celebOverlay').classList.add('show');
+  launchConfetti();
+  playSound('correct');
+}
+
+function nextStage() {
+  document.getElementById('celebOverlay').classList.remove('show');
+  currentStage++;
+  updateProgress();
+  renderStage();
+}
+
+function renderStage() {
+  const main = document.getElementById('gameMain');
+  main.innerHTML = '';
+
+  if (currentStage === -1) { renderIntro(); return; }
+  if (currentStage === 0) { renderStage0(); return; }
+  if (currentStage === 1) { renderStage1(); return; }
+  if (currentStage === 2) { renderStage2(); return; }
+  if (currentStage === 3) { renderStage3(); return; }
+  if (currentStage === 4) { renderStage4(); return; }
+  if (currentStage === 5) { renderStage5(); return; }
+  if (currentStage === 6) { renderStage6(); return; }
+  if (currentStage === 7) { renderStage7(); return; }
+  if (currentStage === 8) { renderStage8(); return; }
+  if (currentStage >= TOTAL_STAGES) { renderFinal(); return; }
+}
+
+// ============================================================
+// INTRO
+// ============================================================
+function renderIntro() {
+  currentStage = -1;
+  const main = document.getElementById('gameMain');
+  main.innerHTML = `
+  <div class="stage-card intro-screen">
+    <div style="font-size:3rem;margin-bottom:12px;">🏆</div>
+    <div class="intro-title">مقارنة الأعداد</div>
+    <div class="intro-subtitle">
+      مرحباً بك في لعبة مقارنة الأعداد! 🎉<br>
+      ستتعلم كيف تقارن بين الأعداد وترتّبها من الأصغر إلى الأكبر.
+    </div>
+    <div class="intro-stages">
+      <div class="intro-stage-item"><div class="intro-stage-icon">🔍</div>اكتشاف فكرة المقارنة</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">📊</div>مثال: ١٢٥ و ١٥٣</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">🎯</div>مثال ١: ٢٥٣٨ و ٢٥٤٣</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">⭐</div>تدريب أ، ب</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">🔢</div>مثال ٢: ٧ منازل</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">🎮</div>تدريب ج، د</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">📐</div>مثال ٣: الترتيب</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">🏅</div>تدريب الترتيب</div>
+      <div class="intro-stage-item"><div class="intro-stage-icon">🏆</div>التحدي النهائي</div>
+    </div>
+    <button class="btn btn-primary" onclick="currentStage=0;updateProgress();renderStage();">
+      🚀 ابدأ الرحلة!
+    </button>
+  </div>`;
+}
+
+// ============================================================
+// STAGE 0 — نشاط استكشافي: اكتشاف فكرة المقارنة
+// ============================================================
+function renderStage0() {
+  const main = document.getElementById('gameMain');
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🔍 نشاط استكشافي</div>
+    <div class="stage-title">اكتشف فكرة المقارنة</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        أهلاً! أنا نجمة 🌟 دليلتك في هذه الرحلة!<br>
+        قبل أن نتعلّم كيف نقارن الأعداد، دعنا نكتشف الفكرة معاً!
+      </div>
+    </div>
+
+    <div class="stage-desc">
+      <strong>السؤال:</strong> كيف تعرف أيّ العددين أكبر؟ 🤔<br>
+      اختر الخطوة الأولى التي يجب أن تفعلها لمقارنة عددين:
+    </div>
+
+    <div id="exploreChoices" style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <button class="btn" style="background:#E3F2FD;color:#0D47A1;border:2px solid #90CAF9;text-align:right;justify-content:flex-start;" onclick="explore0(0)">
+        أ) أجمع الأرقام في كلا العددين
+      </button>
+      <button class="btn" style="background:#E3F2FD;color:#0D47A1;border:2px solid #90CAF9;text-align:right;justify-content:flex-start;" onclick="explore0(1)">
+        ب) أقارن عدد الأرقام (المنازل) في كل عدد أولاً
+      </button>
+      <button class="btn" style="background:#E3F2FD;color:#0D47A1;border:2px solid #90CAF9;text-align:right;justify-content:flex-start;" onclick="explore0(2)">
+        ج) أنظر إلى آخر رقم في كل عدد
+      </button>
+    </div>
+    <div class="feedback" id="fb0"></div>
+  </div>`;
+}
+
+function explore0(choice) {
+  const fb = document.getElementById('fb0');
+  const btns = document.querySelectorAll('#exploreChoices .btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (choice === 1) {
+    fb.className = 'feedback correct';
+    fb.innerHTML = '✅ ممتاز! الخطوة الأولى دائماً هي مقارنة عدد المنازل (الأرقام) في كل عدد. العدد الذي له مناز ل أكثر هو الأكبر!';
+    addScore(10);
+    playSound('correct');
+    setTimeout(() => showCelebration('🌟 اكتشفت الفكرة!', 'أحسنت! الآن نطبّق هذه الفكرة على أمثلة حقيقية.'), 1200);
+  } else {
+    fb.className = 'feedback wrong';
+    fb.innerHTML = '❌ ليس هذا! نحتاج أولاً أن ننظر إلى عدد الأرقام (المنازل) في كل عدد. حاول مرة أخرى!';
+    btns.forEach(b => b.disabled = false);
+    playSound('wrong');
+  }
+}
+
+// ============================================================
+// STAGE 1 — المثال التمهيدي: مقارنة ١٢٥ و ١٥٣ (شرح + تفاعل)
+// ============================================================
+function renderStage1() {
+  const main = document.getElementById('gameMain');
+  selectedSymbol = null;
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">📊 المثال التمهيدي</div>
+    <div class="stage-title">مقارنة العددين ١٢٥ و ١٥٣</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        لنقارن العددين معاً خطوة بخطوة!<br>
+        <strong>انقر على كل خطوة</strong> لتكتشف ماذا يحدث 👇
+      </div>
+    </div>
+
+    <div class="steps-box" id="stepsBox1">
+      <div class="step-row" style="cursor:pointer;" onclick="showStep1(1)">
+        <div class="step-num">١</div>
+        <div class="step-text"><strong>الخطوة الأولى:</strong> أقارن عدد المنازل أولاً — انقر!</div>
+      </div>
+      <div id="step1detail" style="display:none;background:#EDE7F6;border-radius:10px;padding:10px 14px;margin-right:38px;margin-bottom:8px;font-size:0.9rem;line-height:1.7;">
+        كلا العددين من <strong>٣ منازل</strong> (مئات، عشرات، آحاد) ← عدد المنازل متساوٍ، ننتقل للخطوة التالية.
+      </div>
+      <div class="step-row" style="cursor:pointer;" onclick="showStep1(2)">
+        <div class="step-num">٢</div>
+        <div class="step-text"><strong>الخطوة الثانية:</strong> أقارن من اليسار — انقر!</div>
+      </div>
+      <div id="step1detail2" style="display:none;background:#EDE7F6;border-radius:10px;padding:10px 14px;margin-right:38px;margin-bottom:8px;font-size:0.9rem;line-height:1.7;">
+        رقم المئات في ١٢٥ هو <strong>١</strong>، ورقم المئات في ١٥٣ هو <strong>١</strong> ← متساويان، ننتقل لمنزلة العشرات.
+      </div>
+      <div class="step-row" style="cursor:pointer;" onclick="showStep1(3)">
+        <div class="step-num">٣</div>
+        <div class="step-text"><strong>الخطوة الثالثة:</strong> أجد أول اختلاف — انقر!</div>
+      </div>
+      <div id="step1detail3" style="display:none;background:#EDE7F6;border-radius:10px;padding:10px 14px;margin-right:38px;font-size:0.9rem;line-height:1.7;">
+        رقم العشرات في ١٢٥ هو <strong>٢</strong>، ورقم العشرات في ١٥٣ هو <strong>٥</strong> ← ٥ أكبر من ٢، إذن ١٥٣ أكبر!
+      </div>
+    </div>
+
+    <table class="place-table" style="margin-top:16px;">
+      <tr>
+        <th>الآحاد</th><th>العشرات</th><th>المئات</th>
+      </tr>
+      <tr>
+        <td>٥</td><td id="pt1" style="">٢</td><td>١</td>
+      </tr>
+      <tr>
+        <td>٣</td><td id="pt2" class="highlight-cell">٥</td><td>١</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:10px;color:#0D47A1;">🎯 الآن ضع الرمز الصحيح بين العددين:</div>
+      <div class="numbers-compare">
+        <div class="num-box" style="direction:ltr;">١٢٥</div>
+        <div class="symbol-gap" id="symGap1">؟</div>
+        <div class="num-box" style="direction:ltr;">١٥٣</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" onclick="selectSym1('<')">＜</button>
+        <button class="btn btn-symbol" onclick="selectSym1('>')">＞</button>
+        <button class="btn btn-symbol" onclick="selectSym1('=')">=</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-primary" onclick="checkStage1()">✅ تحقق</button>
+      </div>
+    </div>
+    <div class="feedback" id="fb1"></div>
+  </div>`;
+}
+
+function showStep1(n) {
+  if (n>=1) document.getElementById('step1detail').style.display='block';
+  if (n>=2) document.getElementById('step1detail2').style.display='block';
+  if (n>=3) document.getElementById('step1detail3').style.display='block';
+}
+function selectSym1(s) {
+  selectedSymbol = s;
+  document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  document.querySelectorAll('.btn-symbol').forEach(b => { if(b.textContent.trim()===displayMap[s]) b.classList.add('selected'); });
+  document.getElementById('symGap1').textContent = displayMap[s];
+  document.getElementById('symGap1').classList.add('filled');
+}
+function checkStage1() {
+  const fb = document.getElementById('fb1');
+  if (!selectedSymbol) { fb.className='feedback wrong'; fb.style.display='block'; fb.innerHTML='⚠️ اختر الرمز أولاً!'; return; }
+  if (selectedSymbol === '<') {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ أحسنت! ١٢٥ ＜ ١٥٣ لأن رقم العشرات في ١٥٣ (وهو ٥) أكبر من رقم العشرات في ١٢٥ (وهو ٢).';
+    addScore(15);
+    playSound('correct');
+    setTimeout(() => showCelebration('🎉 رائع جداً!', 'فهمت قاعدة المقارنة من اليسار لليمين!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ حاول مرة أخرى! قارن رقم العشرات: في ١٢٥ هو ٢ وفي ١٥٣ هو ٥. أيهما أكبر؟';
+    playSound('wrong');
+    selectedSymbol = null;
+    document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+    document.getElementById('symGap1').textContent='؟';
+    document.getElementById('symGap1').classList.remove('filled');
+  }
+}
+
+// ============================================================
+// STAGE 2 — مثال (١): مقارنة ٢٥٣٨ و ٢٥٤٣
+// ============================================================
+function renderStage2() {
+  const main = document.getElementById('gameMain');
+  selectedSymbol = null;
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🎯 مثال (١)</div>
+    <div class="stage-title">قارن بين ٢٥٣٨ و ٢٥٤٣</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        الآن نطبّق الطريقة على عدد من أربع منازل!<br>
+        راجع جدول المنازل وضع الرمز الصحيح 🔍
+      </div>
+    </div>
+
+    <div class="stage-desc">
+      <strong>الخطوات:</strong><br>
+      ١- رقم الألوف في كلا العددين هو <strong>٢</strong> ← متساوٍ<br>
+      ٢- رقم المئات في كلا العددين هو <strong>٥</strong> ← متساوٍ<br>
+      ٣- رقم العشرات في ٢٥٣٨ هو <strong>٣</strong>، وفي ٢٥٤٣ هو <strong>٤</strong> ← ٤ أكبر!<br>
+      ∴ ٢٥٤٣ أكبر من ٢٥٣٨
+    </div>
+
+    <table class="place-table">
+      <tr><th>الآحاد</th><th>العشرات</th><th>المئات</th><th>الألوف</th></tr>
+      <tr><td>٨</td><td>٣</td><td>٥</td><td>٢</td></tr>
+      <tr><td>٣</td><td class="highlight-cell">٤</td><td>٥</td><td>٢</td></tr>
+    </table>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:10px;color:#0D47A1;">🎯 الآن أنت! ضع الرمز الصحيح:</div>
+      <div class="numbers-compare">
+        <div class="num-box" style="direction:ltr;">٢٥٣٨</div>
+        <div class="symbol-gap" id="symGap2">؟</div>
+        <div class="num-box" style="direction:ltr;">٢٥٤٣</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" onclick="selectSym2('<')">＜</button>
+        <button class="btn btn-symbol" onclick="selectSym2('>')">＞</button>
+        <button class="btn btn-symbol" onclick="selectSym2('=')">=</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-primary" onclick="checkStage2()">✅ تحقق</button>
+      </div>
+    </div>
+    <div class="feedback" id="fb2"></div>
+  </div>`;
+}
+
+function selectSym2(s) {
+  selectedSymbol = s;
+  document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  document.querySelectorAll('.btn-symbol').forEach(b => { if(b.textContent.trim()===displayMap[s]) b.classList.add('selected'); });
+  document.getElementById('symGap2').textContent = displayMap[s];
+  document.getElementById('symGap2').classList.add('filled');
+}
+function checkStage2() {
+  const fb = document.getElementById('fb2');
+  if (!selectedSymbol) { fb.className='feedback wrong'; fb.style.display='block'; fb.innerHTML='⚠️ اختر الرمز أولاً!'; return; }
+  if (selectedSymbol === '<') {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ ممتاز! ٢٥٣٨ ＜ ٢٥٤٣ لأن رقم العشرات في ٢٥٤٣ (٤) أكبر من رقم العشرات في ٢٥٣٨ (٣).';
+    addScore(15);
+    playSound('correct');
+    setTimeout(() => showCelebration('⭐ أحسنت!', 'الآن جرّب مثالاً مشابهاً بنفسك!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ راجع الجدول! رقم العشرات في ٢٥٣٨ هو ٣ وفي ٢٥٤٣ هو ٤. ما الذي يجعل أحدهما أكبر؟';
+    playSound('wrong');
+    selectedSymbol = null;
+    document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+    document.getElementById('symGap2').textContent='؟'; document.getElementById('symGap2').classList.remove('filled');
+  }
+}
+
+// ============================================================
+// STAGE 3 — تمرين (٤) / أ و ب
+// ============================================================
+function renderStage3() {
+  const main = document.getElementById('gameMain');
+  let answers = {a: null, b: null};
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🏋️ تمرين (٤) — أ و ب</div>
+    <div class="stage-title">قارن بين الأعداد الآتية</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        هيا نطبّق ما تعلّمناه على تدريبين! اختر الرمز الصحيح لكل زوج من الأعداد 💪
+      </div>
+    </div>
+
+    <div style="background:#E8F5E9;border-radius:14px;padding:14px;margin-bottom:14px;border:2px solid #4CAF50;">
+      <div style="font-weight:800;font-size:1rem;margin-bottom:10px;">أ) قارن بين: ٣٦٥ و ٣٨٣</div>
+      <div class="numbers-compare" style="margin:10px 0;">
+        <div class="num-box" style="direction:ltr;">٣٦٥</div>
+        <div class="symbol-gap" id="gapA">؟</div>
+        <div class="num-box" style="direction:ltr;">٣٨٣</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" id="btnA_lt" onclick="sel3('a','<','btnA_lt')">＜</button>
+        <button class="btn btn-symbol" id="btnA_gt" onclick="sel3('a','>','btnA_gt')">＞</button>
+        <button class="btn btn-symbol" id="btnA_eq" onclick="sel3('a','=','btnA_eq')">=</button>
+      </div>
+    </div>
+
+    <div style="background:#FFF3E0;border-radius:14px;padding:14px;margin-bottom:14px;border:2px solid #FF9800;">
+      <div style="font-weight:800;font-size:1rem;margin-bottom:10px;">ب) قارن بين: ٤٥١٨ و ٤٣٢٥</div>
+      <div class="numbers-compare" style="margin:10px 0;">
+        <div class="num-box" style="direction:ltr;">٤٥١٨</div>
+        <div class="symbol-gap" id="gapB">؟</div>
+        <div class="num-box" style="direction:ltr;">٤٣٢٥</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" id="btnB_lt" onclick="sel3('b','<','btnB_lt')">＜</button>
+        <button class="btn btn-symbol" id="btnB_gt" onclick="sel3('b','>','btnB_gt')">＞</button>
+        <button class="btn btn-symbol" id="btnB_eq" onclick="sel3('b','=','btnB_eq')">=</button>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-green" onclick="checkStage3()">✅ تحقق من الإجابتين</button>
+    </div>
+    <div class="feedback" id="fb3"></div>
+  </div>`;
+
+  window._answers3 = {a: null, b: null};
+}
+
+function sel3(q, sym, btnId) {
+  if (!window._answers3) window._answers3 = {a:null,b:null};
+  window._answers3[q] = sym;
+  const prefix = 'btn' + q.toUpperCase() + '_';
+  ['lt','gt','eq'].forEach(s => {
+    const b = document.getElementById(prefix + s);
+    if (b) b.classList.remove('selected');
+  });
+  document.getElementById(btnId).classList.add('selected');
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  const gap = document.getElementById('gap' + q.toUpperCase());
+  gap.textContent = displayMap[sym];
+  gap.classList.add('filled');
+}
+
+function checkStage3() {
+  const fb = document.getElementById('fb3');
+  const ans = window._answers3 || {};
+  if (!ans.a || !ans.b) {
+    fb.className='feedback wrong'; fb.style.display='block';
+    fb.innerHTML='⚠️ أجب على السؤالين قبل التحقق!'; return;
+  }
+  let correct = 0, msgs = [];
+  // a: 365 vs 383 → العشرات: 6 < 8, so 365 < 383
+  if (ans.a === '<') { correct++; msgs.push('✅ أ) صحيح! ٣٦٥ ＜ ٣٨٣ (رقم العشرات: ٦ < ٨)'); }
+  else msgs.push('❌ أ) رقم العشرات في ٣٦٥ هو ٦ وفي ٣٨٣ هو ٨، إذن ٣٦٥ ＜ ٣٨٣');
+  // b: 4518 vs 4325 → المئات: 5 > 3, so 4518 > 4325
+  if (ans.b === '>') { correct++; msgs.push('✅ ب) صحيح! ٤٥١٨ ＞ ٤٣٢٥ (رقم المئات: ٥ > ٣)'); }
+  else msgs.push('❌ ب) رقم المئات في ٤٥١٨ هو ٥ وفي ٤٣٢٥ هو ٣، إذن ٤٥١٨ ＞ ٤٣٢٥');
+
+  if (correct === 2) {
+    fb.className='feedback correct';
+    fb.innerHTML = msgs.join('<br>');
+    addScore(20); playSound('correct');
+    setTimeout(() => showCelebration('🌟 ممتاز!', 'أجبت على التدريبين بشكل صحيح!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML = msgs.join('<br>') + '<br><br>⬆️ راجع إجاباتك وحاول مرة أخرى!';
+    playSound('wrong');
+    if (ans.a !== '<') { window._answers3.a = null; document.getElementById('gapA').textContent='؟'; document.getElementById('gapA').classList.remove('filled'); ['lt','gt','eq'].forEach(s => document.getElementById('btnA_'+s).classList.remove('selected')); }
+    if (ans.b !== '>') { window._answers3.b = null; document.getElementById('gapB').textContent='؟'; document.getElementById('gapB').classList.remove('filled'); ['lt','gt','eq'].forEach(s => document.getElementById('btnB_'+s).classList.remove('selected')); }
+  }
+}
+
+// ============================================================
+// STAGE 4 — مثال (٢): مقارنة عددين بعدد منازل مختلف
+// ============================================================
+function renderStage4() {
+  const main = document.getElementById('gameMain');
+  selectedSymbol = null;
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🔢 مثال (٢)</div>
+    <div class="stage-title">مقارنة عددين بعدد منازل مختلف</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        ماذا لو كان عدد المنازل مختلفاً؟<br>
+        العدد ذو المنازل الأكثر هو الأكبر دائماً! 🔑
+      </div>
+    </div>
+
+    <div class="stage-desc">
+      قارن بين: <strong>٣٥١٧٢٤٠</strong> و <strong>٥٧١٨٣٥٠</strong>
+    </div>
+
+    <div class="steps-box">
+      <div class="step-row">
+        <div class="step-num">١</div>
+        <div class="step-text">
+          ٣٥١٧٢٤٠ له <strong>٧ منازل</strong> — رقم الملايين هو <strong>٣</strong>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">٢</div>
+        <div class="step-text">
+          ٥٧١٨٣٥٠ له <strong>٧ منازل</strong> — رقم الملايين هو <strong>٥</strong>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">٣</div>
+        <div class="step-text">
+          ٥ أكبر من ٣ ← إذن <strong>٥٧١٨٣٥٠ أكبر</strong> من ٣٥١٧٢٤٠
+        </div>
+      </div>
+    </div>
+
+    <table class="place-table" style="font-size:0.9rem;">
+      <tr>
+        <th>الآحاد</th><th>العشرات</th><th>المئات</th><th>الألوف</th><th>عشرات الألوف</th><th>مئات الألوف</th><th>الملايين</th>
+      </tr>
+      <tr>
+        <td>٠</td><td>٤</td><td>٢</td><td>٧</td><td>١</td><td>٥</td><td class="highlight-cell">٣</td>
+      </tr>
+      <tr>
+        <td>٠</td><td>٥</td><td>٣</td><td>٨</td><td>١</td><td>٧</td><td class="highlight-cell">٥</td>
+      </tr>
+    </table>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:10px;color:#0D47A1;">🎯 ضع الرمز الصحيح:</div>
+      <div class="numbers-compare">
+        <div class="num-box" style="direction:ltr;font-size:1.1rem;">٣٥١٧٢٤٠</div>
+        <div class="symbol-gap" id="symGap4">؟</div>
+        <div class="num-box" style="direction:ltr;font-size:1.1rem;">٥٧١٨٣٥٠</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" onclick="selectSym4('<')">＜</button>
+        <button class="btn btn-symbol" onclick="selectSym4('>')">＞</button>
+        <button class="btn btn-symbol" onclick="selectSym4('=')">=</button>
+      </div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-primary" onclick="checkStage4()">✅ تحقق</button>
+      </div>
+    </div>
+    <div class="feedback" id="fb4"></div>
+  </div>`;
+}
+
+function selectSym4(s) {
+  selectedSymbol = s;
+  document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  document.querySelectorAll('.btn-symbol').forEach(b => { if(b.textContent.trim()===displayMap[s]) b.classList.add('selected'); });
+  document.getElementById('symGap4').textContent = displayMap[s];
+  document.getElementById('symGap4').classList.add('filled');
+}
+function checkStage4() {
+  const fb = document.getElementById('fb4');
+  if (!selectedSymbol) { fb.className='feedback wrong'; fb.style.display='block'; fb.innerHTML='⚠️ اختر الرمز أولاً!'; return; }
+  if (selectedSymbol === '<') {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ ممتاز! ٣٥١٧٢٤٠ ＜ ٥٧١٨٣٥٠ لأن رقم الملايين في الأول (٣) أصغر من رقم الملايين في الثاني (٥).';
+    addScore(15); playSound('correct');
+    setTimeout(() => showCelebration('🎊 عظيم!', 'فهمت مقارنة الأعداد الكبيرة!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ راجع رقم الملايين! في الأول ٣ وفي الثاني ٥. أيهما أكبر؟';
+    playSound('wrong');
+    selectedSymbol = null;
+    document.querySelectorAll('.btn-symbol').forEach(b => b.classList.remove('selected'));
+    document.getElementById('symGap4').textContent='؟'; document.getElementById('symGap4').classList.remove('filled');
+  }
+}
+
+// ============================================================
+// STAGE 5 — تمرين (٤) / ج و د
+// ============================================================
+function renderStage5() {
+  const main = document.getElementById('gameMain');
+  window._answers5 = {c: null, d: null};
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🏋️ تمرين (٤) — ج و د</div>
+    <div class="stage-title">قارن بين الأعداد الآتية</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        لنواصل التمرين! أعداد أكبر هذه المرة، لكن الطريقة نفسها 💡
+      </div>
+    </div>
+
+    <div style="background:#E8F5E9;border-radius:14px;padding:14px;margin-bottom:14px;border:2px solid #4CAF50;">
+      <div style="font-weight:800;font-size:1rem;margin-bottom:10px;">ج) قارن بين: ٤٢٩٢٠ و ٤٤٩٣٠</div>
+      <div class="numbers-compare" style="margin:10px 0;">
+        <div class="num-box" style="direction:ltr;">٤٢٩٢٠</div>
+        <div class="symbol-gap" id="gapC">؟</div>
+        <div class="num-box" style="direction:ltr;">٤٤٩٣٠</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" id="btnC_lt" onclick="sel5('c','<','btnC_lt')">＜</button>
+        <button class="btn btn-symbol" id="btnC_gt" onclick="sel5('c','>','btnC_gt')">＞</button>
+        <button class="btn btn-symbol" id="btnC_eq" onclick="sel5('c','=','btnC_eq')">=</button>
+      </div>
+      <div style="font-size:0.82rem;color:#555;margin-top:8px;">💡 تلميح: قارن من اليسار — رقم عشرات الألوف</div>
+    </div>
+
+    <div style="background:#FFF3E0;border-radius:14px;padding:14px;margin-bottom:14px;border:2px solid #FF9800;">
+      <div style="font-weight:800;font-size:1rem;margin-bottom:10px;">د) قارن بين: ٥٧١٨٣٢٠ و ٥٧٠٨٣٢٥</div>
+      <div class="numbers-compare" style="margin:10px 0;">
+        <div class="num-box" style="direction:ltr;font-size:1.1rem;">٥٧١٨٣٢٠</div>
+        <div class="symbol-gap" id="gapD">؟</div>
+        <div class="num-box" style="direction:ltr;font-size:1.1rem;">٥٧٠٨٣٢٥</div>
+      </div>
+      <div class="symbol-row">
+        <button class="btn btn-symbol" id="btnD_lt" onclick="sel5('d','<','btnD_lt')">＜</button>
+        <button class="btn btn-symbol" id="btnD_gt" onclick="sel5('d','>','btnD_gt')">＞</button>
+        <button class="btn btn-symbol" id="btnD_eq" onclick="sel5('d','=','btnD_eq')">=</button>
+      </div>
+      <div style="font-size:0.82rem;color:#555;margin-top:8px;">💡 تلميح: قارن رقم مئات الألوف، ثم رقم عشرات الألوف</div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-green" onclick="checkStage5()">✅ تحقق</button>
+    </div>
+    <div class="feedback" id="fb5"></div>
+  </div>`;
+}
+
+function sel5(q, sym, btnId) {
+  if (!window._answers5) window._answers5 = {c:null,d:null};
+  window._answers5[q] = sym;
+  const prefix = 'btn' + q.toUpperCase() + '_';
+  ['lt','gt','eq'].forEach(s => {
+    const b = document.getElementById(prefix + s);
+    if (b) b.classList.remove('selected');
+  });
+  document.getElementById(btnId).classList.add('selected');
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  document.getElementById('gap' + q.toUpperCase()).textContent = displayMap[sym];
+  document.getElementById('gap' + q.toUpperCase()).classList.add('filled');
+}
+
+function checkStage5() {
+  const fb = document.getElementById('fb5');
+  const ans = window._answers5 || {};
+  if (!ans.c || !ans.d) { fb.className='feedback wrong'; fb.style.display='block'; fb.innerHTML='⚠️ أجب على السؤالين قبل التحقق!'; return; }
+  let correct = 0, msgs = [];
+  // c: 42920 vs 44930 → عشرات الألوف: 2 < 4, so 42920 < 44930
+  if (ans.c === '<') { correct++; msgs.push('✅ ج) صحيح! ٤٢٩٢٠ ＜ ٤٤٩٣٠ (رقم عشرات الألوف: ٢ < ٤)'); }
+  else msgs.push('❌ ج) رقم عشرات الألوف في ٤٢٩٢٠ هو ٢ وفي ٤٤٩٣٠ هو ٤ → ٤٢٩٢٠ ＜ ٤٤٩٣٠');
+  // d: 5718320 vs 5708325 → مئات الألوف: 7=7, عشرات الألوف: 1 > 0, so 5718320 > 5708325
+  if (ans.d === '>') { correct++; msgs.push('✅ د) صحيح! ٥٧١٨٣٢٠ ＞ ٥٧٠٨٣٢٥ (رقم عشرات الألوف: ١ > ٠)'); }
+  else msgs.push('❌ د) رقم الملايين متساوٍ (٥)، ومئات الألوف متساوٍ (٧)، لكن رقم عشرات الألوف: ١ > ٠ → ٥٧١٨٣٢٠ ＞ ٥٧٠٨٣٢٥');
+
+  if (correct === 2) {
+    fb.className='feedback correct'; fb.innerHTML=msgs.join('<br>');
+    addScore(20); playSound('correct');
+    setTimeout(() => showCelebration('🏆 ممتاز!', 'أتقنت مقارنة الأعداد الكبيرة!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML=msgs.join('<br>')+'<br><br>⬆️ راجع إجاباتك وحاول مجدداً!';
+    playSound('wrong');
+    if (ans.c!=='<') { window._answers5.c=null; document.getElementById('gapC').textContent='؟'; document.getElementById('gapC').classList.remove('filled'); ['lt','gt','eq'].forEach(s=>document.getElementById('btnC_'+s).classList.remove('selected')); }
+    if (ans.d!=='>') { window._answers5.d=null; document.getElementById('gapD').textContent='؟'; document.getElementById('gapD').classList.remove('filled'); ['lt','gt','eq'].forEach(s=>document.getElementById('btnD_'+s).classList.remove('selected')); }
+  }
+}
+
+// ============================================================
+// STAGE 6 — مثال (٣): ترتيب ٤ أعداد (شرح تفاعلي)
+// ============================================================
+function renderStage6() {
+  const main = document.getElementById('gameMain');
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">📐 مثال (٣)</div>
+    <div class="stage-title">رتّب الأعداد من الأصغر إلى الأكبر</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        ماذا لو أردنا ترتيب أكثر من عددين؟<br>
+        نفس الطريقة! نقارن منزلة منزلة من اليسار 🔢
+      </div>
+    </div>
+
+    <div class="stage-desc">
+      رتّب الأعداد التالية من الأصغر إلى الأكبر:<br>
+      <strong>٤٣٠٤٥٨٠ ، ٤٧٢٥٢٠٠ ، ٤٥١٦٥٧٠ ، ٤٣١٥٤٦٠</strong>
+    </div>
+
+    <div class="steps-box">
+      <div class="step-row">
+        <div class="step-num">١</div>
+        <div class="step-text">عدد المنازل في جميع الأعداد متساوٍ (٧ منازل) ← نقارن رقم الملايين: كلها <strong>٤</strong></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">٢</div>
+        <div class="step-text">ننتقل لمنزلة مئات الألوف: ٤٣... و ٤٣... لهما <strong>٣</strong>، بينما ٤٧... لها <strong>٧</strong>، و٤٥... لها <strong>٥</strong></div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">٣</div>
+        <div class="step-text">إذن ٤٣... أصغر من ٤٥... أصغر من ٤٧...<br>بين ٤٣٠٤٥٨٠ و ٤٣١٥٤٦٠: نقارن عشرات الألوف: ٠ ＜ ١</div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">٤</div>
+        <div class="step-text">
+          الترتيب من الأصغر إلى الأكبر:<br>
+          <strong>٤٣٠٤٥٨٠ ، ٤٣١٥٤٦٠ ، ٤٥١٦٥٧٠ ، ٤٧٢٥٢٠٠</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#FFF9C4;border-radius:14px;padding:12px 16px;margin:14px 0;border:2px solid #F9A825;">
+      <div style="font-weight:700;margin-bottom:8px;">🎯 اختر الترتيب الصحيح من الأصغر إلى الأكبر:</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="radio" name="order6" value="0" style="width:20px;height:20px;">
+          <span style="font-size:0.85rem;direction:ltr;">٤٣١٥٤٦٠ ، ٤٣٠٤٥٨٠ ، ٤٥١٦٥٧٠ ، ٤٧٢٥٢٠٠</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="radio" name="order6" value="1" style="width:20px;height:20px;">
+          <span style="font-size:0.85rem;direction:ltr;">٤٣٠٤٥٨٠ ، ٤٣١٥٤٦٠ ، ٤٥١٦٥٧٠ ، ٤٧٢٥٢٠٠</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="radio" name="order6" value="2" style="width:20px;height:20px;">
+          <span style="font-size:0.85rem;direction:ltr;">٤٧٢٥٢٠٠ ، ٤٥١٦٥٧٠ ، ٤٣١٥٤٦٠ ، ٤٣٠٤٥٨٠</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="radio" name="order6" value="3" style="width:20px;height:20px;">
+          <span style="font-size:0.85rem;direction:ltr;">٤٣٠٤٥٨٠ ، ٤٥١٦٥٧٠ ، ٤٣١٥٤٦٠ ، ٤٧٢٥٢٠٠</span>
+        </label>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary" onclick="checkStage6()">✅ تحقق</button>
+    </div>
+    <div class="feedback" id="fb6"></div>
+  </div>`;
+}
+
+function checkStage6() {
+  const fb = document.getElementById('fb6');
+  const sel = document.querySelector('input[name="order6"]:checked');
+  if (!sel) { fb.className='feedback wrong'; fb.style.display='block'; fb.innerHTML='⚠️ اختر إجابة أولاً!'; return; }
+  if (sel.value === '1') {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ صحيح تماماً! ٤٣٠٤٥٨٠ ، ٤٣١٥٤٦٠ ، ٤٥١٦٥٧٠ ، ٤٧٢٥٢٠٠ — من الأصغر إلى الأكبر.';
+    addScore(15); playSound('correct');
+    setTimeout(() => showCelebration('🌟 أحسنت!', 'فهمت الترتيب من الأصغر إلى الأكبر!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ راجع الخطوات في الأعلى وحاول مرة أخرى! تذكر: نبدأ بالأصغر.';
+    playSound('wrong');
+    sel.checked = false;
+  }
+}
+
+// ============================================================
+// STAGE 7 — لعبة الترتيب بالسحب والإفلات (مثال ٣ تدريباً)
+// ============================================================
+function renderStage7() {
+  const main = document.getElementById('gameMain');
+  const nums = ['٤٧٢٥٢٠٠', '٤٥١٦٥٧٠', '٤٣١٥٤٦٠', '٤٣٠٤٥٨٠'];
+  // shuffled display order
+  let displayOrder = ['٤٥١٦٥٧٠', '٤٣٠٤٥٨٠', '٤٧٢٥٢٠٠', '٤٣١٥٤٦٠'];
+  window._dragOrder = [...displayOrder];
+
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🎮 لعبة الترتيب</div>
+    <div class="stage-title">اسحب الأعداد وضعها من الأصغر إلى الأكبر</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        اسحب كل عدد وأفلته في المكان الصحيح!<br>
+        رتّبها من الأصغر إلى الأكبر ⬆️
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;font-size:0.9rem;font-weight:700;color:#555;">
+      📌 اسحب الأعداد وأعد ترتيبها:
+    </div>
+
+    <div class="order-items" id="dragList">
+      ${displayOrder.map((n,i) => `
+        <div class="order-item" draggable="true"
+          data-index="${i}"
+          ondragstart="dragStart7(event)"
+          ondragover="dragOver7(event)"
+          ondrop="drop7(event)"
+          ondragend="dragEnd7(event)">
+          ${n}
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="background:#E3F2FD;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;">
+      الترتيب الصحيح يظهر من <strong>الأصغر</strong> (في الأعلى) إلى <strong>الأكبر</strong> (في الأسفل)
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-green" onclick="checkStage7()">✅ تحقق من الترتيب</button>
+    </div>
+    <div class="feedback" id="fb7"></div>
+  </div>`;
+}
+
+function dragStart7(e) {
+  dragSrcIndex = parseInt(e.target.dataset.index);
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver7(e) {
+  e.preventDefault();
+  e.target.classList.add('drag-over');
+}
+function dragEnd7(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.order-item').forEach(el => el.classList.remove('drag-over'));
+}
+function drop7(e) {
+  e.preventDefault();
+  const targetIndex = parseInt(e.currentTarget.dataset.index);
+  if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+
+  const items = [...document.querySelectorAll('.order-item')];
+  const srcText = items[dragSrcIndex].textContent.trim();
+  const tgtText = items[targetIndex].textContent.trim();
+
+  // Swap visually
+  items[dragSrcIndex].textContent = tgtText;
+  items[targetIndex].textContent = srcText;
+
+  // Update indices
+  items.forEach((item, i) => item.dataset.index = i);
+  dragSrcIndex = null;
+  document.querySelectorAll('.order-item').forEach(el => el.classList.remove('drag-over'));
+}
+
+function checkStage7() {
+  const fb = document.getElementById('fb7');
+  const items = [...document.querySelectorAll('#dragList .order-item')].map(el => el.textContent.trim());
+  const correct = ['٤٣٠٤٥٨٠', '٤٣١٥٤٦٠', '٤٥١٦٥٧٠', '٤٧٢٥٢٠٠'];
+  const isCorrect = items.every((v,i) => v === correct[i]);
+
+  if (isCorrect) {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ ترتيب رائع! ٤٣٠٤٥٨٠ ، ٤٣١٥٤٦٠ ، ٤٥١٦٥٧٠ ، ٤٧٢٥٢٠٠ — من الأصغر إلى الأكبر! 🎉';
+    addScore(20); playSound('correct');
+    setTimeout(() => showCelebration('🎊 لعبة الترتيب!', 'أحسنت في السحب والإفلات!'), 1200);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ ليس الترتيب الصحيح بعد! قارن الأعداد من اليسار: الأصغر في الأعلى. جرّب مجدداً!';
+    playSound('wrong');
+  }
+}
+
+// ============================================================
+// STAGE 8 — تمرين (٤)/٢: ترتيب ٤ أعداد جديدة (سحب وإفلات)
+// ============================================================
+function renderStage8() {
+  const main = document.getElementById('gameMain');
+  const shuffled = ['٧٥٢١٧٤٣', '٦٩٣٤٧٨٠', '٧٣١٨٧٢٠', '٦٨٢١٩٢٠'];
+
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🏋️ تمرين (٤)/٢</div>
+    <div class="stage-title">رتّب الأعداد من الأصغر إلى الأكبر</div>
+
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        التحدي الأخير قبل المراجعة الكبرى!<br>
+        رتّب هذه الأعداد: ٦٩٣٤٧٨٠ ، ٦٨٢١٩٢٠ ، ٧٥٢١٧٤٣ ، ٧٣١٨٧٢٠ 🏁
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;font-size:0.9rem;font-weight:700;color:#555;">
+      📌 اسحب الأعداد من الأصغر (الأعلى) إلى الأكبر (الأسفل):
+    </div>
+
+    <div class="order-items" id="dragList8">
+      ${shuffled.map((n,i) => `
+        <div class="order-item" draggable="true"
+          data-index="${i}"
+          ondragstart="dragStart8(event)"
+          ondragover="dragOver8(event)"
+          ondrop="drop8(event)"
+          ondragend="dragEnd8(event)">
+          ${n}
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="background:#FFF9C4;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;">
+      💡 تلميح: ابدأ بمقارنة الملايين (٦ أصغر من ٧)!
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-green" onclick="checkStage8()">✅ تحقق من الترتيب</button>
+    </div>
+    <div class="feedback" id="fb8"></div>
+  </div>`;
+}
+
+function dragStart8(e) {
+  dragSrcIndex = parseInt(e.target.dataset.index);
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragOver8(e) { e.preventDefault(); e.target.classList.add('drag-over'); }
+function dragEnd8(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('#dragList8 .order-item').forEach(el => el.classList.remove('drag-over'));
+}
+function drop8(e) {
+  e.preventDefault();
+  const targetIndex = parseInt(e.currentTarget.dataset.index);
+  if (dragSrcIndex === null || dragSrcIndex === targetIndex) return;
+  const items = [...document.querySelectorAll('#dragList8 .order-item')];
+  const srcText = items[dragSrcIndex].textContent.trim();
+  const tgtText = items[targetIndex].textContent.trim();
+  items[dragSrcIndex].textContent = tgtText;
+  items[targetIndex].textContent = srcText;
+  items.forEach((item, i) => item.dataset.index = i);
+  dragSrcIndex = null;
+  document.querySelectorAll('#dragList8 .order-item').forEach(el => el.classList.remove('drag-over'));
+}
+
+function checkStage8() {
+  const fb = document.getElementById('fb8');
+  const items = [...document.querySelectorAll('#dragList8 .order-item')].map(el => el.textContent.trim());
+  // correct: 6821920, 6934780, 7318720, 7521743
+  const correct = ['٦٨٢١٩٢٠', '٦٩٣٤٧٨٠', '٧٣١٨٧٢٠', '٧٥٢١٧٤٣'];
+  const isCorrect = items.every((v,i) => v === correct[i]);
+
+  if (isCorrect) {
+    fb.className='feedback correct';
+    fb.innerHTML='✅ ترتيب مثالي! ٦٨٢١٩٢٠ ، ٦٩٣٤٧٨٠ ، ٧٣١٨٧٢٠ ، ٧٥٢١٧٤٣ — من الأصغر إلى الأكبر! 🎉';
+    addScore(25); playSound('correct');
+    setTimeout(() => showCelebration('🏆 أكملت الدرس!', 'أنت الآن جاهز للتحدي النهائي!'), 1400);
+  } else {
+    fb.className='feedback wrong';
+    fb.innerHTML='❌ ليس الترتيب الصحيح! الأعداد التي تبدأ بـ ٦ أصغر من التي تبدأ بـ ٧. حاول مجدداً!';
+    playSound('wrong');
+  }
+}
+
+// ============================================================
+// FINAL — التحدي النهائي (15 سؤالاً متنوعاً)
+// ============================================================
+let finalAnswers = {};
+let finalQuestions = [];
+
+function renderFinal() {
+  const main = document.getElementById('gameMain');
+
+  finalQuestions = [
+    // 1 - symbol choice
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ٤٥٦ و ٤٦٥', a1: '٤٥٦', a2: '٤٦٥', correct: '<' },
+    // 2 - symbol choice
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ٨٧٣٢ و ٨٧٢٩', a1: '٨٧٣٢', a2: '٨٧٢٩', correct: '>' },
+    // 3 - symbol choice
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ١٢٣٤٥ و ١٢٣٤٥', a1: '١٢٣٤٥', a2: '١٢٣٤٥', correct: '=' },
+    // 4 - input number
+    { type: 'fill', q: 'أكبر عدد بين ٣٦٥ و ٣٨٣ هو:', correct: '٣٨٣', hint: 'قارن رقم العشرات' },
+    // 5 - input number
+    { type: 'fill', q: 'أصغر عدد بين ٤٥١٨ و ٤٣٢٥ هو:', correct: '٤٣٢٥', hint: 'قارن رقم المئات' },
+    // 6 - MCQ ordering
+    { type: 'mcq', q: 'رتّب من الأصغر إلى الأكبر: ٩٥٦ ، ٧٣٨ ، ٨٢١',
+      options: ['٧٣٨ ، ٨٢١ ، ٩٥٦', '٩٥٦ ، ٨٢١ ، ٧٣٨', '٨٢١ ، ٧٣٨ ، ٩٥٦', '٧٣٨ ، ٩٥٦ ، ٨٢١'],
+      correct: 0 },
+    // 7 - symbol
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ٥٣٠٠٠ و ٥٣٩٠٠', a1: '٥٣٠٠٠', a2: '٥٣٩٠٠', correct: '<' },
+    // 8 - fill
+    { type: 'fill', q: 'العدد الأكبر بين ٣٥١٧٢٤٠ و ٥٧١٨٣٥٠ هو:', correct: '٥٧١٨٣٥٠', hint: 'قارن رقم الملايين' },
+    // 9 - MCQ
+    { type: 'mcq', q: 'عند مقارنة عددين لهما عدد منازل مختلف، العدد الأكبر هو:',
+      options: ['العدد ذو المنازل الأقل', 'العدد ذو المنازل الأكثر', 'لا يمكن المقارنة', 'يجب جمع الأرقام'],
+      correct: 1 },
+    // 10 - symbol
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ٢٥٣٨ و ٢٥٤٣', a1: '٢٥٣٨', a2: '٢٥٤٣', correct: '<' },
+    // 11 - fill
+    { type: 'fill', q: 'أصغر عدد بين ٤٢٩٢٠ و ٤٤٩٣٠ هو:', correct: '٤٢٩٢٠', hint: 'قارن رقم عشرات الألوف' },
+    // 12 - MCQ ordering
+    { type: 'mcq', q: 'رتّب من الأصغر إلى الأكبر: ٦٨٢١٩٢٠ ، ٦٩٣٤٧٨٠ ، ٧٥٢١٧٤٣ ، ٧٣١٨٧٢٠',
+      options: [
+        '٦٨٢١٩٢٠ ، ٦٩٣٤٧٨٠ ، ٧٣١٨٧٢٠ ، ٧٥٢١٧٤٣',
+        '٧٥٢١٧٤٣ ، ٧٣١٨٧٢٠ ، ٦٩٣٤٧٨٠ ، ٦٨٢١٩٢٠',
+        '٦٩٣٤٧٨٠ ، ٦٨٢١٩٢٠ ، ٧٣١٨٧٢٠ ، ٧٥٢١٧٤٣',
+        '٦٨٢١٩٢٠ ، ٧٣١٨٧٢٠ ، ٦٩٣٤٧٨٠ ، ٧٥٢١٧٤٣'
+      ],
+      correct: 0 },
+    // 13 - symbol
+    { type: 'symbol', q: 'ضع الرمز المناسب بين: ٥٧١٨٣٢٠ و ٥٧٠٨٣٢٥', a1: '٥٧١٨٣٢٠', a2: '٥٧٠٨٣٢٥', correct: '>' },
+    // 14 - MCQ
+    { type: 'mcq', q: 'لمقارنة عددين لهما عدد منازل متساوٍ، نبدأ المقارنة من:',
+      options: ['اليمين', 'اليسار', 'المنزلة الوسطى', 'لا يهم'],
+      correct: 1 },
+    // 15 - fill
+    { type: 'fill', q: 'أكبر عدد بين ٤٣٠٤٥٨٠ و ٤٣١٥٤٦٠ و ٤٥١٦٥٧٠ هو:', correct: '٤٥١٦٥٧٠', hint: 'قارن مئات الألوف' },
+  ];
+
+  finalAnswers = {};
+
+  main.innerHTML = `
+  <div class="stage-card">
+    <div class="stage-badge">🏆 التحدي النهائي</div>
+    <div class="stage-title">مراجعة شاملة — ١٥ سؤالاً</div>
+    <div class="mascot-wrap">
+      ${mascotSVG()}
+      <div class="mascot-bubble">
+        هذا هو التحدي الأخير! أجب على جميع الأسئلة<br>
+        وأثبت أنك أتقنت مقارنة الأعداد! 🏆
+      </div>
+    </div>
+    <div id="finalQs"></div>
+    <div style="text-align:center;margin-top:20px;">
+      <button class="btn btn-orange" onclick="submitFinal()">🏁 إنهاء التحدي</button>
+    </div>
+    <div class="feedback" id="fbFinal" style="margin-top:16px;"></div>
+  </div>`;
+
+  const container = document.getElementById('finalQs');
+  finalQuestions.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'background:#F8F9FA;border-radius:14px;padding:14px;margin-bottom:12px;border:2px solid #E0E0E0;';
+    let inner = `<div style="font-weight:800;color:#0D47A1;margin-bottom:8px;">سؤال ${arabicDigits(i+1)}: ${q.q}</div>`;
+
+    if (q.type === 'symbol') {
+      inner += `
+        <div class="numbers-compare" style="margin:10px 0;">
+          <div class="num-box" style="direction:ltr;font-size:1.2rem;">${q.a1}</div>
+          <div class="symbol-gap" id="fgap${i}">؟</div>
+          <div class="num-box" style="direction:ltr;font-size:1.2rem;">${q.a2}</div>
+        </div>
+        <div class="symbol-row">
+          <button class="btn btn-symbol" onclick="selectFinalSym(${i},'<')">＜</button>
+          <button class="btn btn-symbol" onclick="selectFinalSym(${i},'>')">＞</button>
+          <button class="btn btn-symbol" onclick="selectFinalSym(${i},'=')">=</button>
+        </div>`;
+    } else if (q.type === 'fill') {
+      inner += `
+        <div style="margin:10px 0;">
+          <input class="num-input" id="finput${i}" placeholder="اكتب إجابتك" style="direction:rtl;text-align:right;" oninput="finalAnswers[${i}]=this.value.trim()">
+          <div style="font-size:0.8rem;color:#888;margin-top:4px;">💡 ${q.hint}</div>
+        </div>`;
+    } else if (q.type === 'mcq') {
+      inner += '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">';
+      q.options.forEach((opt, oi) => {
+        inner += `
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:white;border-radius:10px;padding:10px;border:2px solid #E0E0E0;">
+            <input type="radio" name="fq${i}" value="${oi}" style="width:18px;height:18px;" onchange="finalAnswers[${i}]=parseInt(this.value)">
+            <span style="font-size:0.9rem;direction:ltr;">${opt}</span>
+          </label>`;
+      });
+      inner += '</div>';
+    }
+
+    div.innerHTML = inner;
+    container.appendChild(div);
+  });
+}
+
+function selectFinalSym(qIdx, sym) {
+  finalAnswers[qIdx] = sym;
+  const displayMap = {'<':'＜','>':'＞','=':'='};
+  const gap = document.getElementById('fgap' + qIdx);
+  if (gap) { gap.textContent = displayMap[sym]; gap.classList.add('filled'); }
+  // deselect siblings
+  const btns = gap.parentElement.querySelectorAll('.btn-symbol');
+  btns.forEach(b => b.classList.remove('selected'));
+  btns.forEach(b => { if (b.textContent.trim() === displayMap[sym]) b.classList.add('selected'); });
+}
+
+function submitFinal() {
+  const fb = document.getElementById('fbFinal');
+  let correct = 0;
+  let details = '';
+
+  finalQuestions.forEach((q, i) => {
+    const ans = finalAnswers[i];
+    let isCorrect = false;
+    if (q.type === 'symbol') isCorrect = ans === q.correct;
+    else if (q.type === 'fill') isCorrect = ans === q.correct;
+    else if (q.type === 'mcq') isCorrect = ans === q.correct;
+
+    if (isCorrect) {
+      correct++;
+      details += `<div style="color:#2E7D32;font-size:0.85rem;margin-bottom:4px;">✅ سؤال ${arabicDigits(i+1)}: صحيح</div>`;
+    } else {
+      let correctAns = '';
+      if (q.type === 'symbol') correctAns = q.correct === '<' ? '＜' : q.correct === '>' ? '＞' : '=';
+      else if (q.type === 'fill') correctAns = q.correct;
+      else if (q.type === 'mcq') correctAns = q.options[q.correct];
+      details += `<div style="color:#C62828;font-size:0.85rem;margin-bottom:4px;">❌ سؤال ${arabicDigits(i+1)}: الإجابة الصحيحة: ${correctAns}</div>`;
+    }
+  });
+
+  const pct = Math.round(correct / finalQuestions.length * 100);
+  const stars = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+  addScore(correct * 5);
+  playSound('correct');
+
+  fb.className = 'feedback correct';
+  fb.style.display = 'block';
+  fb.innerHTML = `
+    <div style="font-size:1.5rem;text-align:center;margin-bottom:10px;">${stars}</div>
+    <div style="font-size:1.2rem;font-weight:900;text-align:center;margin-bottom:12px;">
+      أجبت بشكل صحيح على ${arabicDigits(correct)} من ${arabicDigits(finalQuestions.length)} سؤالاً (${arabicDigits(pct)}%)
+    </div>
+    <div style="max-height:200px;overflow-y:auto;border-top:1px solid #ccc;padding-top:10px;margin-top:8px;">
+      ${details}
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="btn btn-primary" onclick="renderIntro();currentStage=-1;score=0;updateProgress();">🔄 العب مجدداً</button>
+    </div>`;
+
+  if (pct >= 70) launchConfetti();
+
+  // Scroll to feedback
+  setTimeout(() => fb.scrollIntoView({ behavior: 'smooth' }), 300);
+}
+
+// ============================================================
+// MASCOT SVG
+// ============================================================
+function mascotSVG() {
+  return `<svg class="mascot-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="22" r="18" fill="#FFD54F"/>
+    <circle cx="22" cy="18" r="3" fill="#1A237E"/>
+    <circle cx="38" cy="18" r="3" fill="#1A237E"/>
+    <circle cx="23" cy="17" r="1.2" fill="white"/>
+    <circle cx="39" cy="17" r="1.2" fill="white"/>
+    <path d="M22 28 Q30 36 38 28" stroke="#1A237E" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="18" cy="22" rx="4" ry="3" fill="#FFAB40" opacity="0.7"/>
+    <ellipse cx="42" cy="22" rx="4" ry="3" fill="#FFAB40" opacity="0.7"/>
+    <path d="M20 40 Q30 44 40 40 L38 55 Q30 58 22 55 Z" fill="#1565C0"/>
+    <circle cx="30" cy="6" r="4" fill="#4FC3F7"/>
+    <path d="M30 10 L30 6" stroke="#4FC3F7" stroke-width="2"/>
+  </svg>`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderIntro();
+</script>
+</body>
+</html>
