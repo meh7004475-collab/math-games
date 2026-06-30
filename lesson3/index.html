@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأعداد ضمن الملايين - الصف الرابع</title>
+<style>
+:root {
+  --primary: #0D47A1;
+  --primary-mid: #1565C0;
+  --primary-light: #90CAF9;
+  --accent: #D84315;
+  --accent-light: #FFCCBC;
+  --green: #2E7D32;
+  --green-light: #E8F5E9;
+  --red: #C62828;
+  --red-light: #FFEBEE;
+  --purple: #4527A0;
+  --purple-light: #EDE7F6;
+  --gold: #F9A825;
+  --shadow: 0 4px 20px rgba(13,71,161,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #E3F2FD 0%, #EDE7F6 55%, #FFF3E0 100%);
+  min-height: 100vh;
+  color: #0D1B2A;
+  direction: rtl;
+}
+
+.hdr {
+  background: linear-gradient(135deg, #0D47A1, #1565C0);
+  color: white; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 3px 12px rgba(13,71,161,.35);
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-title { font-size: 1.15rem; font-weight: 900; }
+.score-box {
+  background: var(--gold); color: #0D47A1;
+  border-radius: 20px; padding: 5px 15px;
+  font-weight: 900; font-size: 1.05rem;
+  display: flex; align-items: center; gap: 5px;
+  transition: transform .2s;
+}
+
+.prog-wrap { padding: 10px 18px 0; }
+.prog-label { font-size: .82rem; color: #555; font-weight: 700; margin-bottom: 3px; }
+.prog-bar { background: #BBDEFB; border-radius: 10px; height: 13px; overflow: hidden; }
+.prog-fill { background: linear-gradient(90deg, #42A5F5, #0D47A1); height: 100%; border-radius: 10px; transition: width .5s; }
+
+.gmain { max-width: 720px; margin: 0 auto; padding: 14px; }
+
+.card {
+  background: white; border-radius: 22px; padding: 22px;
+  box-shadow: var(--shadow); margin-bottom: 14px;
+  border: 3px solid #BBDEFB;
+  animation: slideIn .4s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);} }
+
+.badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #0D47A1, #1565C0);
+  color: white; border-radius: 20px; padding: 4px 13px;
+  font-size: .78rem; font-weight: 700; margin-bottom: 9px;
+}
+.ctitle { font-size: 1.25rem; font-weight: 900; color: #0D47A1; margin-bottom: 9px; }
+.cdesc {
+  background: var(--purple-light); border-radius: 11px;
+  padding: 11px 15px; font-size: .93rem; line-height: 1.9;
+  margin-bottom: 13px; border-right: 4px solid var(--purple);
+}
+
+.mascot-row {
+  display: flex; align-items: flex-start; gap: 11px;
+  background: #FFF3E0; border-radius: 15px;
+  padding: 11px 15px; margin-bottom: 14px;
+  border: 2px solid var(--gold);
+}
+.mascot-svg { flex-shrink: 0; width: 56px; }
+.mascot-txt { font-size: .93rem; line-height: 1.75; font-weight: 600; color: #4E342E; }
+
+.ptable {
+  width: 100%; border-collapse: collapse;
+  margin: 13px 0; direction: rtl;
+}
+.ptable th {
+  background: #0D47A1; color: white;
+  padding: 8px 4px; font-size: .76rem; font-weight: 800;
+  text-align: center; border: 2px solid #0A3880;
+}
+.ptable td {
+  border: 2px solid #BBDEFB; padding: 9px 4px;
+  text-align: center; font-size: 1.25rem;
+  font-weight: 900; color: #0D1B2A;
+}
+.ptable tr:nth-child(odd) td { background: #E3F2FD; }
+.ptable tr:nth-child(even) td { background: #F5F9FF; }
+.hl { background: #FFF176 !important; color: #D84315 !important; font-size: 1.4rem; }
+
+/* GROUP BLOCKS for 6+ digit numbers (3-digit chunks) */
+.block-split {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; margin: 16px 0; flex-wrap: wrap; direction: ltr;
+}
+.block-box {
+  border-radius: 14px; padding: 12px 16px;
+  text-align: center; font-weight: 900;
+  min-width: 80px;
+}
+.block-millions { background: linear-gradient(135deg,#FFCCBC,#FFAB91); border: 2.5px solid #D84315; color: #BF360C; }
+.block-thousands { background: linear-gradient(135deg,#E3F2FD,#BBDEFB); border: 2.5px solid #1565C0; color: #0D47A1; }
+.block-units { background: linear-gradient(135deg,#E8F5E9,#C8E6C9); border: 2.5px solid #2E7D32; color: #1B5E20; }
+.block-label { font-size: .72rem; margin-bottom: 4px; opacity: .85; }
+.block-num { font-size: 1.5rem; letter-spacing: 1px; }
+.block-arrow { font-size: 1.4rem; color: #555; font-weight: 900; }
+
+.btn {
+  border: none; border-radius: 13px;
+  font-family: inherit; font-weight: 800; font-size: .95rem;
+  cursor: pointer; padding: 10px 20px;
+  transition: all .2s;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.btn:active { transform: scale(.95); }
+.btn-primary { background: linear-gradient(135deg,#0D47A1,#1565C0); color:white; box-shadow:0 4px 12px rgba(13,71,161,.3); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-green { background: linear-gradient(135deg,#2E7D32,#1B5E20); color:white; }
+.btn-orange { background: linear-gradient(135deg,#D84315,#BF360C); color:white; }
+.btn-purple { background: linear-gradient(135deg,#4527A0,#311B92); color:white; }
+.btn-choice {
+  display: block; width: 100%;
+  background: #E3F2FD; color: #0D47A1;
+  border: 2.5px solid #90CAF9;
+  border-radius: 13px; padding: 11px 15px;
+  font-size: .93rem; font-weight: 700;
+  cursor: pointer; text-align: right;
+  margin-bottom: 9px; transition: all .2s;
+}
+.btn-choice:hover { background: #BBDEFB; }
+.btn-choice.correct { background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; }
+.btn-choice.wrong { background: #FFEBEE; border-color: #C62828; color: #C62828; }
+
+.fb {
+  border-radius: 15px; padding: 13px 17px;
+  font-size: .95rem; font-weight: 700;
+  text-align: center; margin-top: 13px;
+  display: none;
+  animation: pop .4s ease;
+}
+@keyframes pop { 0%{transform:scale(.7);opacity:0;}60%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;} }
+.fb.ok { background: #E8F5E9; border: 2px solid #2E7D32; color: #1B5E20; display: block; }
+.fb.err { background: #FFEBEE; border: 2px solid #C62828; color: #C62828; display: block; }
+
+.steps-box {
+  background: var(--purple-light); border-radius: 15px;
+  padding: 13px; margin: 11px 0;
+  border-right: 5px solid var(--purple);
+}
+.step-row { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 9px; }
+.step-n {
+  background: var(--purple); color: white;
+  border-radius: 50%; width: 27px; height: 27px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .82rem; font-weight: 800; flex-shrink: 0;
+}
+.step-t { font-size: .9rem; font-weight: 600; line-height: 1.65; }
+
+.num-card {
+  background: linear-gradient(135deg,#E3F2FD,#BBDEFB);
+  border: 2.5px solid #1565C0;
+  border-radius: 16px; padding: 14px 20px;
+  font-size: 1.6rem; font-weight: 900;
+  color: #0D47A1; text-align: center;
+  letter-spacing: 2px; direction: ltr;
+  margin: 10px 0;
+}
+
+.txt-input {
+  border: 3px solid #1565C0; border-radius: 11px;
+  padding: 9px 14px; font-size: 1rem;
+  font-family: inherit; font-weight: 700;
+  color: #0D47A1; width: 100%;
+  outline: none; transition: border-color .2s;
+  direction: rtl;
+}
+.txt-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(249,168,37,.2); }
+
+.celeb {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: none; align-items: center; justify-content: center; z-index: 999;
+}
+.celeb.show { display: flex; }
+.celeb-box {
+  background: white; border-radius: 26px; padding: 30px;
+  text-align: center; max-width: 360px; width: 90%;
+  animation: zoomIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes zoomIn { from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;} }
+.celeb-stars { font-size: 2.4rem; margin: 8px 0; }
+.celeb-title { font-size: 1.5rem; font-weight: 900; color: #0D47A1; margin-bottom: 7px; }
+.celeb-msg { font-size: .95rem; color: #555; margin-bottom: 18px; line-height: 1.6; }
+
+.cf { position:fixed;width:12px;height:12px;opacity:0;animation:fall 3s ease-in forwards;border-radius:2px;z-index:1000; }
+@keyframes fall { 0%{opacity:1;transform:translateY(-80px)rotateZ(0);}100%{opacity:0;transform:translateY(100vh)rotateZ(720deg);} }
+
+.intro { text-align: center; padding: 18px 10px; }
+.intro-title { font-size: 1.9rem; font-weight: 900; color: #0D47A1; margin-bottom: 8px; }
+.intro-sub { font-size: .97rem; color: #555; margin-bottom: 18px; line-height: 1.8; }
+.intro-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 9px; margin-bottom: 18px; }
+.intro-item {
+  background: linear-gradient(135deg,#E3F2FD,#BBDEFB);
+  border: 2px solid #1565C0; border-radius: 13px;
+  padding: 11px 7px; font-size: .82rem; font-weight: 700;
+  color: #0D47A1; text-align: center;
+}
+.intro-icon { font-size: 1.5rem; margin-bottom: 4px; }
+
+.match-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+.match-col { display: flex; flex-direction: column; gap: 8px; }
+.match-card {
+  border-radius: 13px; padding: 11px 14px;
+  font-weight: 800; font-size: .9rem;
+  cursor: pointer; border: 2.5px solid;
+  transition: all .2s; text-align: center;
+}
+.match-num { background: #E3F2FD; border-color: #1565C0; color: #0D47A1; direction: ltr; font-size: 1.0rem; }
+.match-word { background: #FFF3E0; border-color: #D84315; color: #BF360C; line-height: 1.5; font-size: .8rem; }
+.match-card.selected { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.match-card.matched { opacity: .55; pointer-events: none; }
+.match-card.match-correct { border-color: #2E7D32 !important; background: #E8F5E9 !important; }
+
+.abacus-interactive {
+  display: flex; gap: 4px; justify-content: center;
+  align-items: flex-end; margin: 16px auto;
+  direction: ltr; overflow-x: auto; padding: 8px;
+}
+.ab-col { display: flex; flex-direction: column; align-items: center; }
+.ab-lbl { font-size: .62rem; font-weight: 800; color: #0D47A1; margin-bottom: 6px; text-align: center; max-width: 38px; }
+.ab-beads { display: flex; flex-direction: column; gap: 3px; align-items: center; min-height: 140px; justify-content: flex-end; }
+.ab-bead {
+  width: 26px; height: 13px; border-radius: 7px;
+  background: linear-gradient(135deg, #42A5F5, #1565C0);
+  border: 2px solid #0D47A1;
+  cursor: pointer; transition: all .18s;
+  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+.ab-bead.lit {
+  background: linear-gradient(135deg, #FF7043, #D84315);
+  border-color: #8F2400;
+}
+.ab-rod { width: 5px; height: 18px; background: linear-gradient(#8D6E63,#5D4037); border-radius: 3px; }
+.ab-base { width: 34px; height: 11px; background: linear-gradient(#26A69A,#00796B); border-radius: 4px; margin-top: 5px; }
+.ab-val { font-size: .92rem; font-weight: 900; color: #0D47A1; margin-top: 5px; }
+
+.chunk-display {
+  display: flex; justify-content: center; gap: 6px; margin: 12px 0;
+  direction: ltr; flex-wrap: wrap;
+}
+.chunk {
+  border-radius: 12px; padding: 10px 14px;
+  font-size: 1.3rem; font-weight: 900;
+  border: 3px solid;
+}
+
+@media(max-width:480px){
+  .match-area{grid-template-columns:1fr;}
+  .block-split{flex-direction:column;}
+  .ab-bead{width:22px;height:11px;}
+  .ctitle{font-size:1.05rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">🌍 الأعداد ضمن الملايين</div>
+  <div class="score-box" id="scoreBox">⭐ <span id="scoreDisp">٠</span></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label">التقدم: <span id="progLbl">لم تبدأ بعد</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+
+<div class="gmain" id="gmain"></div>
+
+<div class="celeb" id="celebWrap">
+  <div class="celeb-box">
+    <div class="celeb-stars" id="cStars">⭐⭐⭐</div>
+    <div class="celeb-title" id="cTitle">رائع!</div>
+    <div class="celeb-msg" id="cMsg"></div>
+    <button class="btn btn-green" onclick="nextStage()">التالي ←</button>
+  </div>
+</div>
+
+<script>
+var stage = -1;
+var score = 0;
+var TOTAL = 9;
+
+function ar(n) {
+  return String(n).replace(/[0-9]/g, function(d){ return '٠١٢٣٤٥٦٧٨٩'[d]; });
+}
+
+function updProg() {
+  var pct = stage < 0 ? 0 : Math.round(stage / TOTAL * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progLbl').textContent =
+    stage < 0 ? 'لم تبدأ بعد' : 'المرحلة ' + ar(stage) + ' من ' + ar(TOTAL);
+  document.getElementById('scoreDisp').textContent = ar(score);
+}
+
+function addScore(n) {
+  score += n;
+  document.getElementById('scoreDisp').textContent = ar(score);
+  var b = document.getElementById('scoreBox');
+  b.style.transform = 'scale(1.25)';
+  setTimeout(function(){ b.style.transform = 'scale(1)'; }, 280);
+}
+
+function snd(type) {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    if (type === 'ok') {
+      o.frequency.setValueAtTime(523, ctx.currentTime);
+      o.frequency.setValueAtTime(659, ctx.currentTime + .12);
+      o.frequency.setValueAtTime(784, ctx.currentTime + .24);
+      g.gain.setValueAtTime(.28, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .55);
+      o.start(); o.stop(ctx.currentTime + .55);
+    } else {
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(180, ctx.currentTime);
+      g.gain.setValueAtTime(.18, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .28);
+      o.start(); o.stop(ctx.currentTime + .28);
+    }
+  } catch(e) {}
+}
+
+function cfetti() {
+  var cols = ['#D84315','#0D47A1','#2E7D32','#4527A0','#F9A825','#1565C0'];
+  for (var i = 0; i < 52; i++) {
+    var el = document.createElement('div');
+    el.className = 'cf';
+    el.style.cssText = 'left:' + (Math.random()*100) + 'vw;top:0;background:' + cols[Math.floor(Math.random()*cols.length)] + ';animation-delay:' + (Math.random()*.8) + 's;animation-duration:' + (2+Math.random()*2) + 's;';
+    document.body.appendChild(el);
+    setTimeout(function(){ el.remove(); }, 4500);
+  }
+}
+
+function celeb(title, msg) {
+  document.getElementById('cTitle').textContent = title;
+  document.getElementById('cMsg').textContent = msg;
+  document.getElementById('celebWrap').classList.add('show');
+  cfetti(); snd('ok');
+}
+
+function nextStage() {
+  document.getElementById('celebWrap').classList.remove('show');
+  stage++;
+  updProg();
+  render();
+}
+
+function render() {
+  document.getElementById('gmain').innerHTML = '';
+  var fns = [s0, s1, s2, s3, s4, s5, s6, s7, s8, sFinal];
+  if (stage < 0) { renderIntro(); return; }
+  if (stage < fns.length) fns[stage]();
+  else sFinal();
+}
+
+function html(h) {
+  document.getElementById('gmain').innerHTML = '<div class="card">' + h + '</div>';
+}
+
+function ms() {
+  return '<svg class="mascot-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="22" r="18" fill="#FF7043"/><circle cx="22" cy="18" r="3" fill="#1A237E"/><circle cx="38" cy="18" r="3" fill="#1A237E"/><circle cx="23" cy="17" r="1.2" fill="white"/><circle cx="39" cy="17" r="1.2" fill="white"/><path d="M22 28 Q30 35 38 28" stroke="#1A237E" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="18" cy="22" rx="4" ry="3" fill="#D84315" opacity=".7"/><ellipse cx="42" cy="22" rx="4" ry="3" fill="#D84315" opacity=".7"/><path d="M20 40 Q30 44 40 40 L38 55 Q30 58 22 55 Z" fill="#0D47A1"/><circle cx="30" cy="6" r="4" fill="#4FC3F7"/></svg>';
+}
+
+function placeTable(headers, rows) {
+  var h = '<table class="ptable"><tr>';
+  headers.forEach(function(hh){ h += '<th>' + hh + '</th>'; });
+  h += '</tr>';
+  rows.forEach(function(row){
+    h += '<tr>';
+    row.forEach(function(cell){
+      if (cell && cell.toString().indexOf('hl:') === 0) {
+        h += '<td class="hl">' + cell.toString().replace('hl:','') + '</td>';
+      } else {
+        h += '<td>' + (cell === '' ? '' : cell) + '</td>';
+      }
+    });
+    h += '</tr>';
+  });
+  h += '</table>';
+  return h;
+}
+
+// ══════════════════════════════════════════════
+// INTRO
+// ══════════════════════════════════════════════
+function renderIntro() {
+  stage = -1;
+  html(
+    '<div class="intro">' +
+    '<div style="font-size:2.8rem;margin-bottom:10px;">🌍</div>' +
+    '<div class="intro-title">الأعداد ضمن الملايين</div>' +
+    '<div class="intro-sub">مرحباً! في هذا الدرس ستتعلم كيف تقرأ الأعداد الضخمة حتى الملايين! 🚀</div>' +
+    '<div class="intro-grid">' +
+    '<div class="intro-item"><div class="intro-icon">🔍</div>اكتشاف المليون</div>' +
+    '<div class="intro-item"><div class="intro-icon">📊</div>جدول المنازل</div>' +
+    '<div class="intro-item"><div class="intro-icon">✂️</div>تجزيء الأعداد لكُتل</div>' +
+    '<div class="intro-item"><div class="intro-icon">🧮</div>مثال ١: تمثيل وقراءة</div>' +
+    '<div class="intro-item"><div class="intro-icon">📖</div>مثال ٢: عددان</div>' +
+    '<div class="intro-item"><div class="intro-icon">🎮</div>تمرين /١ أ وب</div>' +
+    '<div class="intro-item"><div class="intro-icon">🎲</div>تمرين /١ ج ود</div>' +
+    '<div class="intro-item"><div class="intro-icon">🧮</div>تمرين /٢ عدادان</div>' +
+    '<div class="intro-item"><div class="intro-icon">🏆</div>التحدي النهائي</div>' +
+    '</div>' +
+    '<button class="btn btn-primary" onclick="stage=0;updProg();render();">🚀 ابدأ!</button>' +
+    '</div>'
+  );
+}
+
+// ══════════════════════════════════════════════
+// S0 — نشاط استكشافي: ٩٩٩٩٩٩ + ١ = ١٠٠٠٠٠٠ (مليون)
+// ══════════════════════════════════════════════
+function s0() {
+  html(
+    '<div class="badge">🔍 نشاط استكشافي</div>' +
+    '<div class="ctitle">اكتشف: ماذا يأتي بعد ٩٩٩٩٩٩؟</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">العدد <strong>٩٩٩٩٩٩</strong> هو أكبر عدد بست منازل!<br>ماذا يحدث عندما نضيف ١ إليه؟ انقر لتكتشف 🤔</div></div>' +
+
+    '<div style="text-align:center;margin:16px 0;">' +
+    '<div class="num-card">٩٩٩٩٩٩</div>' +
+    '<div style="font-size:1.4rem;margin:8px;color:#0D47A1;font-weight:900;">+ ١</div>' +
+    '<button class="btn btn-orange" onclick="showResult0()">🔍 ماذا يُساوي؟</button>' +
+    '<div id="res0" style="display:none;margin-top:14px;"></div>' +
+    '</div>' +
+
+    '<div id="q0wrap" style="display:none;">' +
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;margin-top:12px;border:2px solid #D84315;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 العدد ١٠٠٠٠٠٠ يُقرأ...</div>' +
+    '<button class="btn-choice" onclick="pick0(0)">أ) مئة ألف</button>' +
+    '<button class="btn-choice" onclick="pick0(1)">ب) مليون ✅</button>' +
+    '<button class="btn-choice" onclick="pick0(2)">ج) مليار</button>' +
+    '</div></div>' +
+    '<div class="fb" id="fb0"></div>'
+  );
+}
+
+function showResult0() {
+  var d = document.getElementById('res0');
+  d.style.display = 'block';
+  d.innerHTML =
+    '<div class="num-card" style="font-size:1.7rem;border-color:#D84315;background:linear-gradient(135deg,#FFCCBC,#FFAB91);color:#BF360C;">١٠٠٠٠٠٠</div>' +
+    '<div style="margin-top:10px;font-weight:700;color:#0D47A1;">هذا العدد يُضاف إليه منزلة جديدة: <strong>الملايين!</strong></div>' +
+    placeTable(
+      ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],
+      [
+        ['٩','٩','٩','٩','٩','٩',''],
+        ['١','','','','','',''],
+        ['٠','٠','٠','٠','٠','٠','١']
+      ]
+    ) +
+    '<div style="background:#EDE7F6;border-radius:11px;padding:11px;margin-top:10px;font-size:.88rem;font-weight:700;color:#4527A0;">' +
+    '💡 إذا واصلت زيادة حزم مئات الألوف حتى يصبح عددها عشر حزم، فإننا نجعل العشرة حزم معاً في حزمة كبيرة تُسمى <strong>المليون</strong>!' +
+    '</div>';
+  document.getElementById('q0wrap').style.display = 'block';
+}
+
+function pick0(idx) {
+  var fb = document.getElementById('fb0');
+  var btns = document.querySelectorAll('#q0wrap .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === 1) {
+    btns[1].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ أحسنت! ١٠٠٠٠٠٠ = مليون. وهو أول عدد في منزلة الملايين!';
+    addScore(10); snd('ok');
+    setTimeout(function(){ celeb('🌍 اكتشفت المليون!', '٩٩٩٩٩٩ + ١ = ١٠٠٠٠٠٠ وهو مليون — منزلة ضخمة جديدة!'); }, 1100);
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ ليس هذا! ٩٩٩٩٩٩ + ١ = ١٠٠٠٠٠٠ وهو مليون. انظر إلى جدول المنازل!';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S1 — تجزيء الأعداد إلى كُتل ثلاثية
+// ══════════════════════════════════════════════
+function s1() {
+  html(
+    '<div class="badge">✂️ تجزيء الأعداد إلى كُتل</div>' +
+    '<div class="ctitle">قاعدة قراءة الأعداد الكبيرة</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">لقراءة أي عدد من ٦ أرقام فأكثر، نُقسّمه من اليمين إلى كُتل، كل كُتلة من ٣ أرقام! 🔢</div></div>' +
+
+    '<div class="num-card">٤٣٩٥٤٨٣٧</div>' +
+
+    '<div style="text-align:center;margin:10px 0;font-weight:700;color:#555;">انقر للتجزيء خطوة بخطوة:</div>' +
+    '<div id="chunkArea" style="text-align:center;">' +
+    '<button class="btn btn-purple" onclick="showChunks()">✂️ جزّئ العدد!</button>' +
+    '</div>' +
+    '<div id="chunkResult" style="display:none;margin-top:14px;"></div>' +
+
+    '<div class="fb" id="fb1"></div>'
+  );
+}
+
+function showChunks() {
+  document.getElementById('chunkArea').innerHTML = '';
+  var d = document.getElementById('chunkResult');
+  d.style.display = 'block';
+  d.innerHTML =
+    '<div class="chunk-display">' +
+    '<div class="chunk" style="background:#FFCCBC;border-color:#D84315;color:#BF360C;">٤٣</div>' +
+    '<div class="chunk" style="background:#E3F2FD;border-color:#1565C0;color:#0D47A1;">٩٥٤</div>' +
+    '<div class="chunk" style="background:#E8F5E9;border-color:#2E7D32;color:#1B5E20;">٨٣٧</div>' +
+    '</div>' +
+    '<div class="block-split">' +
+    '<div class="block-box block-millions"><div class="block-label">الملايين</div><div class="block-num">٤٣</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-thousands"><div class="block-label">الألوف</div><div class="block-num">٩٥٤</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-units"><div class="block-label">الواحدات</div><div class="block-num">٨٣٧</div></div>' +
+    '</div>' +
+    '<div style="background:#E8F5E9;border-radius:13px;padding:13px;text-align:center;border:2px solid #2E7D32;margin-top:12px;">' +
+    '<div style="font-weight:900;color:#1B5E20;font-size:1rem;">القراءة الكاملة:</div>' +
+    '<div style="font-size:1rem;font-weight:700;margin-top:5px;color:#2E7D32;">ثلاثة وأربعون مليوناً وتسعمئة وأربعة وخمسون ألفاً وثمانمئة وسبعة وثلاثون</div>' +
+    '</div>' +
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;border:2px solid #D84315;margin-top:12px;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 الكُتلة الأولى من اليمين (٨٣٧) تُمثّل:</div>' +
+    '<button class="btn-choice" onclick="pick1(0)">أ) الملايين</button>' +
+    '<button class="btn-choice" onclick="pick1(1)">ب) الألوف</button>' +
+    '<button class="btn-choice" onclick="pick1(2)">ج) الواحدات ✅</button>' +
+    '</div>';
+}
+
+function pick1(idx) {
+  var fb = document.getElementById('fb1');
+  var btns = document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === 2) {
+    btns[2].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! أول كُتلة من اليمين دائماً هي كُتلة الواحدات (آحاد، عشرات، مئات).';
+    addScore(10); snd('ok');
+    setTimeout(function(){ celeb('✂️ فهمت التجزيء!', 'ممتاز! الآن نُطبّق على العداد!'); }, 1100);
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ راجع الترتيب! من اليمين: الواحدات ← الألوف ← الملايين.';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S2 — العداد التفاعلي (تكوين عدد بالملايين)
+// ══════════════════════════════════════════════
+var abState2 = [0,0,0,0,0,0,0]; // آحاد..مئات الألوف, ملايين
+var abLbls2 = ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'];
+
+function s2() {
+  abState2 = [0,0,0,0,0,0,0];
+  renderAbacus2();
+}
+
+function renderAbacus2() {
+  var places = [1,10,100,1000,10000,100000,1000000];
+  var total = 0;
+  abState2.forEach(function(v,i){ total += v * places[i]; });
+
+  var colsHTML = '';
+  for (var ci = 6; ci >= 0; ci--) {
+    colsHTML += '<div class="ab-col">';
+    colsHTML += '<div class="ab-lbl">' + abLbls2[ci] + '</div>';
+    colsHTML += '<div class="ab-beads">';
+    for (var b = 9; b >= 1; b--) {
+      colsHTML += '<div class="ab-bead' + (b <= abState2[ci] ? ' lit' : '') + '" onclick="toggleBead2(' + ci + ',' + b + ')"></div>';
+    }
+    colsHTML += '</div>';
+    colsHTML += '<div class="ab-rod"></div>';
+    colsHTML += '<div class="ab-base"></div>';
+    colsHTML += '<div class="ab-val">' + ar(abState2[ci]) + '</div>';
+    colsHTML += '</div>';
+  }
+
+  document.getElementById('gmain').innerHTML =
+    '<div class="card">' +
+    '<div class="badge">🧮 العداد التفاعلي</div>' +
+    '<div class="ctitle">كوّن العدد ١٠٠٠٠٠٠ (مليون) على العداد</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">انقر على الخرزات لتضيئها! ضع خرزة واحدة في عمود الملايين فقط لتكوين المليون 🌍</div></div>' +
+
+    '<div class="abacus-interactive" id="abWrap2">' + colsHTML + '</div>' +
+
+    '<div style="text-align:center;margin-top:10px;">' +
+    '<div style="font-size:1rem;font-weight:700;color:#555;margin-bottom:6px;">العدد المُكوَّن:</div>' +
+    '<div class="num-card" style="font-size:1.6rem;display:inline-block;min-width:200px;">' + ar(total) + '</div>' +
+    '</div>' +
+
+    '<div style="text-align:center;margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">' +
+    '<button class="btn btn-orange" onclick="resetAbacus2()">🔄 إعادة</button>' +
+    '<button class="btn btn-green" onclick="checkAbacus2()">✅ تحقق</button>' +
+    '</div>' +
+    '<div class="fb" id="fbAb2"></div>' +
+    '</div>';
+}
+
+function toggleBead2(col, bead) {
+  abState2[col] = (abState2[col] === bead) ? bead - 1 : bead;
+  renderAbacus2();
+}
+
+function resetAbacus2() {
+  abState2 = [0,0,0,0,0,0,0];
+  renderAbacus2();
+}
+
+function checkAbacus2() {
+  var fb = document.getElementById('fbAb2');
+  var expected = [0,0,0,0,0,0,1];
+  var ok = expected.every(function(v,i){ return abState2[i] === v; });
+  if (ok) {
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ ممتاز! كوّنت المليون بخرزة واحدة في عمود الملايين فقط!';
+    addScore(15); snd('ok');
+    setTimeout(function(){ celeb('🧮 أتقنت العداد!', 'الآن سنقرأ أعداداً أكبر بالملايين!'); }, 1100);
+  } else {
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ ليس بعد! ضع خرزة واحدة فقط في عمود الملايين (أبعد عمود لليسار) ولا شيء في الأعمدة الأخرى.';
+    snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S3 — مثال (١): تمثيل وقراءة ٥٤٣٠٧١٨
+// ══════════════════════════════════════════════
+var ex1state = [8,1,7,0,3,4,0]; // آحاد..ملايين for 5430718
+function s3() {
+  renderEx1();
+}
+
+function renderEx1() {
+  var abLbls3 = ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'];
+  var colsHTML = '';
+  for (var ci = 6; ci >= 0; ci--) {
+    colsHTML += '<div class="ab-col">';
+    colsHTML += '<div class="ab-lbl">' + abLbls3[ci] + '</div>';
+    colsHTML += '<div class="ab-beads">';
+    for (var b = 9; b >= 1; b--) {
+      colsHTML += '<div class="ab-bead' + (b <= ex1state[ci] ? ' lit' : '') + '"></div>';
+    }
+    colsHTML += '</div>';
+    colsHTML += '<div class="ab-rod"></div>';
+    colsHTML += '<div class="ab-base"></div>';
+    colsHTML += '<div class="ab-val">' + ar(ex1state[ci]) + '</div>';
+    colsHTML += '</div>';
+  }
+
+  html(
+    '<div class="badge">🎯 مثال (١)</div>' +
+    '<div class="ctitle">مثّل العدد ٥٤٣٠٧١٨ على العداد واقرأه</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">انظر إلى العداد، يُمثّل العدد <strong>٥٤٣٠٧١٨</strong> بخرزات في كل عمود 🔢</div></div>' +
+
+    '<div class="num-card">٥٤٣٠٧١٨</div>' +
+    '<div class="abacus-interactive">' + colsHTML + '</div>' +
+
+    placeTable(
+      ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],
+      [['٨','١','٧','٠','٣','٤','٠']]
+    ) +
+
+    '<div class="block-split">' +
+    '<div class="block-box block-millions"><div class="block-label">الملايين</div><div class="block-num">٥</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-thousands"><div class="block-label">الألوف</div><div class="block-num">٤٣٠</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-units"><div class="block-label">الواحدات</div><div class="block-num">٧١٨</div></div>' +
+    '</div>' +
+
+    '<div style="background:#E8F5E9;border-radius:13px;padding:13px;text-align:center;border:2px solid #2E7D32;margin:12px 0;">' +
+    '<div style="font-weight:900;color:#1B5E20;font-size:1rem;">القراءة الكاملة:</div>' +
+    '<div style="font-size:1rem;font-weight:700;margin-top:5px;color:#2E7D32;">خمسة مليون وأربعمئة وثلاثون ألفاً وسبعمئة وثمانية عشر</div>' +
+    '</div>' +
+
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;border:2px solid #D84315;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 رقم الملايين في العدد ٥٤٣٠٧١٨ هو:</div>' +
+    '<button class="btn-choice" onclick="pick3(0)">أ) ٥ ✅</button>' +
+    '<button class="btn-choice" onclick="pick3(1)">ب) ٤</button>' +
+    '<button class="btn-choice" onclick="pick3(2)">ج) ٨</button>' +
+    '</div>' +
+    '<div class="fb" id="fb3"></div>'
+  );
+}
+
+function pick3(idx) {
+  var fb = document.getElementById('fb3');
+  var btns = document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === 0) {
+    btns[0].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! الرقم الأول من اليسار في ٥٤٣٠٧١٨ هو ٥ — وهو رقم الملايين.';
+    addScore(10); snd('ok');
+    setTimeout(function(){ celeb('🎯 أحسنت!', 'فهمت تمثيل وقراءة الأعداد بالملايين!'); }, 1100);
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ رقم الملايين هو أول رقم من اليسار في العدد، وهو ٥.';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S4 — مثال (٢) أ: قراءة ١٥٣١٧٢٣٠
+// ══════════════════════════════════════════════
+function s4() {
+  html(
+    '<div class="badge">📖 مثال (٢) — أ</div>' +
+    '<div class="ctitle">اقرأ العدد ١٥٣١٧٢٣٠</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">عدد من ٨ أرقام! نُجزّئه من اليمين إلى كُتل ثلاثية 🔍</div></div>' +
+
+    '<div class="num-card">١٥٣١٧٢٣٠</div>' +
+
+    '<div style="display:flex;flex-direction:column;gap:9px;margin:13px 0;">' +
+    '<div onclick="showStep4(1)" style="cursor:pointer;background:#FFCCBC;border:2px solid #D84315;border-radius:12px;padding:11px 15px;font-weight:700;color:#BF360C;">📌 الخطوة ١: نُجزّئ من اليمين — انقر!</div>' +
+    '<div id="st4_1" style="display:none;background:#FFAB91;border-radius:10px;padding:10px 14px;margin-right:16px;">' +
+    '<div class="chunk-display">' +
+    '<div class="chunk" style="background:#FFCCBC;border-color:#D84315;color:#BF360C;">١٥</div>' +
+    '<div class="chunk" style="background:#E3F2FD;border-color:#1565C0;color:#0D47A1;">٣١٧</div>' +
+    '<div class="chunk" style="background:#E8F5E9;border-color:#2E7D32;color:#1B5E20;">٢٣٠</div>' +
+    '</div></div>' +
+
+    '<div onclick="showStep4(2)" style="cursor:pointer;background:#E3F2FD;border:2px solid #1565C0;border-radius:12px;padding:11px 15px;font-weight:700;color:#0D47A1;">📌 الخطوة ٢: نقرأ الملايين — انقر!</div>' +
+    '<div id="st4_2" style="display:none;background:#BBDEFB;border-radius:10px;padding:10px 14px;margin-right:16px;font-weight:700;">١٥ مليوناً = خمسة عشر مليوناً</div>' +
+
+    '<div onclick="showStep4(3)" style="cursor:pointer;background:#E8F5E9;border:2px solid #2E7D32;border-radius:12px;padding:11px 15px;font-weight:700;color:#1B5E20;">📌 الخطوة ٣: نقرأ الألوف ثم الواحدات — انقر!</div>' +
+    '<div id="st4_3" style="display:none;background:#C8E6C9;border-radius:10px;padding:10px 14px;margin-right:16px;font-weight:700;">٣١٧ ألفاً = ثلاثمئة وسبعة عشر ألفاً<br>٢٣٠ = مئتان وثلاثون</div>' +
+    '</div>' +
+
+    '<div style="background:#E8F5E9;border-radius:13px;padding:13px;text-align:center;border:2px solid #2E7D32;margin-bottom:13px;">' +
+    '<div style="font-weight:900;color:#1B5E20;">القراءة الكاملة: خمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً ومئتان وثلاثون</div>' +
+    '</div>' +
+
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;border:2px solid #D84315;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 كُتلة الملايين في ١٥٣١٧٢٣٠ هي:</div>' +
+    '<button class="btn-choice" onclick="pick4(0)">أ) ٢٣٠</button>' +
+    '<button class="btn-choice" onclick="pick4(1)">ب) ١٥ ✅</button>' +
+    '<button class="btn-choice" onclick="pick4(2)">ج) ٣١٧</button>' +
+    '</div>' +
+    '<div class="fb" id="fb4"></div>'
+  );
+}
+
+function showStep4(n) {
+  for (var i = 1; i <= 3; i++) {
+    var el = document.getElementById('st4_' + i);
+    if (el && i <= n) el.style.display = 'block';
+  }
+}
+
+function pick4(idx) {
+  var fb = document.getElementById('fb4');
+  var btns = document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === 1) {
+    btns[1].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! كُتلة الملايين هي الأرقام الأبعد لليسار: ١٥.';
+    addScore(10); snd('ok');
+    setTimeout(function(){ celeb('📖 أحسنت!', 'فهمت كيف تُجزئ الأعداد الكبيرة وتقرأها!'); }, 1100);
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ كُتلة الملايين هي أول كُتلة من اليسار: ١٥.';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S5 — مثال (٢) ب: قراءة ٣٥٤٠٥٧٠٠
+// ══════════════════════════════════════════════
+function s5() {
+  html(
+    '<div class="badge">📖 مثال (٢) — ب</div>' +
+    '<div class="ctitle">اقرأ العدد ٣٥٤٠٥٧٠٠</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">هذا العدد يحتوي على أصفار! نُجزّئه بنفس الطريقة 💡</div></div>' +
+
+    '<div class="num-card">٣٥٤٠٥٧٠٠</div>' +
+
+    '<div class="chunk-display">' +
+    '<div class="chunk" style="background:#FFCCBC;border-color:#D84315;color:#BF360C;">٣٥</div>' +
+    '<div class="chunk" style="background:#E3F2FD;border-color:#1565C0;color:#0D47A1;">٤٠٥</div>' +
+    '<div class="chunk" style="background:#E8F5E9;border-color:#2E7D32;color:#1B5E20;">٧٠٠</div>' +
+    '</div>' +
+
+    '<div class="block-split">' +
+    '<div class="block-box block-millions"><div class="block-label">الملايين</div><div class="block-num">٣٥</div><div style="font-size:.7rem;margin-top:3px;">خمسة وثلاثون مليوناً</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-thousands"><div class="block-label">الألوف</div><div class="block-num">٤٠٥</div><div style="font-size:.7rem;margin-top:3px;">أربعمئة وخمسة آلاف</div></div>' +
+    '<div class="block-arrow">+</div>' +
+    '<div class="block-box block-units"><div class="block-label">الواحدات</div><div class="block-num">٧٠٠</div><div style="font-size:.7rem;margin-top:3px;">سبعمئة</div></div>' +
+    '</div>' +
+
+    '<div style="background:#E8F5E9;border-radius:13px;padding:13px;text-align:center;border:2px solid #2E7D32;margin-bottom:13px;">' +
+    '<div style="font-weight:900;color:#1B5E20;font-size:.95rem;">القراءة الكاملة:</div>' +
+    '<div style="font-size:.95rem;font-weight:700;margin-top:5px;color:#2E7D32;">خمسة وثلاثون مليوناً وأربعمئة وخمسة آلاف وسبعمئة</div>' +
+    '</div>' +
+
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;border:2px solid #D84315;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 كُتلة الواحدات في ٣٥٤٠٥٧٠٠ هي:</div>' +
+    '<button class="btn-choice" onclick="pick5(0)">أ) ٧٠٠ ✅</button>' +
+    '<button class="btn-choice" onclick="pick5(1)">ب) ٤٠٥</button>' +
+    '<button class="btn-choice" onclick="pick5(2)">ج) ٣٥</button>' +
+    '</div>' +
+    '<div class="fb" id="fb5"></div>'
+  );
+}
+
+function pick5(idx) {
+  var fb = document.getElementById('fb5');
+  var btns = document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === 0) {
+    btns[0].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! كُتلة الواحدات هي الأرقام الثلاثة من اليمين: ٧٠٠.';
+    addScore(10); snd('ok');
+    setTimeout(function(){ celeb('⭐ رائع!', 'الآن ننتقل إلى التمارين!'); }, 1100);
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ كُتلة الواحدات هي أقرب كُتلة لليمين: ٧٠٠.';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S6 — تمرين /١ أ وب: مطابقة
+// ══════════════════════════════════════════════
+var matchData2 = [
+  { num: '١٣١٥٤٧٠', word: 'مليون وثلاثمئة وخمسة عشر ألفاً وأربعمئة وسبعون' },
+  { num: '١٠٢٥٣٧٧٥', word: 'عشرة ملايين ومئتان وخمسة وثلاثون ألفاً وسبعمئة وخمسة وسبعون' }
+];
+var matchSel2 = { num: null, word: null };
+var matchDone2 = [];
+
+function s6() {
+  matchSel2 = { num: null, word: null };
+  matchDone2 = [];
+  renderMatch2();
+}
+
+function renderMatch2() {
+  var numsHTML = '';
+  matchData2.forEach(function(item, i) {
+    var isDone = matchDone2.indexOf(i) !== -1;
+    numsHTML += '<div class="match-card match-num' + (isDone ? ' matched match-correct' : '') + '" id="mn' + i + '" onclick="selectMatch2(\'num\',' + i + ')">' + item.num + '</div>';
+  });
+
+  var words = [matchData2[1].word, matchData2[0].word];
+  var wordIds = [1, 0];
+  var wordsHTML = '';
+  words.forEach(function(w, pos) {
+    var origIdx = wordIds[pos];
+    var isDone = matchDone2.indexOf(origIdx) !== -1;
+    wordsHTML += '<div class="match-card match-word' + (isDone ? ' matched match-correct' : '') + '" id="mw' + origIdx + '" onclick="selectMatch2(\'word\',' + origIdx + ')">' + w + '</div>';
+  });
+
+  document.getElementById('gmain').innerHTML =
+    '<div class="card">' +
+    '<div class="badge">🎮 تمرين /١ — أ وب</div>' +
+    '<div class="ctitle">وصّل العدد بقراءته</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">انقر على عدد ثم انقر على قراءته الصحيحة! 🔗</div></div>' +
+    '<div class="match-area">' +
+    '<div class="match-col">' + numsHTML + '</div>' +
+    '<div class="match-col">' + wordsHTML + '</div>' +
+    '</div>' +
+    '<div class="fb" id="fbMatch2"></div>' +
+    '</div>';
+}
+
+function selectMatch2(type, idx) {
+  if (matchDone2.indexOf(idx) !== -1) return;
+  if (matchSel2[type] !== null) {
+    var old = matchSel2[type];
+    var oldEl = document.getElementById((type === 'num' ? 'mn' : 'mw') + old);
+    if (oldEl) oldEl.classList.remove('selected');
+  }
+  matchSel2[type] = idx;
+  var el = document.getElementById((type === 'num' ? 'mn' : 'mw') + idx);
+  if (el) el.classList.add('selected');
+
+  if (matchSel2.num !== null && matchSel2.word !== null) {
+    var fb = document.getElementById('fbMatch2');
+    if (matchSel2.num === matchSel2.word) {
+      ['mn','mw'].forEach(function(prefix) {
+        var e = document.getElementById(prefix + matchSel2.num);
+        if (e) { e.classList.remove('selected'); e.classList.add('matched','match-correct'); }
+      });
+      matchDone2.push(matchSel2.num);
+      fb.className = 'fb ok';
+      fb.innerHTML = '✅ صحيح! ' + matchData2[matchSel2.num].num + ' = ' + matchData2[matchSel2.num].word;
+      addScore(10); snd('ok');
+      matchSel2 = { num: null, word: null };
+      if (matchDone2.length === matchData2.length) {
+        setTimeout(function(){ celeb('🎮 ممتاز!', 'وصّلت جميع الأعداد بقراءتها الصحيحة!'); }, 900);
+      }
+    } else {
+      fb.className = 'fb err';
+      fb.innerHTML = '❌ ليس مطابقاً! راجع قراءة كل عدد وحاول مرة أخرى.';
+      snd('err');
+      ['mn' + matchSel2.num, 'mw' + matchSel2.word].forEach(function(id) {
+        var e = document.getElementById(id);
+        if (e) e.classList.remove('selected');
+      });
+      matchSel2 = { num: null, word: null };
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// S7 — تمرين /١ ج ود: اختيار القراءة
+// ══════════════════════════════════════════════
+var ex7b = [
+  {
+    num: '١١٥٣١٧٥٠٠',
+    opts: [
+      'مئة وخمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً وخمسمئة',
+      'خمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً وخمسمئة',
+      'مئة وخمسة عشر ألفاً وثلاثمئة وسبعة عشر'
+    ],
+    ans: 0
+  },
+  {
+    num: '٣١٢٧٥٠٤١٨',
+    opts: [
+      'ثلاثة ملايين ومئتان وخمسة وسبعون ألفاً وأربعمئة وثمانية عشر',
+      'ثلاثمئة واثنا عشر مليوناً وسبعمئة وخمسون ألفاً وأربعمئة وثمانية عشر',
+      'ثلاثة وثلاثون مليوناً وسبعمئة وخمسون ألفاً وأربعمئة وثمانية عشر'
+    ],
+    ans: 1
+  }
+];
+var s7step2 = 0;
+
+function s7() {
+  s7step2 = 0;
+  renderS7b();
+}
+
+function renderS7b() {
+  var q = ex7b[s7step2];
+  var optsHTML = '';
+  q.opts.forEach(function(opt, i) {
+    optsHTML += '<button class="btn-choice" onclick="pick7b(' + i + ')">' + opt + '</button>';
+  });
+
+  document.getElementById('gmain').innerHTML =
+    '<div class="card">' +
+    '<div class="badge">🎲 تمرين /١ — ' + (s7step2 === 0 ? 'ج' : 'د') + '</div>' +
+    '<div class="ctitle">اقرأ العدد: ' + q.num + '</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">جزّئ العدد من اليمين إلى كُتل ثلاثية، ثم اختر القراءة الصحيحة! 💡</div></div>' +
+
+    '<div class="num-card">' + q.num + '</div>' +
+    '<div style="margin-top:13px;">' + optsHTML + '</div>' +
+    '<div style="font-size:.78rem;color:#888;margin-top:5px;text-align:center;">السؤال ' + ar(s7step2+1) + ' من ' + ar(ex7b.length) + '</div>' +
+    '<div class="fb" id="fb7b"></div>' +
+    '</div>';
+}
+
+function pick7b(idx) {
+  var fb = document.getElementById('fb7b');
+  var q = ex7b[s7step2];
+  var btns = document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){ b.disabled = true; });
+  if (idx === q.ans) {
+    btns[idx].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! ' + q.num + ' = ' + q.opts[q.ans];
+    addScore(10); snd('ok');
+    s7step2++;
+    if (s7step2 < ex7b.length) {
+      setTimeout(renderS7b, 900);
+    } else {
+      setTimeout(function(){ celeb('🎲 أتممت التمرين!', 'أجبت على جميع الأعداد بشكل صحيح!'); }, 900);
+    }
+  } else {
+    btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ راجع التجزيء وقراءة كل كُتلة على حدة!';
+    snd('err');
+    btns.forEach(function(b){ b.disabled = false; });
+    btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S8 — تمرين /٢: عدادان تفاعليان
+// ══════════════════════════════════════════════
+var abacusEx2 = [
+  {
+    label: 'أ',
+    // from book image - reasonable values for 7-digit number with millions
+    beads: [4, 2, 3, 1, 5, 2, 1],
+    reading: 'مليون ومئتان وخمسة عشر ألفاً وثلاثمئة وأربعة وعشرون'
+  },
+  {
+    label: 'ب',
+    beads: [2, 5, 4, 3, 1, 7, 2],
+    reading: 'اثنان مليون وسبعمئة وثلاثة عشر ألفاً وأربعمئة وخمسة واثنان'
+  }
+];
+var s8cur2 = 0;
+
+function s8() {
+  s8cur2 = 0;
+  renderS8b();
+}
+
+function renderS8b() {
+  var ex = abacusEx2[s8cur2];
+  var lbls = ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'];
+  var places = [1,10,100,1000,10000,100000,1000000];
+  var total = 0;
+  ex.beads.forEach(function(v,i){ total += v * places[i]; });
+
+  var colsHTML = '';
+  for (var ci = 6; ci >= 0; ci--) {
+    colsHTML += '<div class="ab-col">';
+    colsHTML += '<div class="ab-lbl">' + lbls[ci] + '</div>';
+    colsHTML += '<div class="ab-beads">';
+    for (var b = 9; b >= 1; b--) {
+      colsHTML += '<div class="ab-bead' + (b <= ex.beads[ci] ? ' lit' : '') + '"></div>';
+    }
+    colsHTML += '</div>';
+    colsHTML += '<div class="ab-rod"></div>';
+    colsHTML += '<div class="ab-base"></div>';
+    colsHTML += '<div class="ab-val">' + ar(ex.beads[ci]) + '</div>';
+    colsHTML += '</div>';
+  }
+
+  document.getElementById('gmain').innerHTML =
+    '<div class="card">' +
+    '<div class="badge">🧮 تمرين /٢ — عداد ' + ex.label + '</div>' +
+    '<div class="ctitle">اكتب واقرأ العدد من العداد</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">انظر إلى عدد الخرزات في كل عمود واكتب العدد ثم اختر قراءته الصحيحة! 🔢</div></div>' +
+
+    '<div class="abacus-interactive">' + colsHTML + '</div>' +
+
+    placeTable(
+      ['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],
+      [ex.beads.map(function(v){ return ar(v); })]
+    ) +
+
+    '<div style="margin:14px 0;">' +
+    '<div style="font-weight:800;margin-bottom:8px;color:#0D47A1;">✏️ العدد المُكوَّن:</div>' +
+    '<div style="text-align:center;">' +
+    '<div class="num-card" style="font-size:1.6rem;min-width:180px;display:inline-block;">' + ar(total) + '</div>' +
+    '</div>' +
+    '</div>' +
+
+    '<div style="background:#FFF3E0;border-radius:13px;padding:13px;border:2px solid #D84315;margin-top:10px;">' +
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">📢 اختر القراءة الصحيحة:</div>' +
+    '<button class="btn-choice" id="s8opt0" onclick="pick8b(0)">' + ex.reading + '</button>' +
+    '<button class="btn-choice" id="s8opt1" onclick="pick8b(1)">' + getWrongReading2(s8cur2, 0) + '</button>' +
+    '<button class="btn-choice" id="s8opt2" onclick="pick8b(2)">' + getWrongReading2(s8cur2, 1) + '</button>' +
+    '</div>' +
+    '<div style="font-size:.78rem;color:#888;margin-top:5px;text-align:center;">العداد ' + ex.label + ' من ٢</div>' +
+    '<div class="fb" id="fb8b"></div>' +
+    '</div>';
+}
+
+function getWrongReading2(cur, idx) {
+  var wrongs = [
+    ['مئتان وخمسة عشر ألفاً وثلاثمئة وأربعة وعشرون', 'مليون وخمسة عشر ألفاً ومئتان وأربعة وعشرون'],
+    ['سبعمئة وثلاثة عشر ألفاً وأربعمئة واثنان وخمسون', 'اثنان وسبعون مليوناً وثلاثمئة وأربعة وخمسون']
+  ];
+  return wrongs[cur][idx];
+}
+
+function pick8b(idx) {
+  var fb = document.getElementById('fb8b');
+  var btns = [document.getElementById('s8opt0'), document.getElementById('s8opt1'), document.getElementById('s8opt2')];
+  btns.forEach(function(b){ if(b) b.disabled = true; });
+  if (idx === 0) {
+    if (btns[0]) btns[0].className = 'btn-choice correct';
+    fb.className = 'fb ok';
+    fb.innerHTML = '✅ صحيح! ' + abacusEx2[s8cur2].reading;
+    addScore(15); snd('ok');
+    s8cur2++;
+    if (s8cur2 < abacusEx2.length) {
+      setTimeout(renderS8b, 900);
+    } else {
+      setTimeout(function(){ celeb('🧮 أتممت التمرين!', 'قرأت الأعداد الضخمة من العداد بشكل صحيح!'); }, 900);
+    }
+  } else {
+    if (btns[idx]) btns[idx].className = 'btn-choice wrong';
+    fb.className = 'fb err';
+    fb.innerHTML = '❌ راجع الخرزات وعُدّها مرة أخرى! تذكر: الخرزات البرتقالية هي القيمة.';
+    snd('err');
+    btns.forEach(function(b){ if(b) b.disabled = false; });
+    if (btns[idx]) btns[idx].disabled = true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// FINAL — التحدي النهائي
+// ══════════════════════════════════════════════
+var finalA2 = {};
+
+function sFinal() {
+  var Qs = [
+    {q:'العدد ١٠٠٠٠٠٠ يُقرأ:', opts:['مئة ألف','مليون','عشرة آلاف','مليار'], ans:1},
+    {q:'العدد ٩٩٩٩٩٩ + ١ =', opts:['١٠٠٠٠٠٠','٩٩٩٩٩٩','١٠٠٠٠٠','١٠٠٠٠٠٠٠'], ans:0},
+    {q:'لقراءة عدد كبير، نُجزّئه من اليمين إلى كُتل، كل كُتلة من:', opts:['رقمين','٣ أرقام','٤ أرقام','رقم واحد'], ans:1},
+    {q:'كُتلة الواحدات في العدد ٤٣٩٥٤٨٣٧ هي:', opts:['٤٣','٩٥٤','٨٣٧','٣٩٥'], ans:2},
+    {q:'كُتلة الملايين في العدد ٤٣٩٥٤٨٣٧ هي:', opts:['٤٣','٨٣٧','٩٥٤','٣٧'], ans:0},
+    {q:'العدد ٥٤٣٠٧١٨ يُقرأ:', opts:['خمسة مليون وأربعمئة وثلاثون ألفاً وسبعمئة وثمانية عشر','أربعة مليون وخمسمئة وثلاثون ألفاً وسبعمئة وثمانية عشر','خمسمئة وأربعة وثلاثون ألفاً وسبعمئة وثمانية عشر','خمسة وأربعون مليوناً وثلاثة آلاف وسبعمئة وثمانية عشر'], ans:0},
+    {q:'رقم الملايين في العدد ١٥٣١٧٢٣٠ هو:', opts:['١','٥','١٥','٣'], ans:2},
+    {q:'العدد ١٥٣١٧٢٣٠ يُقرأ:', opts:['خمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً ومئتان وثلاثون','مليون وخمسمئة وثلاثة عشر ألفاً وسبعمئة وثلاثون','خمسة عشر ألفاً وثلاثمئة وسبعة عشر ومئتان وثلاثون','خمسة ملايين وثلاثمئة وسبعة عشر ألفاً ومئتان وثلاثون'], ans:0},
+    {q:'العدد ٣٥٤٠٥٧٠٠ يُقرأ:', opts:['خمسة وثلاثون ألفاً وأربعمئة وخمسة وسبعمئة','خمسة وثلاثون مليوناً وأربعمئة وخمسة آلاف وسبعمئة','ثلاثة ملايين وخمسمئة وأربعة آلاف وخمسمئة وسبعون','خمسة وثلاثون مليوناً وأربعة آلاف وخمسة وسبعمئة'], ans:1},
+    {q:'كُتلة الألوف في العدد ٣٥٤٠٥٧٠٠ هي:', opts:['٣٥','٧٠٠','٤٠٥','٠٧٠'], ans:2},
+    {q:'العدد ١٣١٥٤٧٠ يُقرأ:', opts:['ثلاثة ملايين ومئة وخمسة عشر ألفاً وأربعمئة وسبعون','مليون وثلاثمئة وخمسة عشر ألفاً وأربعمئة وسبعون','مليون وثلاثة آلاف وخمسة عشر وأربعمئة وسبعون','ثلاثة عشر مليوناً وخمسمئة وأربعة وسبعون'], ans:1},
+    {q:'العدد ١٠٢٥٣٧٧٥ يُقرأ:', opts:['عشرة ملايين ومئتان وخمسة وثلاثون ألفاً وسبعمئة وخمسة وسبعون','مليون ومئتان وخمسة وثلاثون ألفاً وسبعمئة وخمسة وسبعون','عشرون مليوناً وخمسة وثلاثون ألفاً وسبعمئة وخمسة وسبعون','مئة وعشرة ملايين وخمسة وثلاثون ألفاً وسبعمئة وخمسة وسبعون'], ans:0},
+    {q:'العدد ١١٥٣١٧٥٠٠ يُقرأ:', opts:['خمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً وخمسمئة','مئة وخمسة عشر مليوناً وثلاثمئة وسبعة عشر ألفاً وخمسمئة','مئة وخمسة عشر ألفاً وثلاثمئة وسبعة عشر وخمسمئة','إحدى عشرة مليوناً وخمسمئة وثلاثة عشر ألفاً وسبعمئة وخمسون'], ans:1},
+    {q:'العدد ٣١٢٧٥٠٤١٨ يُقرأ:', opts:['ثلاثة ملايين ومئتان وخمسة وسبعون ألفاً وأربعمئة وثمانية عشر','ثلاثمئة واثنا عشر مليوناً وسبعمئة وخمسون ألفاً وأربعمئة وثمانية عشر','واحد وثلاثون مليوناً ومئتان وخمسون ألفاً وأربعة وثمانون','ثلاثمئة وعشرون مليوناً وسبعمئة وخمسة آلاف وأربعمئة وثمانية عشر'], ans:1},
+    {q:'لقراءة عدد ٦ أرقام فأكثر نبدأ التجزيء من:', opts:['اليسار','اليمين','الوسط','لا يهم'], ans:1}
+  ];
+
+  var qHTML = '';
+  Qs.forEach(function(q, i) {
+    qHTML += '<div style="background:#F8FAFF;border-radius:13px;padding:13px;margin-bottom:11px;border:2px solid #BBDEFB;">';
+    qHTML += '<div style="font-weight:800;color:#0D47A1;margin-bottom:8px;">سؤال ' + ar(i+1) + ': ' + q.q + '</div>';
+    q.opts.forEach(function(opt, oi) {
+      qHTML += '<label style="display:flex;align-items:center;gap:9px;cursor:pointer;background:white;border-radius:10px;padding:9px 12px;border:2px solid #E3F2FD;margin-bottom:6px;">';
+      qHTML += '<input type="radio" name="fq2_' + i + '" value="' + oi + '" style="width:17px;height:17px;accent-color:#0D47A1;" onchange="finalA2[' + i + ']=parseInt(this.value)">';
+      qHTML += '<span style="font-size:.88rem;">' + opt + '</span></label>';
+    });
+    qHTML += '</div>';
+  });
+
+  document.getElementById('gmain').innerHTML =
+    '<div class="card">' +
+    '<div class="badge">🏆 التحدي النهائي</div>' +
+    '<div class="ctitle">مراجعة شاملة — ' + ar(Qs.length) + ' سؤالاً</div>' +
+    '<div class="mascot-row">' + ms() + '<div class="mascot-txt">أثبت أنك أتقنت الأعداد ضمن الملايين! 🏆<br>أجب على جميع الأسئلة ثم اضغط "إنهاء"!</div></div>' +
+    qHTML +
+    '<div style="text-align:center;margin-top:18px;">' +
+    '<button class="btn btn-orange" onclick="submitFinal2()" style="font-size:1rem;padding:13px 26px;">🏁 إنهاء التحدي</button>' +
+    '</div>' +
+    '<div class="fb" id="fbFinal2" style="margin-top:14px;"></div>' +
+    '</div>';
+
+  window._finalQs3 = Qs;
+  finalA2 = {};
+}
+
+function submitFinal2() {
+  var fb = document.getElementById('fbFinal2');
+  var Qs = window._finalQs3;
+  var correct = 0, details = '';
+  Qs.forEach(function(q, i) {
+    var ok = finalA2[i] === q.ans;
+    if (ok) {
+      correct++;
+      details += '<div style="color:#1B5E20;font-size:.83rem;margin-bottom:3px;">✅ سؤال ' + ar(i+1) + ': صحيح</div>';
+    } else {
+      details += '<div style="color:#C62828;font-size:.83rem;margin-bottom:3px;">❌ سؤال ' + ar(i+1) + ': الإجابة الصحيحة: ' + q.opts[q.ans] + '</div>';
+    }
+  });
+  var pct = Math.round(correct / Qs.length * 100);
+  var stars = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+  addScore(correct * 5); snd('ok');
+  if (pct >= 70) cfetti();
+  fb.className = 'fb ok';
+  fb.style.display = 'block';
+  fb.innerHTML =
+    '<div style="font-size:1.5rem;text-align:center;margin-bottom:7px;">' + stars + '</div>' +
+    '<div style="font-size:1.15rem;font-weight:900;text-align:center;margin-bottom:11px;">أجبت بشكل صحيح على ' + ar(correct) + ' من ' + ar(Qs.length) + ' (' + ar(pct) + '%)</div>' +
+    '<div style="max-height:200px;overflow-y:auto;border-top:1px solid #ccc;padding-top:9px;">' + details + '</div>' +
+    '<div style="text-align:center;margin-top:14px;">' +
+    '<button class="btn btn-primary" onclick="stage=-1;score=0;updProg();renderIntro();">🔄 العب مجدداً</button>' +
+    '</div>';
+  setTimeout(function(){ fb.scrollIntoView({behavior:'smooth'}); }, 300);
+}
+
+renderIntro();
+</script>
+</body>
+</html>
