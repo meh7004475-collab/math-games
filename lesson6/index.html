@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأعداد الزوجية والفردية - الصف الرابع</title>
+<style>
+:root {
+  --blue: #1565C0; --blue-l: #E3F2FD; --blue-d: #0D47A1;
+  --green: #2E7D32; --green-l: #E8F5E9;
+  --red: #C62828; --red-l: #FFEBEE;
+  --orange: #E65100; --orange-l: #FFF3E0;
+  --purple: #6A1B9A; --purple-l: #F3E5F5;
+  --teal: #00695C; --teal-l: #E0F2F1;
+  --gold: #F9A825;
+  --shadow: 0 4px 18px rgba(21,101,192,.13);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI','Arial',sans-serif;
+  background: linear-gradient(135deg,#E3F2FD 0%,#F3E5F5 55%,#E8F5E9 100%);
+  min-height: 100vh; color: #1A237E; direction: rtl;
+}
+.hdr {
+  background: linear-gradient(135deg,#0D47A1,#1565C0);
+  color: white; padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 3px 12px rgba(13,71,161,.35);
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-title { font-size: 1.1rem; font-weight: 900; }
+.score-box {
+  background: var(--gold); color: #0D47A1;
+  border-radius: 20px; padding: 5px 14px;
+  font-weight: 900; font-size: 1rem;
+  display: flex; align-items: center; gap: 5px; transition: transform .2s;
+}
+.prog-wrap { padding: 9px 17px 0; }
+.prog-label { font-size: .8rem; color: #555; font-weight: 700; margin-bottom: 3px; }
+.prog-bar { background: #BBDEFB; border-radius: 10px; height: 12px; overflow: hidden; }
+.prog-fill { background: linear-gradient(90deg,#42A5F5,#0D47A1); height: 100%; border-radius: 10px; transition: width .5s; }
+.gmain { max-width: 700px; margin: 0 auto; padding: 13px; }
+.card {
+  background: white; border-radius: 22px; padding: 20px;
+  box-shadow: var(--shadow); margin-bottom: 13px;
+  border: 3px solid #BBDEFB; animation: slideIn .4s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);} }
+.badge {
+  display: inline-block;
+  background: linear-gradient(135deg,#0D47A1,#1565C0);
+  color: white; border-radius: 20px; padding: 4px 13px;
+  font-size: .77rem; font-weight: 700; margin-bottom: 8px;
+}
+.ctitle { font-size: 1.2rem; font-weight: 900; color: #0D47A1; margin-bottom: 8px; }
+.mascot-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #FFF8E1; border-radius: 14px;
+  padding: 10px 14px; margin-bottom: 13px; border: 2px solid var(--gold);
+}
+.mascot-svg { flex-shrink: 0; width: 52px; }
+.mascot-txt { font-size: .9rem; line-height: 1.7; font-weight: 600; color: #4E342E; }
+
+/* TABLES */
+.ptable { width: 100%; border-collapse: collapse; margin: 11px 0; direction: rtl; }
+.ptable th { background: #0D47A1; color: white; padding: 8px 5px; font-size: .78rem; font-weight: 800; text-align: center; border: 2px solid #0A3880; }
+.ptable td { border: 2px solid #BBDEFB; padding: 9px 5px; text-align: center; font-size: 1.15rem; font-weight: 900; }
+.ptable tr:nth-child(odd) td { background: #E3F2FD; }
+.ptable tr:nth-child(even) td { background: #F5F9FF; }
+.hl { background: #FFF176 !important; color: #E65100 !important; }
+
+/* BUTTONS */
+.btn { border: none; border-radius: 12px; font-family: inherit; font-weight: 800; font-size: .93rem; cursor: pointer; padding: 10px 18px; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:active { transform: scale(.95); }
+.btn-primary { background: linear-gradient(135deg,#0D47A1,#1565C0); color:white; box-shadow:0 4px 12px rgba(13,71,161,.28); }
+.btn-primary:hover { transform: translateY(-2px); }
+.btn-green { background: linear-gradient(135deg,#2E7D32,#1B5E20); color:white; }
+.btn-orange { background: linear-gradient(135deg,#E65100,#BF360C); color:white; }
+.btn-teal { background: linear-gradient(135deg,#00695C,#004D40); color:white; }
+.btn-choice {
+  display: block; width: 100%; background: #E3F2FD; color: #0D47A1;
+  border: 2.5px solid #90CAF9; border-radius: 12px; padding: 10px 14px;
+  font-size: .9rem; font-weight: 700; cursor: pointer; text-align: right;
+  margin-bottom: 8px; transition: all .2s;
+}
+.btn-choice:hover { background: #BBDEFB; }
+.btn-choice.correct { background: #E8F5E9; border-color: #2E7D32; color: #1B5E20; }
+.btn-choice.wrong { background: #FFEBEE; border-color: #C62828; color: #C62828; }
+
+/* FEEDBACK */
+.fb { border-radius: 14px; padding: 12px 16px; font-size: .93rem; font-weight: 700; text-align: center; margin-top: 12px; display: none; animation: pop .4s ease; }
+@keyframes pop { 0%{transform:scale(.7);opacity:0;}60%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;} }
+.fb.ok { background: #E8F5E9; border: 2px solid #2E7D32; color: #1B5E20; display: block; }
+.fb.err { background: #FFEBEE; border: 2px solid #C62828; color: #C62828; display: block; }
+
+/* NUMBER CHIPS */
+.num-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.num-chip {
+  border-radius: 12px; padding: 9px 15px; font-size: 1.1rem; font-weight: 900;
+  cursor: pointer; border: 2.5px solid; transition: all .2s; user-select: none;
+}
+.num-chip.neutral { background: #F5F5F5; border-color: #BDBDBD; color: #333; }
+.num-chip.even { background: var(--blue-l); border-color: var(--blue); color: var(--blue-d); }
+.num-chip.odd { background: var(--orange-l); border-color: var(--orange); color: var(--orange); }
+.num-chip.prime { background: var(--green-l); border-color: var(--green); color: var(--green); }
+.num-chip.composite { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.num-chip.selected { transform: scale(1.12); box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+
+/* CLASSIFY ZONES */
+.classify-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+.zone { border-radius: 14px; padding: 12px; min-height: 80px; border: 3px dashed; }
+.zone-even { background: var(--blue-l); border-color: var(--blue); }
+.zone-odd { background: var(--orange-l); border-color: var(--orange); }
+.zone-prime { background: var(--green-l); border-color: var(--green); }
+.zone-composite { background: var(--red-l); border-color: var(--red); }
+.zone-title { font-weight: 900; font-size: .9rem; margin-bottom: 8px; text-align: center; }
+.zone-even .zone-title { color: var(--blue-d); }
+.zone-odd .zone-title { color: var(--orange); }
+.zone-prime .zone-title { color: var(--green); }
+.zone-composite .zone-title { color: var(--red); }
+.dropped { display: inline-block; background: white; border-radius: 8px; padding: 5px 10px; margin: 3px; font-weight: 900; font-size: .95rem; box-shadow: 0 2px 5px rgba(0,0,0,.1); }
+
+/* LIST TABLE */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+.list-box { background: #F8F9FA; border-radius: 12px; padding: 12px; border: 2px solid #E0E0E0; }
+.list-box-title { font-weight: 800; font-size: .88rem; text-align: center; margin-bottom: 10px; }
+.list-item { display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; padding: 5px; border-radius: 8px; margin-bottom: 4px; }
+.list-item.even-item { background: var(--blue-l); color: var(--blue-d); }
+.list-item.odd-item { background: var(--orange-l); color: var(--orange); }
+
+/* ADDITION TABLE */
+.add-table { width: 100%; border-collapse: collapse; margin: 12px 0; direction: rtl; }
+.add-table th { background: #0D47A1; color: white; padding: 10px 6px; text-align: center; font-size: 1rem; font-weight: 900; border: 2px solid #0A3880; }
+.add-table td { border: 2px solid #BBDEFB; padding: 6px 4px; text-align: center; }
+.add-input {
+  width: 58px; border: 2.5px solid #90CAF9; border-radius: 8px;
+  padding: 5px 3px; font-size: 1rem; font-weight: 900;
+  text-align: center; font-family: inherit; color: #0D47A1;
+  outline: none; background: #F5F9FF;
+}
+.add-input.ok { border-color: #2E7D32; background: #E8F5E9; color: #1B5E20; }
+.add-input.err { border-color: #C62828; background: #FFEBEE; color: #C62828; }
+
+/* ABACUS */
+.abacus-wrap { display: flex; gap: 5px; justify-content: center; align-items: flex-end; margin: 14px auto; direction: ltr; overflow-x: auto; padding: 6px; }
+.ab-col { display: flex; flex-direction: column; align-items: center; }
+.ab-lbl { font-size: .6rem; font-weight: 800; color: #0D47A1; margin-bottom: 5px; text-align: center; max-width: 36px; }
+.ab-beads { display: flex; flex-direction: column; gap: 3px; align-items: center; min-height: 130px; justify-content: flex-end; }
+.ab-bead { width: 24px; height: 12px; border-radius: 6px; background: linear-gradient(135deg,#42A5F5,#1565C0); border: 2px solid #0D47A1; cursor: pointer; transition: all .15s; }
+.ab-bead.lit { background: linear-gradient(135deg,#FF7043,#D84315); border-color: #8F2400; }
+.ab-rod { width: 5px; height: 16px; background: linear-gradient(#8D6E63,#5D4037); border-radius: 3px; }
+.ab-base { width: 30px; height: 10px; background: linear-gradient(#26A69A,#00796B); border-radius: 4px; margin-top: 4px; }
+.ab-val { font-size: .85rem; font-weight: 900; color: #0D47A1; margin-top: 4px; }
+
+/* DRAG */
+.drag-num { background: linear-gradient(135deg,#E3F2FD,#BBDEFB); border: 2.5px solid #1565C0; border-radius: 12px; padding: 9px 15px; font-size: 1.2rem; font-weight: 900; cursor: grab; user-select: none; transition: all .18s; color: #0D47A1; }
+.drag-num:hover { transform: scale(1.07); }
+.drag-num.used { opacity: .3; pointer-events: none; }
+
+/* CELEBRATION */
+.celeb { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none; align-items: center; justify-content: center; z-index: 999; }
+.celeb.show { display: flex; }
+.celeb-box { background: white; border-radius: 24px; padding: 28px; text-align: center; max-width: 350px; width: 90%; animation: zoomIn .5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes zoomIn { from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;} }
+.celeb-stars { font-size: 2.2rem; margin: 7px 0; }
+.celeb-title { font-size: 1.45rem; font-weight: 900; color: #0D47A1; margin-bottom: 6px; }
+.celeb-msg { font-size: .92rem; color: #555; margin-bottom: 16px; line-height: 1.6; }
+.cf { position:fixed;width:11px;height:11px;opacity:0;animation:fall 3s ease-in forwards;border-radius:2px;z-index:1000; }
+@keyframes fall { 0%{opacity:1;transform:translateY(-80px)rotateZ(0);}100%{opacity:0;transform:translateY(100vh)rotateZ(720deg);} }
+
+.intro { text-align: center; padding: 16px 8px; }
+.intro-title { font-size: 1.8rem; font-weight: 900; color: #0D47A1; margin-bottom: 8px; }
+.intro-sub { font-size: .93rem; color: #555; margin-bottom: 16px; line-height: 1.8; }
+.intro-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: 8px; margin-bottom: 16px; }
+.intro-item { background: linear-gradient(135deg,#E3F2FD,#BBDEFB); border: 2px solid #1565C0; border-radius: 12px; padding: 10px 6px; font-size: .8rem; font-weight: 700; color: #0D47A1; text-align: center; }
+.intro-icon { font-size: 1.4rem; margin-bottom: 3px; }
+
+@media(max-width:480px) {
+  .classify-area{grid-template-columns:1fr;}
+  .two-col{grid-template-columns:1fr;}
+  .ctitle{font-size:1rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">🔢 الأعداد الزوجية والفردية</div>
+  <div class="score-box" id="scoreBox">⭐ <span id="scoreDisp">٠</span></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label">التقدم: <span id="progLbl">لم تبدأ بعد</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+
+<div class="gmain" id="gmain"></div>
+
+<div class="celeb" id="celebWrap">
+  <div class="celeb-box">
+    <div class="celeb-stars">⭐⭐⭐</div>
+    <div class="celeb-title" id="cTitle">رائع!</div>
+    <div class="celeb-msg" id="cMsg"></div>
+    <button class="btn btn-green" onclick="nextStage()">التالي ←</button>
+  </div>
+</div>
+
+<script>
+var stage = -1, score = 0, TOTAL = 12;
+function ar(n){ return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];}); }
+function updProg(){
+  var pct = stage<0?0:Math.round(stage/TOTAL*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=stage<0?'لم تبدأ بعد':'المرحلة '+ar(stage)+' من '+ar(TOTAL);
+  document.getElementById('scoreDisp').textContent=ar(score);
+}
+function addScore(n){
+  score+=n;
+  document.getElementById('scoreDisp').textContent=ar(score);
+  var b=document.getElementById('scoreBox');
+  b.style.transform='scale(1.25)';
+  setTimeout(function(){b.style.transform='scale(1)';},280);
+}
+function snd(t){
+  try{
+    var ctx=new (window.AudioContext||window.webkitAudioContext)();
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(t==='ok'){o.frequency.setValueAtTime(523,ctx.currentTime);o.frequency.setValueAtTime(659,ctx.currentTime+.12);o.frequency.setValueAtTime(784,ctx.currentTime+.24);g.gain.setValueAtTime(.28,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.55);o.start();o.stop(ctx.currentTime+.55);}
+    else{o.type='sawtooth';o.frequency.setValueAtTime(180,ctx.currentTime);g.gain.setValueAtTime(.18,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.28);o.start();o.stop(ctx.currentTime+.28);}
+  }catch(e){}
+}
+function cfetti(){
+  var cols=['#1565C0','#2E7D32','#E65100','#6A1B9A','#F9A825','#C62828'];
+  for(var i=0;i<50;i++){var el=document.createElement('div');el.className='cf';el.style.cssText='left:'+(Math.random()*100)+'vw;top:0;background:'+cols[Math.floor(Math.random()*cols.length)]+';animation-delay:'+(Math.random()*.8)+'s;animation-duration:'+(2+Math.random()*2)+'s;';document.body.appendChild(el);setTimeout(function(){el.remove();},4500);}
+}
+function celeb(title,msg){
+  document.getElementById('cTitle').textContent=title;
+  document.getElementById('cMsg').textContent=msg;
+  document.getElementById('celebWrap').classList.add('show');
+  cfetti();snd('ok');
+}
+function nextStage(){
+  document.getElementById('celebWrap').classList.remove('show');
+  stage++;updProg();render();
+}
+function render(){
+  document.getElementById('gmain').innerHTML='';
+  var fns=[s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,sFinal];
+  if(stage<0){renderIntro();return;}
+  if(stage<fns.length)fns[stage]();
+  else sFinal();
+}
+function html(h){document.getElementById('gmain').innerHTML='<div class="card">'+h+'</div>';}
+function ms(){return '<svg class="mascot-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="22" r="18" fill="#FFB300"/><circle cx="22" cy="18" r="3" fill="#1A237E"/><circle cx="38" cy="18" r="3" fill="#1A237E"/><circle cx="23" cy="17" r="1.2" fill="white"/><circle cx="39" cy="17" r="1.2" fill="white"/><path d="M22 28 Q30 35 38 28" stroke="#1A237E" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="18" cy="22" rx="4" ry="3" fill="#F57F17" opacity=".7"/><ellipse cx="42" cy="22" rx="4" ry="3" fill="#F57F17" opacity=".7"/><path d="M20 40 Q30 44 40 40 L38 55 Q30 58 22 55 Z" fill="#1565C0"/><circle cx="30" cy="6" r="4" fill="#66BB6A"/></svg>';}
+function isPrime(n){if(n<2)return false;for(var i=2;i<=Math.sqrt(n);i++)if(n%i===0)return false;return true;}
+function isEven(n){return n%2===0;}
+
+// ── INTRO ──────────────────────────────────────
+function renderIntro(){
+  stage=-1;
+  html('<div class="intro"><div style="font-size:2.6rem;margin-bottom:8px;">🔢</div><div class="intro-title">الأعداد الزوجية والفردية</div><div class="intro-sub">مرحباً! في هذا الدرس ستتعلم الفرق بين الأعداد الزوجية والفردية وتُطبّق على تمارين متنوعة! 🎉</div><div class="intro-grid"><div class="intro-item"><div class="intro-icon">🔍</div>نشاط: القائمة أ</div><div class="intro-item"><div class="intro-icon">🔍</div>نشاط: القائمة ب</div><div class="intro-item"><div class="intro-icon">📏</div>القاعدة</div><div class="intro-item"><div class="intro-icon">🎯</div>المثال ١٤ عدداً</div><div class="intro-item"><div class="intro-icon">🎮</div>تمرين/١ زوجية</div><div class="intro-item"><div class="intro-icon">🎲</div>تمرين/٢ فردية</div><div class="intro-item"><div class="intro-icon">📊</div>تمرين/٣ الجدول</div><div class="intro-item"><div class="intro-icon">💡</div>الاستنتاجات</div><div class="intro-item"><div class="intro-icon">🧮</div>تمرين عام/١</div><div class="intro-item"><div class="intro-icon">⚖️</div>تمرين عام/٢+٣</div><div class="intro-item"><div class="intro-icon">🌟</div>تمرين عام/٤+٥+٦</div><div class="intro-item"><div class="intro-icon">🏆</div>تمرين عام/٧ + تحدي</div></div><button class="btn btn-primary" onclick="stage=0;updProg();render();">🚀 ابدأ!</button></div>');
+}
+
+// ══════════════════════════════════════════════
+// S0 — نشاط استكشافي: القائمة أ (الأعداد الزوجية)
+// ══════════════════════════════════════════════
+function s0(){
+  html(
+    '<div class="badge">🔍 نشاط استكشافي — القائمة أ</div>'+
+    '<div class="ctitle">اكتشف الأعداد الزوجية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">انظر إلى القائمة (أ)! كل عدد هو مجموع عددين <strong>متساويين</strong>.<br>هل يمكنك اكتشاف القاعدة؟ 🤔</div></div>'+
+
+    '<div class="two-col">'+
+    '<div class="list-box"><div class="list-box-title" style="color:#1565C0;">📋 القائمة أ</div>'+
+    '<div class="list-item even-item">١ + ١ = ٢</div>'+
+    '<div class="list-item even-item">٢ + ٢ = ٤</div>'+
+    '<div class="list-item even-item">٣ + ٣ = ٦</div>'+
+    '<div class="list-item even-item">٤ + ٤ = ٨</div>'+
+    '<div class="list-item even-item">٥ + ٥ = ١٠</div>'+
+    '<div class="list-item even-item">٦ + ٦ = ١٢</div>'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;justify-content:center;gap:10px;">'+
+    '<div style="background:#E3F2FD;border-radius:12px;padding:12px;font-size:.88rem;line-height:1.7;font-weight:600;color:#0D47A1;border:2px solid #90CAF9;">'+
+    '✨ كل عدد في القائمة (أ) يمكن تقسيمه إلى <strong>عددين متساويين</strong>.<br>هذه الأعداد تُسمى <strong>الأعداد الزوجية</strong>!'+
+    '</div>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 أيّ العبارات صحيحة عن الأعداد الزوجية؟</div>'+
+    '<button class="btn-choice" onclick="pick0(0)">أ) لا يمكن تقسيمها إلى عددين متساويين</button>'+
+    '<button class="btn-choice" onclick="pick0(1)">ب) يمكن تقسيمها إلى عددين متساويين ✅</button>'+
+    '<button class="btn-choice" onclick="pick0(2)">ج) تنتهي دائماً بالرقم ١</button>'+
+    '</div>'+
+    '<div class="fb" id="fb0"></div>'
+  );
+}
+function pick0(idx){
+  var fb=document.getElementById('fb0');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! الأعداد الزوجية تُقسَّم إلى عددين متساويين مثل ٦=٣+٣';addScore(10);snd('ok');setTimeout(function(){celeb('🔍 اكتشفت الأعداد الزوجية!','يمكن تقسيمها إلى عددين متساويين!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ انظر إلى القائمة! كل عدد = عدد + نفس العدد. إذن يمكن تقسيمها!';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S1 — نشاط استكشافي: القائمة ب (الأعداد الفردية)
+// ══════════════════════════════════════════════
+function s1(){
+  html(
+    '<div class="badge">🔍 نشاط استكشافي — القائمة ب</div>'+
+    '<div class="ctitle">اكتشف الأعداد الفردية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">الآن انظر إلى القائمة (ب)! هل يمكن تقسيم هذه الأعداد إلى عددين متساويين؟ 🤔</div></div>'+
+
+    '<div class="two-col">'+
+    '<div class="list-box"><div class="list-box-title" style="color:#E65100;">📋 القائمة ب</div>'+
+    '<div class="list-item odd-item">١ + صفر = ١</div>'+
+    '<div class="list-item odd-item">١ + ٢ = ٣</div>'+
+    '<div class="list-item odd-item">٢ + ٣ = ٥</div>'+
+    '<div class="list-item odd-item">٣ + ٤ = ٧</div>'+
+    '<div class="list-item odd-item">٤ + ٥ = ٩</div>'+
+    '<div class="list-item odd-item">٥ + ٦ = ١١</div>'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;justify-content:center;gap:10px;">'+
+    '<div style="background:#FFF3E0;border-radius:12px;padding:12px;font-size:.88rem;line-height:1.7;font-weight:600;color:#E65100;border:2px solid #FFAB40;">'+
+    '✨ كل عدد في القائمة (ب) <strong>لا يمكن</strong> تقسيمه إلى عددين متساويين.<br>هذه الأعداد تُسمى <strong>الأعداد الفردية</strong>!'+
+    '</div>'+
+    '</div></div>'+
+
+    '<div onclick="showDiff()" style="cursor:pointer;background:#E3F2FD;border:2px solid #1565C0;border-radius:12px;padding:11px 14px;font-weight:700;color:#0D47A1;margin:12px 0;">📌 انقر لترى الفرق بين القائمتين!</div>'+
+    '<div id="diffArea" style="display:none;background:#F3E5F5;border-radius:12px;padding:13px;margin-bottom:12px;border:2px solid #6A1B9A;">'+
+    '<div style="font-weight:800;color:#4A148C;margin-bottom:8px;">✨ الفرق:</div>'+
+    '<div style="font-size:.88rem;font-weight:600;line-height:1.8;">'+
+    '🔵 الأعداد الزوجية: ٢، ٤، ٦، ٨، ١٠، ١٢، ١٤، ١٦، ١٨، ٢٠...<br>'+
+    '🟠 الأعداد الفردية: ١، ٣، ٥، ٧، ٩، ١١، ١٣، ١٥، ١٧، ١٩، ٢١...'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 العدد ٧ في القائمة (ب) يُسمى:</div>'+
+    '<button class="btn-choice" onclick="pick1(0)">أ) عدد زوجي</button>'+
+    '<button class="btn-choice" onclick="pick1(1)">ب) عدد فردي ✅</button>'+
+    '<button class="btn-choice" onclick="pick1(2)">ج) عدد أولي فقط</button>'+
+    '</div>'+
+    '<div class="fb" id="fb1"></div>'
+  );
+}
+function showDiff(){document.getElementById('diffArea').style.display='block';}
+function pick1(idx){
+  var fb=document.getElementById('fb1');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! ٧ = ٣+٤ وليس عددين متساويين، إذن هو عدد فردي.';addScore(10);snd('ok');setTimeout(function(){celeb('🔍 اكتشفت الأعداد الفردية!','لا يمكن تقسيمها إلى عددين متساويين!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ ٧ لا يمكن تقسيمه إلى عددين متساويين (٣+٤ وليس ٣.٥+٣.٥) إذن هو فردي!';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S2 — القاعدة: رقم الآحاد يحدد نوع العدد
+// ══════════════════════════════════════════════
+function s2(){
+  html(
+    '<div class="badge">📏 القاعدة الذهبية</div>'+
+    '<div class="ctitle">كيف أعرف إذا كان العدد زوجياً أم فردياً؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">لا داعي لتقسيم العدد! فقط انظر إلى <strong>رقم الآحاد</strong> (آخر رقم من اليمين)! 🔑</div></div>'+
+
+    '<div style="display:flex;flex-direction:column;gap:10px;margin:12px 0;">'+
+    '<div style="background:#E3F2FD;border-radius:12px;padding:12px;border-right:5px solid #1565C0;">'+
+    '<div style="font-weight:800;color:#0D47A1;margin-bottom:5px;">١. إذا كان رقم الآحاد <span style="background:#1565C0;color:white;border-radius:6px;padding:2px 8px;">٠ أو ٢ أو ٤ أو ٦ أو ٨</span></div>'+
+    '<div style="font-size:.88rem;font-weight:600;">← يكون العدد <strong>زوجياً</strong> 🔵</div>'+
+    '</div>'+
+    '<div style="background:#FFF3E0;border-radius:12px;padding:12px;border-right:5px solid #E65100;">'+
+    '<div style="font-weight:800;color:#E65100;margin-bottom:5px;">٢. إذا كان رقم الآحاد <span style="background:#E65100;color:white;border-radius:6px;padding:2px 8px;">١ أو ٣ أو ٥ أو ٧ أو ٩</span></div>'+
+    '<div style="font-size:.88rem;font-weight:600;">← يكون العدد <strong>فردياً</strong> 🟠</div>'+
+    '</div>'+
+    '<div style="background:#E8F5E9;border-radius:12px;padding:12px;border-right:5px solid #2E7D32;">'+
+    '<div style="font-weight:800;color:#2E7D32;margin-bottom:5px;">٣. إذا كان رقم الآحاد <span style="background:#2E7D32;color:white;border-radius:6px;padding:2px 8px;">صفر ٠</span></div>'+
+    '<div style="font-size:.88rem;font-weight:600;">← يكون العدد <strong>زوجياً</strong> 🔵 (الصفر عدد زوجي!)</div>'+
+    '</div>'+
+    '</div>'+
+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0;">'+
+    [234,157,8920,63,400,75].map(function(n){
+      return '<div onclick="clickRule('+n+',this)" style="cursor:pointer;border-radius:11px;padding:10px 16px;font-size:1.1rem;font-weight:900;background:#F5F5F5;border:2.5px solid #BDBDBD;transition:all .2s;">'+ar(n)+'</div>';
+    }).join('')+
+    '</div>'+
+    '<div id="ruleResult" style="min-height:30px;text-align:center;font-weight:700;font-size:.95rem;color:#555;margin-top:4px;">👆 انقر على أي عدد لمعرفة نوعه!</div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 العدد ٨٩٢٠ هو:</div>'+
+    '<button class="btn-choice" onclick="pick2(0)">أ) عدد فردي</button>'+
+    '<button class="btn-choice" onclick="pick2(1)">ب) عدد زوجي (الآحاد = ٠) ✅</button>'+
+    '<button class="btn-choice" onclick="pick2(2)">ج) لا زوجي ولا فردي</button>'+
+    '</div>'+
+    '<div class="fb" id="fb2"></div>'
+  );
+}
+function clickRule(n,el){
+  var even=isEven(n);
+  el.style.background=even?'#E3F2FD':'#FFF3E0';
+  el.style.borderColor=even?'#1565C0':'#E65100';
+  el.style.color=even?'#0D47A1':'#E65100';
+  document.getElementById('ruleResult').innerHTML=
+    ar(n)+' — رقم الآحاد: '+ar(n%10)+' — <strong style="color:'+(even?'#1565C0':'#E65100')+'">'+(even?'زوجي 🔵':'فردي 🟠')+'</strong>';
+}
+function pick2(idx){
+  var fb=document.getElementById('fb2');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! رقم الآحاد في ٨٩٢٠ هو صفر، والصفر زوجي، إذن ٨٩٢٠ زوجي!';addScore(10);snd('ok');setTimeout(function(){celeb('📏 أتقنت القاعدة!','انظر لرقم الآحاد دائماً لتعرف نوع العدد!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ انظر لرقم الآحاد في ٨٩٢٠: هو الصفر ٠ — والصفر زوجي!';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S3 — المثال: تمييز ١٤ عدداً بالسحب والإفلات
+// ══════════════════════════════════════════════
+var exNums3=[2,3,5,8,9,10,12,13,17,20,24,25,32,37];
+var classified3={even:[],odd:[]};
+var draggedNum3=null;
+
+function s3(){
+  classified3={even:[],odd:[]};
+  draggedNum3=null;
+  renderS3();
+}
+function renderS3(){
+  var poolHTML='<div class="num-pool" id="pool3">';
+  exNums3.forEach(function(n){
+    var used=classified3.even.indexOf(n)!==-1||classified3.odd.indexOf(n)!==-1;
+    poolHTML+='<div class="num-chip neutral'+(used?' used':'')+'" id="nc'+n+'" draggable="true" ondragstart="ds3(event,'+n+')" ontouchstart="ts3(event,'+n+')" ontouchmove="tm3(event)" ontouchend="te3(event)">'+ar(n)+'</div>';
+  });
+  poolHTML+='</div>';
+
+  var evenDrops=classified3.even.map(function(n){return '<span class="dropped">'+ar(n)+'</span>';}).join('');
+  var oddDrops=classified3.odd.map(function(n){return '<span class="dropped">'+ar(n)+'</span>';}).join('');
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🎯 المثال: تمييز ١٤ عدداً</div>'+
+    '<div class="ctitle">صنّف الأعداد: زوجية أم فردية؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">اسحب كل عدد إلى المنطقة الصحيحة!<br>🔵 زوجي = رقم الآحاد: ٠،٢،٤،٦،٨<br>🟠 فردي = رقم الآحاد: ١،٣،٥،٧،٩</div></div>'+
+    poolHTML+
+    '<div class="classify-area">'+
+    '<div class="zone zone-even" id="zone3even" ondragover="event.preventDefault()" ondrop="drop3(event,\'even\')"><div class="zone-title">🔵 أعداد زوجية</div><div id="even3Drop">'+evenDrops+'</div></div>'+
+    '<div class="zone zone-odd" id="zone3odd" ondragover="event.preventDefault()" ondrop="drop3(event,\'odd\')"><div class="zone-title">🟠 أعداد فردية</div><div id="odd3Drop">'+oddDrops+'</div></div>'+
+    '</div>'+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-green" onclick="checkS3()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb3"></div>'+
+    '</div>';
+}
+function ds3(e,n){draggedNum3=n;e.dataTransfer.effectAllowed='move';}
+function drop3(e,zone){e.preventDefault();if(draggedNum3===null)return;placeNum3(draggedNum3,zone);draggedNum3=null;}
+function ts3(e,n){draggedNum3=n;}
+function tm3(e){e.preventDefault();}
+function te3(e){
+  if(draggedNum3===null)return;
+  var touch=e.changedTouches[0];
+  var el=document.elementFromPoint(touch.clientX,touch.clientY);
+  if(!el)return;
+  var zone=el.closest('#zone3even')?'even':el.closest('#zone3odd')?'odd':null;
+  if(zone){placeNum3(draggedNum3,zone);}
+  draggedNum3=null;
+}
+function placeNum3(n,zone){
+  classified3.even=classified3.even.filter(function(x){return x!==n;});
+  classified3.odd=classified3.odd.filter(function(x){return x!==n;});
+  classified3[zone].push(n);
+  renderS3();
+}
+function checkS3(){
+  var fb=document.getElementById('fb3');
+  var total=classified3.even.length+classified3.odd.length;
+  if(total<exNums3.length){fb.className='fb err';fb.innerHTML='⚠️ لم تصنّف جميع الأعداد! تبقّى '+ar(exNums3.length-total)+' أعداد.';return;}
+  var wrong=[];
+  classified3.even.forEach(function(n){if(!isEven(n))wrong.push(ar(n)+' (فردي وليس زوجياً)');});
+  classified3.odd.forEach(function(n){if(isEven(n))wrong.push(ar(n)+' (زوجي وليس فردياً)');});
+  if(wrong.length===0){
+    fb.className='fb ok';
+    fb.innerHTML='✅ ممتاز! الزوجية: '+classified3.even.map(ar).join('، ')+' — الفردية: '+classified3.odd.map(ar).join('، ');
+    addScore(20);snd('ok');
+    setTimeout(function(){celeb('🎯 رائع!','صنّفت جميع الأعداد بشكل صحيح!');},1100);
+  }else{
+    fb.className='fb err';fb.innerHTML='❌ راجع: '+wrong.join(' | ')+'. تذكّر: انظر لرقم الآحاد!';snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S4 — تمرين /١: اكتب الأعداد الزوجية (انقر للاختيار)
+// ══════════════════════════════════════════════
+var ex4nums=[6,7,8,9,10,15,16,18,19,25,26,38];
+var ex4sel=[];
+
+function s4(){
+  ex4sel=[];
+  renderS4();
+}
+function renderS4(){
+  var chipsHTML='<div class="num-pool">';
+  ex4nums.forEach(function(n){
+    var sel=ex4sel.indexOf(n)!==-1;
+    chipsHTML+='<div class="num-chip'+(sel?' even':' neutral')+'" onclick="toggleEx4('+n+')">'+ar(n)+'</div>';
+  });
+  chipsHTML+='</div>';
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🎮 تمرين (٦)/١</div>'+
+    '<div class="ctitle">انقر على جميع الأعداد الزوجية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">انقر على الأعداد الزوجية فقط! (رقم الآحاد: ٠،٢،٤،٦،٨) 🔵</div></div>'+
+    chipsHTML+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-green" onclick="checkS4()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb4"></div>'+
+    '</div>';
+}
+function toggleEx4(n){
+  var idx=ex4sel.indexOf(n);
+  if(idx===-1)ex4sel.push(n);
+  else ex4sel.splice(idx,1);
+  renderS4();
+}
+function checkS4(){
+  var fb=document.getElementById('fb4');
+  var correctEvens=ex4nums.filter(isEven);
+  var missing=correctEvens.filter(function(n){return ex4sel.indexOf(n)===-1;});
+  var extra=ex4sel.filter(function(n){return !isEven(n);});
+  if(missing.length===0&&extra.length===0){
+    fb.className='fb ok';fb.innerHTML='✅ ممتاز! الأعداد الزوجية هي: '+correctEvens.map(ar).join('، ');
+    addScore(15);snd('ok');setTimeout(function(){celeb('🎮 أحسنت!','اخترت الأعداد الزوجية بشكل صحيح!');},1100);
+  }else{
+    fb.className='fb err';
+    var msg='';
+    if(extra.length>0)msg+='❌ هذه ليست زوجية: '+extra.map(ar).join('، ')+'. ';
+    if(missing.length>0)msg+='⚠️ فاتتك: '+missing.map(ar).join('، ')+'.';
+    fb.innerHTML=msg;snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S5 — تمرين /٢: اكتب الأعداد الفردية
+// ══════════════════════════════════════════════
+var ex5nums=[8,9,11,12,14,15,17,18,20,23,24,29];
+var ex5sel=[];
+
+function s5(){
+  ex5sel=[];
+  renderS5();
+}
+function renderS5(){
+  var chipsHTML='<div class="num-pool">';
+  ex5nums.forEach(function(n){
+    var sel=ex5sel.indexOf(n)!==-1;
+    chipsHTML+='<div class="num-chip'+(sel?' odd':' neutral')+'" onclick="toggleEx5('+n+')">'+ar(n)+'</div>';
+  });
+  chipsHTML+='</div>';
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🎲 تمرين (٦)/٢</div>'+
+    '<div class="ctitle">انقر على جميع الأعداد الفردية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">انقر على الأعداد الفردية فقط! (رقم الآحاد: ١،٣،٥،٧،٩) 🟠</div></div>'+
+    chipsHTML+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-orange" onclick="checkS5()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb5"></div>'+
+    '</div>';
+}
+function toggleEx5(n){
+  var idx=ex5sel.indexOf(n);
+  if(idx===-1)ex5sel.push(n);
+  else ex5sel.splice(idx,1);
+  renderS5();
+}
+function checkS5(){
+  var fb=document.getElementById('fb5');
+  var correctOdds=ex5nums.filter(function(n){return !isEven(n);});
+  var missing=correctOdds.filter(function(n){return ex5sel.indexOf(n)===-1;});
+  var extra=ex5sel.filter(function(n){return isEven(n);});
+  if(missing.length===0&&extra.length===0){
+    fb.className='fb ok';fb.innerHTML='✅ ممتاز! الأعداد الفردية هي: '+correctOdds.map(ar).join('، ');
+    addScore(15);snd('ok');setTimeout(function(){celeb('🎲 رائع!','اخترت الأعداد الفردية بشكل صحيح!');},1100);
+  }else{
+    fb.className='fb err';
+    var msg='';
+    if(extra.length>0)msg+='❌ هذه ليست فردية: '+extra.map(ar).join('، ')+'. ';
+    if(missing.length>0)msg+='⚠️ فاتتك: '+missing.map(ar).join('، ')+'.';
+    fb.innerHTML=msg;snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S6 — تمرين /٣: الجدول التفاعلي
+// ══════════════════════════════════════════════
+// Table: cols=2,5,8,11 rows=3,6,7,12
+var tCols=[2,5,8,11], tRows=[3,6,7,12];
+var tInputs={};
+
+function s6(){
+  tInputs={};
+  renderS6();
+}
+function renderS6(){
+  var tableHTML='<table class="add-table"><tr><th>+</th>';
+  tCols.forEach(function(c){tableHTML+='<th>'+ar(c)+'</th>';});
+  tableHTML+='</tr>';
+  tRows.forEach(function(r){
+    tableHTML+='<tr><th>'+ar(r)+'</th>';
+    tCols.forEach(function(c){
+      var key=r+'_'+c;
+      var val=tInputs[key]||'';
+      var cls=val?((parseInt(val)===(r+c))?'ok':'err'):'';
+      tableHTML+='<td><input class="add-input '+cls+'" id="ti'+key+'" type="number" value="'+val+'" placeholder="؟" onchange="setTInput(\''+key+'\',this.value,'+r+','+c+')"></td>';
+    });
+    tableHTML+='</tr>';
+  });
+  tableHTML+='</table>';
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">📊 تمرين (٦)/٣</div>'+
+    '<div class="ctitle">أكمل جدول الجمع</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">أكمل الجدول! اجمع الرقم في العمود مع الرقم في الصف ✏️<br>مثال: ٢ + ٣ = ٥</div></div>'+
+    tableHTML+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-primary" onclick="checkS6()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb6"></div>'+
+    '</div>';
+}
+function setTInput(key,val,r,c){
+  tInputs[key]=val;
+  var el=document.getElementById('ti'+key);
+  if(val===''){el.className='add-input';return;}
+  el.className='add-input '+(parseInt(val)===(r+c)?'ok':'err');
+}
+function checkS6(){
+  var fb=document.getElementById('fb6');
+  var wrong=0,total=0;
+  tRows.forEach(function(r){
+    tCols.forEach(function(c){
+      total++;
+      var key=r+'_'+c;
+      if(!tInputs[key]||parseInt(tInputs[key])!==(r+c))wrong++;
+    });
+  });
+  if(wrong===0){
+    fb.className='fb ok';fb.innerHTML='✅ جميع خلايا الجدول صحيحة! رائع!';
+    addScore(20);snd('ok');
+    setTimeout(function(){celeb('📊 أكملت الجدول!','الآن نستنتج القواعد!');},1100);
+  }else{
+    fb.className='fb err';fb.innerHTML='❌ يوجد '+ar(wrong)+' خطأ. الخلايا الحمراء تحتاج تصحيح!';snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S7 — الاستنتاجات الأربعة
+// ══════════════════════════════════════════════
+var s7ans={a:null,b:null,c:null,d:null};
+
+function s7(){
+  s7ans={a:null,b:null,c:null,d:null};
+  html(
+    '<div class="badge">💡 الاستنتاجات</div>'+
+    '<div class="ctitle">أكمل الاستنتاجات من الجدول</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">من خلال الجدول الذي أكملته، يمكنك استنتاج هذه القواعد المهمة! 🧠</div></div>'+
+
+    '<div style="display:flex;flex-direction:column;gap:12px;margin:12px 0;">'+
+
+    '<div style="background:#E3F2FD;border-radius:12px;padding:12px;border:2px solid #90CAF9;">'+
+    '<div style="font-weight:800;margin-bottom:8px;color:#0D47A1;">أ) عدد زوجي + عدد زوجي = عدد ...</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" id="a_z" onclick="pickConc(\'a\',\'زوجي\')" style="background:#E3F2FD;color:#1565C0;border:2px solid #1565C0;">زوجي 🔵</button>'+
+    '<button class="btn" id="a_f" onclick="pickConc(\'a\',\'فردي\')" style="background:#FFF3E0;color:#E65100;border:2px solid #E65100;">فردي 🟠</button>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF3E0;border-radius:12px;padding:12px;border:2px solid #FFAB40;">'+
+    '<div style="font-weight:800;margin-bottom:8px;color:#E65100;">ب) عدد فردي + عدد فردي = عدد ...</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" id="b_z" onclick="pickConc(\'b\',\'زوجي\')" style="background:#E3F2FD;color:#1565C0;border:2px solid #1565C0;">زوجي 🔵</button>'+
+    '<button class="btn" id="b_f" onclick="pickConc(\'b\',\'فردي\')" style="background:#FFF3E0;color:#E65100;border:2px solid #E65100;">فردي 🟠</button>'+
+    '</div></div>'+
+
+    '<div style="background:#F3E5F5;border-radius:12px;padding:12px;border:2px solid #CE93D8;">'+
+    '<div style="font-weight:800;margin-bottom:8px;color:#6A1B9A;">ج) عدد زوجي + عدد فردي = عدد ...</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" id="c_z" onclick="pickConc(\'c\',\'زوجي\')" style="background:#E3F2FD;color:#1565C0;border:2px solid #1565C0;">زوجي 🔵</button>'+
+    '<button class="btn" id="c_f" onclick="pickConc(\'c\',\'فردي\')" style="background:#FFF3E0;color:#E65100;border:2px solid #E65100;">فردي 🟠</button>'+
+    '</div></div>'+
+
+    '<div style="background:#E8F5E9;border-radius:12px;padding:12px;border:2px solid #A5D6A7;">'+
+    '<div style="font-weight:800;margin-bottom:8px;color:#2E7D32;">د) هل الصفر عدد زوجي؟</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" id="d_y" onclick="pickConc(\'d\',\'نعم\')" style="background:#E8F5E9;color:#2E7D32;border:2px solid #2E7D32;">نعم ✅</button>'+
+    '<button class="btn" id="d_n" onclick="pickConc(\'d\',\'لا\')" style="background:#FFEBEE;color:#C62828;border:2px solid #C62828;">لا</button>'+
+    '</div></div>'+
+
+    '</div>'+
+    '<div style="text-align:center;">'+
+    '<button class="btn btn-primary" onclick="checkS7()">✅ تحقق من الاستنتاجات</button>'+
+    '</div>'+
+    '<div class="fb" id="fb7"></div>'
+  );
+}
+
+function pickConc(q,val){
+  s7ans[q]=val;
+  var prefix=q+'_';
+  ['z','f','y','n'].forEach(function(s){var el=document.getElementById(prefix+s);if(el)el.style.opacity='.5';});
+  var selId=q+'_'+(val==='زوجي'?'z':val==='فردي'?'f':val==='نعم'?'y':'n');
+  var selEl=document.getElementById(selId);
+  if(selEl){selEl.style.opacity='1';selEl.style.transform='scale(1.08)';}
+}
+
+function checkS7(){
+  var fb=document.getElementById('fb7');
+  // correct: a=زوجي, b=زوجي, c=فردي, d=نعم
+  if(!s7ans.a||!s7ans.b||!s7ans.c||!s7ans.d){fb.className='fb err';fb.innerHTML='⚠️ أجب على جميع الاستنتاجات الأربعة!';return;}
+  var correct=s7ans.a==='زوجي'&&s7ans.b==='زوجي'&&s7ans.c==='فردي'&&s7ans.d==='نعم';
+  var msgs=[];
+  msgs.push(s7ans.a==='زوجي'?'✅ أ) زوجي + زوجي = زوجي':'❌ أ) زوجي + زوجي = زوجي (مثل ٢+٤=٦)');
+  msgs.push(s7ans.b==='زوجي'?'✅ ب) فردي + فردي = زوجي':'❌ ب) فردي + فردي = زوجي (مثل ٣+٥=٨)');
+  msgs.push(s7ans.c==='فردي'?'✅ ج) زوجي + فردي = فردي':'❌ ج) زوجي + فردي = فردي (مثل ٢+٣=٥)');
+  msgs.push(s7ans.d==='نعم'?'✅ د) نعم، الصفر عدد زوجي (٠÷٢=٠)':'❌ د) نعم! الصفر عدد زوجي لأنه يُقسَّم على ٢ بدون باقٍ');
+  if(correct){fb.className='fb ok';fb.innerHTML=msgs.join('<br>');addScore(20);snd('ok');setTimeout(function(){celeb('💡 استنتجت القواعد!','جميع الاستنتاجات صحيحة!');},1100);}
+  else{fb.className='fb err';fb.innerHTML=msgs.join('<br>');snd('err');}
+}
+
+// ══════════════════════════════════════════════
+// S8 — تمرين عام /١: تمثيل ٥ أعداد على العداد
+// ══════════════════════════════════════════════
+var abExs=[
+  {n:12538,beads:[8,3,5,2,1,0,0],lbls:['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],reading:'اثنا عشر ألفاً وخمسمئة وثمانية وثلاثون'},
+  {n:8541,beads:[1,4,5,8,0,0,0],lbls:['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],reading:'ثمانية آلاف وخمسمئة وواحد وأربعون'},
+  {n:92302,beads:[2,0,3,2,9,0,0],lbls:['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],reading:'اثنان وتسعون ألفاً وثلاثمئة واثنان'},
+  {n:513215,beads:[5,1,2,3,1,5,0],lbls:['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],reading:'خمسمئة وثلاثة عشر ألفاً ومئتان وخمسة عشر'},
+  {n:3415321,beads:[1,2,3,5,1,4,3],lbls:['الآحاد','العشرات','المئات','الألوف','عشرات الألوف','مئات الألوف','الملايين'],reading:'ثلاثة ملايين وأربعمئة وخمسة عشر ألفاً وثلاثمئة وواحد وعشرون'}
+];
+var s8cur=0;
+
+function s8(){s8cur=0;renderS8();}
+
+function renderS8(){
+  var ex=abExs[s8cur];
+  var colsHTML='';
+  for(var ci=6;ci>=0;ci--){
+    colsHTML+='<div class="ab-col"><div class="ab-lbl">'+ex.lbls[ci]+'</div><div class="ab-beads">';
+    for(var b=9;b>=1;b--){colsHTML+='<div class="ab-bead'+(b<=ex.beads[ci]?' lit':'')+'"></div>';}
+    colsHTML+='</div><div class="ab-rod"></div><div class="ab-base"></div><div class="ab-val">'+ar(ex.beads[ci])+'</div></div>';
+  }
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🧮 تمرين عام /١ — عداد '+ar(s8cur+1)+' من ٥</div>'+
+    '<div class="ctitle">ما العدد الممثَّل على العداد؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">عُدّ الخرزات الحمراء في كل عمود واختر القراءة الصحيحة! 🔢</div></div>'+
+    '<div class="abacus-wrap">'+colsHTML+'</div>'+
+    '<div style="text-align:center;margin:12px 0;"><div style="background:#E3F2FD;border-radius:12px;padding:10px;font-size:1.4rem;font-weight:900;color:#0D47A1;display:inline-block;min-width:160px;direction:ltr;">'+ar(ex.n)+'</div></div>'+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:12px;border:2px solid #F9A825;">'+
+    '<div style="font-weight:800;margin-bottom:8px;color:#4E342E;">اختر القراءة الصحيحة:</div>'+
+    '<button class="btn-choice" onclick="pick8(0)">'+ex.reading+'</button>'+
+    '<button class="btn-choice" onclick="pick8(1)">'+getWrongAb(s8cur,0)+'</button>'+
+    '<button class="btn-choice" onclick="pick8(2)">'+getWrongAb(s8cur,1)+'</button>'+
+    '</div>'+
+    '<div class="fb" id="fb8"></div>'+
+    '</div>';
+}
+
+function getWrongAb(i,w){
+  var wrongs=[
+    ['اثنا عشر ألفاً وخمسمئة وثلاثة وثمانون','اثنا عشر ألفاً وثلاثمئة وخمسة وثمانون'],
+    ['ثمانية آلاف وأربعمئة وخمسة وعشرون','خمسة وأربعون ألفاً وثمانمئة وواحد'],
+    ['تسعة وعشرون ألفاً وثلاثمئة واثنان','اثنان وتسعون ألفاً ومئتان وثلاثون'],
+    ['ثلاثون ألفاً وخمسمئة وثلاثة عشر ومئتان وخمسة عشر','خمسمئة وواحد وثلاثون ألفاً ومئتان وخمسة'],
+    ['أربعة ملايين وثلاثمئة وخمسة عشر ألفاً وأربعمئة وواحد وعشرون','ثلاثة ملايين وخمسمئة وأربعة عشر ألفاً وثلاثمئة واثنان وعشرون']
+  ];
+  return wrongs[i][w];
+}
+
+function pick8(idx){
+  var fb=document.getElementById('fb8');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===0){
+    btns[0].className='btn-choice correct';fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! '+ar(abExs[s8cur].n)+' = '+abExs[s8cur].reading;
+    addScore(8);snd('ok');s8cur++;
+    if(s8cur<abExs.length)setTimeout(renderS8,900);
+    else setTimeout(function(){celeb('🧮 أتممت العدادات الخمسة!','أحسنت في قراءة الأعداد من العداد!');},900);
+  }else{
+    btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ راجع عدد الخرزات في كل عمود!';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══════════════════════════════════════════════
+// S9 — تمرين عام /٢ + /٣ (مقارنة وترتيب)
+// ══════════════════════════════════════════════
+var s9ans={a:null,b:null,c:null};
+
+function s9(){
+  s9ans={a:null,b:null,c:null};
+  html(
+    '<div class="badge">⚖️ تمرين عام /٢ + /٣</div>'+
+    '<div class="ctitle">مقارنة الأعداد وترتيبها</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">قارن بين الأعداد وضع الرمز الصحيح، ثم رتّب الأعداد تصاعدياً! 🔢</div></div>'+
+
+    '<div style="background:#E3F2FD;border-radius:12px;padding:13px;margin-bottom:12px;border:2px solid #90CAF9;">'+
+    '<div style="font-weight:800;color:#0D47A1;margin-bottom:10px;">/٢ قارن بين الأعداد (اختر الرمز):</div>'+
+
+    '<div style="margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">أ) ٤٧٥ و ٤٨٣</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'a\',\'<\',this)">＜</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'a\',\'>\',this)">＞</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'a\',\'=\',this)">=</button>'+
+    '</div></div>'+
+
+    '<div style="margin-bottom:10px;"><div style="font-weight:700;margin-bottom:5px;">ب) ٥٦٧٥ و ٥٣٩٧</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'b\',\'<\',this)">＜</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'b\',\'>\',this)">＞</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'b\',\'=\',this)">=</button>'+
+    '</div></div>'+
+
+    '<div><div style="font-weight:700;margin-bottom:5px;">ج) ٨٣١٥٧٦٠ و ٨٩١٣٠٠٠</div>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'c\',\'<\',this)">＜</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'c\',\'>\',this)">＞</button>'+
+    '<button class="btn" style="font-size:1.2rem;background:#F5F5F5;border:2px solid #BDBDBD;" onclick="pickCmp(\'c\',\'=\',this)">=</button>'+
+    '</div></div>'+
+    '</div>'+
+
+    '<div style="background:#E8F5E9;border-radius:12px;padding:13px;margin-bottom:12px;border:2px solid #A5D6A7;">'+
+    '<div style="font-weight:800;color:#2E7D32;margin-bottom:8px;">/٣ رتّب الأعداد تصاعدياً (من الأصغر إلى الأكبر):</div>'+
+    '<div style="font-size:.88rem;direction:ltr;font-weight:700;margin-bottom:8px;color:#555;">٨٥٤٣٥٣٧ ، ٨٥٢٩٢١٤ ، ٨٥٤٣١٣٥ ، ٧٣٤٧٢١٧ ، ٧٣٤٥٢١٤</div>'+
+    '<button class="btn-choice" onclick="pickSort(0)">أ) ٧٣٤٥٢١٤ ، ٧٣٤٧٢١٧ ، ٨٥٢٩٢١٤ ، ٨٥٤٣١٣٥ ، ٨٥٤٣٥٣٧ ✅</button>'+
+    '<button class="btn-choice" onclick="pickSort(1)">ب) ٨٥٢٩٢١٤ ، ٧٣٤٥٢١٤ ، ٧٣٤٧٢١٧ ، ٨٥٤٣١٣٥ ، ٨٥٤٣٥٣٧</button>'+
+    '<button class="btn-choice" onclick="pickSort(2)">ج) ٧٣٤٧٢١٧ ، ٧٣٤٥٢١٤ ، ٨٥٢٩٢١٤ ، ٨٥٤٣٥٣٧ ، ٨٥٤٣١٣٥</button>'+
+    '</div>'+
+
+    '<div style="text-align:center;"><button class="btn btn-primary" onclick="checkS9()">✅ تحقق</button></div>'+
+    '<div class="fb" id="fb9"></div>'
+  );
+  window._sortAns=null;
+}
+
+function pickCmp(q,sym,el){
+  s9ans[q]=sym;
+  var parent=el.parentElement;
+  parent.querySelectorAll('.btn').forEach(function(b){b.style.background='#F5F5F5';b.style.borderColor='#BDBDBD';b.style.color='#333';});
+  el.style.background='#0D47A1';el.style.borderColor='#0D47A1';el.style.color='white';
+}
+function pickSort(idx){
+  window._sortAns=idx;
+  document.querySelectorAll('#gmain .btn-choice').forEach(function(b){b.style.opacity='.5';});
+  document.querySelectorAll('#gmain .btn-choice')[idx].style.opacity='1';
+  document.querySelectorAll('#gmain .btn-choice')[idx].style.fontWeight='900';
+}
+function checkS9(){
+  var fb=document.getElementById('fb9');
+  var msgs=[];
+  var cmpOk=true;
+  if(s9ans.a==='<')msgs.push('✅ أ) ٤٧٥ ＜ ٤٨٣');else{msgs.push('❌ أ) ٤٧٥ ＜ ٤٨٣ (العشرات: ٧<٨)');cmpOk=false;}
+  if(s9ans.b==='>')msgs.push('✅ ب) ٥٦٧٥ ＞ ٥٣٩٧');else{msgs.push('❌ ب) ٥٦٧٥ ＞ ٥٣٩٧ (المئات: ٦>٣)');cmpOk=false;}
+  if(s9ans.c==='<')msgs.push('✅ ج) ٨٣١٥٧٦٠ ＜ ٨٩١٣٠٠٠');else{msgs.push('❌ ج) ٨٣١٥٧٦٠ ＜ ٨٩١٣٠٠٠ (مئات الألوف: ٣<٩)');cmpOk=false;}
+  var sortOk=window._sortAns===0;
+  if(sortOk)msgs.push('✅ /٣ الترتيب التصاعدي صحيح!');else msgs.push('❌ /٣ الترتيب: ٧٣٤٥٢١٤ ، ٧٣٤٧٢١٧ ، ٨٥٢٩٢١٤ ، ٨٥٤٣١٣٥ ، ٨٥٤٣٥٣٧');
+  if(cmpOk&&sortOk){fb.className='fb ok';fb.innerHTML=msgs.join('<br>');addScore(20);snd('ok');setTimeout(function(){celeb('⚖️ ممتاز!','أتقنت المقارنة والترتيب!');},1100);}
+  else{fb.className='fb err';fb.innerHTML=msgs.join('<br>');snd('err');}
+}
+
+// ══════════════════════════════════════════════
+// S10 — تمرين عام /٤+٥+٦ (أولي + غير أولي + ١٤١)
+// ══════════════════════════════════════════════
+var ex10nums=[2,3,4,5,6,7,8,9,11,12,13,14,15,17];
+var ex10sel={};
+
+function s10(){
+  ex10sel={};
+  ex10nums.forEach(function(n){ex10sel[n]=null;});
+  renderS10();
+}
+function renderS10(){
+  var chipsHTML='<div class="num-pool">';
+  ex10nums.forEach(function(n){
+    var cls='neutral';
+    if(ex10sel[n]==='prime')cls='prime';
+    else if(ex10sel[n]==='composite')cls='composite';
+    chipsHTML+='<div class="num-chip '+cls+'" style="cursor:default;">'+
+      '<span>'+ar(n)+'</span>'+
+      '<div style="display:flex;gap:4px;margin-top:4px;">'+
+      '<button style="border:none;background:#27AE60;color:white;border-radius:5px;padding:2px 6px;font-size:.7rem;cursor:pointer;font-weight:700;" onclick="setEx10('+n+',\'prime\')">أولي</button>'+
+      '<button style="border:none;background:#E74C3C;color:white;border-radius:5px;padding:2px 6px;font-size:.7rem;cursor:pointer;font-weight:700;" onclick="setEx10('+n+',\'composite\')">غير</button>'+
+      '</div></div>';
+  });
+  chipsHTML+='</div>';
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🌟 تمرين عام /٤ + /٥ + /٦</div>'+
+    '<div class="ctitle">الأعداد الأولية وغير الأولية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">لكل عدد: هل هو أولي (قواسمه نفسه و١ فقط) أم غير أولي؟ 🔍</div></div>'+
+    '<div style="font-size:.82rem;font-weight:700;margin-bottom:8px;color:#555;">📌 انقر "أولي" أو "غير" لكل عدد:</div>'+
+    chipsHTML+
+
+    '<div style="background:#E8F5E9;border-radius:12px;padding:12px;margin:12px 0;border:2px solid #A5D6A7;">'+
+    '<div style="font-weight:800;color:#2E7D32;margin-bottom:7px;">/٥ اكتب ثلاثة أعداد أولية أكبر من ١٠ مباشرة:</div>'+
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;">'+
+    '<input class="add-input" id="p5a" type="number" placeholder="؟" style="width:70px;">'+
+    '<input class="add-input" id="p5b" type="number" placeholder="؟" style="width:70px;">'+
+    '<input class="add-input" id="p5c" type="number" placeholder="؟" style="width:70px;">'+
+    '</div></div>'+
+
+    '<div style="background:#FFF3E0;border-radius:12px;padding:12px;border:2px solid #FFAB40;">'+
+    '<div style="font-weight:800;color:#E65100;margin-bottom:8px;">/٦ هل العدد ١٤١ عدد أولي أم غير أولي؟</div>'+
+    '<button class="btn-choice" onclick="pick141(0)">أ) عدد أولي</button>'+
+    '<button class="btn-choice" onclick="pick141(1)">ب) عدد غير أولي ✅ (١٤١ = ٣ × ٤٧)</button>'+
+    '</div>'+
+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-primary" onclick="checkS10()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb10"></div>'+
+    '</div>';
+}
+function setEx10(n,type){ex10sel[n]=type;renderS10();}
+function pick141(idx){
+  window._141ans=idx;
+  document.querySelectorAll('#gmain .btn-choice').forEach(function(b){b.style.opacity='.5';});
+  document.querySelectorAll('#gmain .btn-choice')[idx].style.opacity='1';
+}
+function checkS10(){
+  var fb=document.getElementById('fb10');
+  var unanswered=ex10nums.filter(function(n){return ex10sel[n]===null;});
+  if(unanswered.length>0){fb.className='fb err';fb.innerHTML='⚠️ لم تُجب على '+ar(unanswered.length)+' أعداد: '+unanswered.map(ar).join('، ');return;}
+  var wrong4=[];
+  ex10nums.forEach(function(n){
+    var exp=isPrime(n)?'prime':'composite';
+    if(ex10sel[n]!==exp)wrong4.push(ar(n));
+  });
+  var p5a=parseInt(document.getElementById('p5a').value);
+  var p5b=parseInt(document.getElementById('p5b').value);
+  var p5c=parseInt(document.getElementById('p5c').value);
+  var valid5=[p5a,p5b,p5c].filter(function(v){return !isNaN(v)&&v>10&&isPrime(v);});
+  var ok141=window._141ans===1;
+  if(wrong4.length===0&&valid5.length===3&&ok141){
+    fb.className='fb ok';fb.innerHTML='✅ جميع الإجابات صحيحة! الأولية: '+ex10nums.filter(isPrime).map(ar).join('، ')+' — ١٤١ = ٣ × ٤٧ غير أولي!';
+    addScore(20);snd('ok');setTimeout(function(){celeb('🌟 رائع!','أتقنت الأعداد الأولية!');},1100);
+  }else{
+    var msg='';
+    if(wrong4.length>0)msg+='❌ خطأ في: '+wrong4.join('، ')+'. ';
+    if(valid5.length<3)msg+='⚠️ /٥ اكتب ٣ أعداد أولية >١٠ مثل ١١،١٣،١٧. ';
+    if(!ok141)msg+='❌ /٦ ١٤١ = ٣×٤٧ إذن غير أولي!';
+    fb.className='fb err';fb.innerHTML=msg;snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S11 — تمرين عام /٧: تمييز زوجي وفردي من ١٥ عدداً
+// ══════════════════════════════════════════════
+var ex11nums=[2,3,5,6,7,9,10,11,12,13,15,18,21,28,31,37];
+var ex11sel={};
+
+function s11(){
+  ex11sel={};
+  ex11nums.forEach(function(n){ex11sel[n]=null;});
+  renderS11();
+}
+function renderS11(){
+  var chipsHTML='<div class="num-pool">';
+  ex11nums.forEach(function(n){
+    var cls='neutral';
+    if(ex11sel[n]==='even')cls='even';
+    else if(ex11sel[n]==='odd')cls='odd';
+    chipsHTML+='<div class="num-chip '+cls+'" style="cursor:default;">'+
+      '<div>'+ar(n)+'</div>'+
+      '<div style="display:flex;gap:4px;margin-top:4px;">'+
+      '<button style="border:none;background:#1565C0;color:white;border-radius:5px;padding:2px 6px;font-size:.7rem;cursor:pointer;font-weight:700;" onclick="setEx11('+n+',\'even\')">زوجي</button>'+
+      '<button style="border:none;background:#E65100;color:white;border-radius:5px;padding:2px 6px;font-size:.7rem;cursor:pointer;font-weight:700;" onclick="setEx11('+n+',\'odd\')">فردي</button>'+
+      '</div></div>';
+  });
+  chipsHTML+='</div>';
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🏆 تمرين عام /٧</div>'+
+    '<div class="ctitle">ميّز: زوجي أم فردي؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">آخر تمرين قبل التحدي النهائي! لكل عدد اختر: زوجي أم فردي؟ 🎯</div></div>'+
+    '<div style="font-size:.82rem;font-weight:700;margin-bottom:8px;color:#555;">📌 انقر "زوجي" أو "فردي" لكل عدد:</div>'+
+    chipsHTML+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-primary" onclick="checkS11()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb11"></div>'+
+    '</div>';
+}
+function setEx11(n,type){ex11sel[n]=type;renderS11();}
+function checkS11(){
+  var fb=document.getElementById('fb11');
+  var unanswered=ex11nums.filter(function(n){return ex11sel[n]===null;});
+  if(unanswered.length>0){fb.className='fb err';fb.innerHTML='⚠️ لم تُجب على '+ar(unanswered.length)+' أعداد!';return;}
+  var wrong=[];
+  ex11nums.forEach(function(n){
+    var exp=isEven(n)?'even':'odd';
+    if(ex11sel[n]!==exp)wrong.push(ar(n));
+  });
+  if(wrong.length===0){
+    fb.className='fb ok';
+    fb.innerHTML='✅ جميع الإجابات صحيحة! الزوجية: '+ex11nums.filter(isEven).map(ar).join('، ')+' — الفردية: '+ex11nums.filter(function(n){return !isEven(n);}).map(ar).join('، ');
+    addScore(20);snd('ok');setTimeout(function(){celeb('🏆 ممتاز!','الآن جاهز للتحدي النهائي!');},1100);
+  }else{
+    fb.className='fb err';fb.innerHTML='❌ خطأ في: '+wrong.join('، ')+'. تذكّر: انظر لرقم الآحاد!';snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// FINAL — التحدي النهائي
+// ══════════════════════════════════════════════
+var finalA={};
+function sFinal(){
+  var Qs=[
+    {q:'العدد الزوجي هو العدد الذي:',opts:['لا يقبل القسمة على ٢','يمكن تقسيمه إلى عددين متساويين','ينتهي بالرقم ١','يقبل القسمة على ٣ فقط'],ans:1},
+    {q:'أيّ الأعداد التالية زوجي؟',opts:['٧','١١','٢٤','٣٧'],ans:2},
+    {q:'أيّ الأعداد التالية فردي؟',opts:['٣٢','٤٤','٢٠','٢٥'],ans:3},
+    {q:'العدد ٨٩٢٠ هو:',opts:['فردي','زوجي لأن الآحاد = ٠','فردي لأن الآحاد = ٢','لا زوجي ولا فردي'],ans:1},
+    {q:'زوجي + زوجي =',opts:['فردي دائماً','زوجي دائماً','أحياناً زوجي وأحياناً فردي','لا يمكن الحكم'],ans:1},
+    {q:'فردي + فردي =',opts:['فردي دائماً','زوجي دائماً','أحياناً زوجي وأحياناً فردي','لا يمكن الحكم'],ans:1},
+    {q:'زوجي + فردي =',opts:['فردي دائماً','زوجي دائماً','أحياناً زوجي وأحياناً فردي','صفر'],ans:0},
+    {q:'هل الصفر عدد زوجي؟',opts:['لا، الصفر ليس زوجياً ولا فردياً','نعم، الصفر عدد زوجي','لا، الصفر عدد فردي','لا يمكن تحديد نوعه'],ans:1},
+    {q:'العدد ١٤١ هو:',opts:['عدد أولي','عدد غير أولي (١٤١=٣×٤٧)','عدد زوجي','لا أولي ولا غير أولي'],ans:1},
+    {q:'أيّ الأعداد أولي؟',opts:['٩','١٥','١١','٢١'],ans:2},
+    {q:'رقم الآحاد في العدد ٣٨٥ هو:',opts:['٣','٨','٥','٣٨'],ans:2},
+    {q:'العدد ٣٨٥ هو:',opts:['زوجي','فردي لأن الآحاد = ٥','زوجي لأن الآحاد = ٨','لا يمكن التحديد'],ans:1},
+    {q:'أيّ القوائم تحتوي على أعداد زوجية فقط؟',opts:['٢، ٤، ٦، ٩','٢، ٤، ٦، ٨','١، ٣، ٥، ٧','٢، ٣، ٥، ٧'],ans:1},
+    {q:'٦ + ٧ =؟ هل الناتج زوجي أم فردي؟',opts:['زوجي','فردي لأن زوجي+فردي=فردي','فردي لأن ٦+٧=١٣','ب وج كلاهما صحيح'],ans:3},
+    {q:'أيّ الأعداد التالية كلها فردية؟',opts:['١، ٣، ٥، ٧، ٩','١، ٣، ٥، ٨، ٩','٢، ٣، ٥، ٧، ٩','١، ٣، ٤، ٧، ٩'],ans:0}
+  ];
+
+  var qHTML='';
+  Qs.forEach(function(q,i){
+    qHTML+='<div style="background:#F8FAFF;border-radius:12px;padding:12px;margin-bottom:10px;border:2px solid #BBDEFB;">';
+    qHTML+='<div style="font-weight:800;color:#0D47A1;margin-bottom:7px;">سؤال '+ar(i+1)+': '+q.q+'</div>';
+    q.opts.forEach(function(opt,oi){
+      qHTML+='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:white;border-radius:9px;padding:8px 11px;border:2px solid #E3F2FD;margin-bottom:5px;">';
+      qHTML+='<input type="radio" name="fqeo'+i+'" value="'+oi+'" style="width:16px;height:16px;accent-color:#1565C0;" onchange="finalA['+i+']=parseInt(this.value)">';
+      qHTML+='<span style="font-size:.88rem;">'+opt+'</span></label>';
+    });
+    qHTML+='</div>';
+  });
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🏆 التحدي النهائي</div>'+
+    '<div class="ctitle">مراجعة شاملة — '+ar(Qs.length)+' سؤالاً</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">أثبت أنك أتقنت الدرس! أجب على جميع الأسئلة 🏆</div></div>'+
+    qHTML+
+    '<div style="text-align:center;margin-top:16px;">'+
+    '<button class="btn btn-orange" onclick="submitFinal()" style="font-size:1rem;padding:12px 24px;">🏁 إنهاء التحدي</button>'+
+    '</div>'+
+    '<div class="fb" id="fbFinal" style="margin-top:12px;"></div>'+
+    '</div>';
+  window._finalQs=Qs;finalA={};
+}
+
+function submitFinal(){
+  var fb=document.getElementById('fbFinal');
+  var Qs=window._finalQs;
+  var correct=0,details='';
+  Qs.forEach(function(q,i){
+    var ok=finalA[i]===q.ans;
+    if(ok){correct++;details+='<div style="color:#1B5E20;font-size:.82rem;margin-bottom:2px;">✅ سؤال '+ar(i+1)+': صحيح</div>';}
+    else{details+='<div style="color:#C62828;font-size:.82rem;margin-bottom:2px;">❌ سؤال '+ar(i+1)+': الإجابة: '+q.opts[q.ans]+'</div>';}
+  });
+  var pct=Math.round(correct/Qs.length*100);
+  var stars=pct>=90?'⭐⭐⭐':pct>=70?'⭐⭐':'⭐';
+  addScore(correct*5);snd('ok');if(pct>=70)cfetti();
+  fb.className='fb ok';fb.style.display='block';
+  fb.innerHTML='<div style="font-size:1.4rem;text-align:center;margin-bottom:6px;">'+stars+'</div>'+
+    '<div style="font-size:1.1rem;font-weight:900;text-align:center;margin-bottom:10px;">أجبت بشكل صحيح على '+ar(correct)+' من '+ar(Qs.length)+' ('+ar(pct)+'%)</div>'+
+    '<div style="max-height:180px;overflow-y:auto;border-top:1px solid #ddd;padding-top:8px;">'+details+'</div>'+
+    '<div style="text-align:center;margin-top:12px;"><button class="btn btn-primary" onclick="stage=-1;score=0;updProg();renderIntro();">🔄 العب مجدداً</button></div>';
+  setTimeout(function(){fb.scrollIntoView({behavior:'smooth'});},300);
+}
+
+renderIntro();
+</script>
+</body>
+</html>
