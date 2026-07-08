@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ضرب ٣ أرقام × ٣ أرقام - الصف الرابع</title>
+<style>
+:root{
+  --primary:#7B1FA2;--primary-d:#4A148C;--primary-l:#F3E5F5;
+  --green:#2E7D32;--green-l:#E8F5E9;
+  --red:#C62828;--red-l:#FFEBEE;
+  --orange:#E65100;--orange-l:#FFF3E0;
+  --blue:#1565C0;--blue-l:#E3F2FD;
+  --gold:#F9A825;
+  --shadow:0 4px 20px rgba(123,31,162,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI','Arial',sans-serif;background:linear-gradient(135deg,#F3E5F5 0%,#E8F5E9 55%,#FFF3E0 100%);min-height:100vh;color:#1A237E;direction:rtl;}
+.hdr{background:linear-gradient(135deg,#4A148C,#7B1FA2);color:white;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(74,20,140,.35);position:sticky;top:0;z-index:100;}
+.hdr-title{font-size:1.1rem;font-weight:900;}
+.score-box{background:var(--gold);color:#4A148C;border-radius:20px;padding:5px 14px;font-weight:900;font-size:1rem;display:flex;align-items:center;gap:5px;transition:transform .2s;}
+.prog-wrap{padding:9px 17px 0;}
+.prog-label{font-size:.8rem;color:#555;font-weight:700;margin-bottom:3px;}
+.prog-bar{background:#E1BEE7;border-radius:10px;height:12px;overflow:hidden;}
+.prog-fill{background:linear-gradient(90deg,#AB47BC,#4A148C);height:100%;border-radius:10px;transition:width .5s;}
+.gmain{max-width:720px;margin:0 auto;padding:13px;}
+.card{background:white;border-radius:22px;padding:20px;box-shadow:var(--shadow);margin-bottom:13px;border:3px solid #E1BEE7;animation:slideIn .4s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.badge{display:inline-block;background:linear-gradient(135deg,#4A148C,#7B1FA2);color:white;border-radius:20px;padding:4px 13px;font-size:.77rem;font-weight:700;margin-bottom:8px;}
+.ctitle{font-size:1.2rem;font-weight:900;color:#4A148C;margin-bottom:8px;}
+.mascot-row{display:flex;align-items:flex-start;gap:10px;background:#FFF8E1;border-radius:14px;padding:10px 14px;margin-bottom:13px;border:2px solid var(--gold);}
+.mascot-svg{flex-shrink:0;width:52px;}
+.mascot-txt{font-size:.9rem;line-height:1.7;font-weight:600;color:#4E342E;}
+.btn{border:none;border-radius:12px;font-family:inherit;font-weight:800;font-size:.93rem;cursor:pointer;padding:10px 18px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+.btn:active{transform:scale(.95);}
+.btn-primary{background:linear-gradient(135deg,#4A148C,#7B1FA2);color:white;box-shadow:0 4px 12px rgba(74,20,140,.28);}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-green{background:linear-gradient(135deg,#2E7D32,#1B5E20);color:white;}
+.btn-orange{background:linear-gradient(135deg,#E65100,#BF360C);color:white;}
+.btn-blue{background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;}
+.btn-choice{display:block;width:100%;background:var(--primary-l);color:#4A148C;border:2.5px solid #CE93D8;border-radius:12px;padding:10px 14px;font-size:.9rem;font-weight:700;cursor:pointer;text-align:right;margin-bottom:8px;transition:all .2s;}
+.btn-choice:hover{background:#E1BEE7;}
+.btn-choice.correct{background:var(--green-l);border-color:var(--green);color:var(--green);}
+.btn-choice.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.fb{border-radius:14px;padding:12px 16px;font-size:.93rem;font-weight:700;text-align:center;margin-top:12px;display:none;animation:pop .4s ease;}
+@keyframes pop{0%{transform:scale(.7);opacity:0;}60%{transform:scale(1.1);}100%{transform:scale(1);opacity:1;}}
+.fb.ok{background:var(--green-l);border:2px solid var(--green);color:var(--green);display:block;}
+.fb.err{background:var(--red-l);border:2px solid var(--red);color:var(--red);display:block;}
+
+/* MULTIPLICATION DISPLAY */
+.mult-box{background:#F8F4FF;border-radius:16px;padding:16px;margin:12px 0;border:2px solid #CE93D8;font-family:'Courier New',monospace;}
+.mult-numbers{display:flex;flex-direction:column;align-items:flex-end;gap:4px;direction:ltr;}
+.mult-num{font-size:1.6rem;font-weight:900;color:#4A148C;letter-spacing:3px;}
+.mult-separator{border:none;border-top:3px solid #4A148C;width:100%;margin:4px 0;}
+.mult-partial{font-size:1.3rem;font-weight:900;letter-spacing:2px;}
+.mult-result{font-size:1.6rem;font-weight:900;color:#2E7D32;letter-spacing:3px;}
+.p1{color:#E65100;}
+.p2{color:#1565C0;}
+.p3{color:#7B1FA2;}
+
+/* STEP BOXES */
+.step-box{border-radius:14px;padding:12px 15px;margin:8px 0;cursor:pointer;border:2.5px solid;transition:all .2s;}
+.step-box:hover{transform:translateX(-4px);}
+.step-1{background:#FFF3E0;border-color:#E65100;color:#4E342E;}
+.step-2{background:#E3F2FD;border-color:#1565C0;color:#0D47A1;}
+.step-3{background:var(--primary-l);border-color:#7B1FA2;color:#4A148C;}
+.step-4{background:var(--green-l);border-color:#2E7D32;color:#1B5E20;}
+.step-detail{display:none;background:rgba(255,255,255,.8);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.88rem;font-weight:700;direction:ltr;text-align:left;}
+
+/* INPUT */
+.num-input{border:3px solid #7B1FA2;border-radius:11px;padding:8px 12px;font-size:1.1rem;font-family:inherit;font-weight:800;color:#4A148C;text-align:center;width:160px;outline:none;transition:border-color .2s;}
+.num-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(249,168,37,.2);}
+.num-input.ok{border-color:var(--green);background:var(--green-l);color:var(--green);}
+.num-input.err{border-color:var(--red);background:var(--red-l);color:var(--red);}
+
+/* DRILL GRID */
+.drill-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+.drill-item{background:#F8F4FF;border-radius:14px;padding:14px;border:2px solid #CE93D8;}
+.drill-item-title{font-size:.85rem;font-weight:800;color:#4A148C;margin-bottom:8px;text-align:center;}
+.drill-nums{font-size:1.2rem;font-weight:900;color:#4A148C;text-align:center;direction:ltr;margin-bottom:8px;}
+.drill-input{border:2.5px solid #7B1FA2;border-radius:9px;padding:6px 8px;font-size:1rem;font-family:inherit;font-weight:800;color:#4A148C;text-align:center;width:100%;outline:none;}
+.drill-input.ok{border-color:var(--green);background:var(--green-l);color:var(--green);}
+.drill-input.err{border-color:var(--red);background:var(--red-l);color:var(--red);}
+
+/* PROBLEM */
+.problem-box{background:linear-gradient(135deg,#F3E5F5,#E8EAF6);border-radius:16px;padding:16px;margin:12px 0;border:2px solid #7B1FA2;}
+.problem-title{font-weight:900;font-size:1rem;color:#4A148C;margin-bottom:8px;}
+.problem-text{font-size:.92rem;line-height:1.8;margin-bottom:12px;font-weight:600;}
+
+/* CELEBRATION */
+.celeb{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999;}
+.celeb.show{display:flex;}
+.celeb-box{background:white;border-radius:24px;padding:28px;text-align:center;max-width:350px;width:90%;animation:zoomIn .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes zoomIn{from{transform:scale(.3);opacity:0;}to{transform:scale(1);opacity:1;}}
+.celeb-stars{font-size:2.2rem;margin:7px 0;}
+.celeb-title{font-size:1.45rem;font-weight:900;color:#4A148C;margin-bottom:6px;}
+.celeb-msg{font-size:.92rem;color:#555;margin-bottom:16px;line-height:1.6;}
+.cf{position:fixed;width:11px;height:11px;opacity:0;animation:fall 3s ease-in forwards;border-radius:2px;z-index:1000;}
+@keyframes fall{0%{opacity:1;transform:translateY(-80px)rotateZ(0);}100%{opacity:0;transform:translateY(100vh)rotateZ(720deg);}}
+
+.intro{text-align:center;padding:16px 8px;}
+.intro-title{font-size:1.8rem;font-weight:900;color:#4A148C;margin-bottom:8px;}
+.intro-sub{font-size:.93rem;color:#555;margin-bottom:16px;line-height:1.8;}
+.intro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:16px;}
+.intro-item{background:linear-gradient(135deg,#F3E5F5,#E1BEE7);border:2px solid #7B1FA2;border-radius:12px;padding:10px 6px;font-size:.8rem;font-weight:700;color:#4A148C;text-align:center;}
+.intro-icon{font-size:1.4rem;margin-bottom:3px;}
+
+@media(max-width:480px){
+  .drill-grid{grid-template-columns:1fr;}
+  .ctitle{font-size:1rem;}
+  .mult-num{font-size:1.3rem;}
+}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-title">✖️ ضرب ٣ أرقام × ٣ أرقام</div>
+  <div class="score-box" id="scoreBox">⭐ <span id="scoreDisp">٠</span></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label">التقدم: <span id="progLbl">لم تبدأ بعد</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+<div class="gmain" id="gmain"></div>
+<div class="celeb" id="celebWrap">
+  <div class="celeb-box">
+    <div class="celeb-stars">⭐⭐⭐</div>
+    <div class="celeb-title" id="cTitle">رائع!</div>
+    <div class="celeb-msg" id="cMsg"></div>
+    <button class="btn btn-green" onclick="nextStage()">التالي ←</button>
+  </div>
+</div>
+<script>
+var stage=-1,score=0,TOTAL=11;
+function ar(n){return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});}
+function updProg(){
+  var pct=stage<0?0:Math.round(stage/TOTAL*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=stage<0?'لم تبدأ بعد':'المرحلة '+ar(stage)+' من '+ar(TOTAL);
+  document.getElementById('scoreDisp').textContent=ar(score);
+}
+function addScore(n){score+=n;document.getElementById('scoreDisp').textContent=ar(score);var b=document.getElementById('scoreBox');b.style.transform='scale(1.25)';setTimeout(function(){b.style.transform='scale(1)';},280);}
+function snd(t){
+  try{var ctx=new(window.AudioContext||window.webkitAudioContext)();var o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);
+  if(t==='ok'){o.frequency.setValueAtTime(523,ctx.currentTime);o.frequency.setValueAtTime(659,ctx.currentTime+.12);o.frequency.setValueAtTime(784,ctx.currentTime+.24);g.gain.setValueAtTime(.28,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.55);o.start();o.stop(ctx.currentTime+.55);}
+  else{o.type='sawtooth';o.frequency.setValueAtTime(180,ctx.currentTime);g.gain.setValueAtTime(.18,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.28);o.start();o.stop(ctx.currentTime+.28);}
+  }catch(e){}
+}
+function cfetti(){
+  var cols=['#7B1FA2','#2E7D32','#E65100','#1565C0','#F9A825','#C62828'];
+  for(var i=0;i<50;i++){var el=document.createElement('div');el.className='cf';el.style.cssText='left:'+(Math.random()*100)+'vw;top:0;background:'+cols[Math.floor(Math.random()*cols.length)]+';animation-delay:'+(Math.random()*.8)+'s;animation-duration:'+(2+Math.random()*2)+'s;';document.body.appendChild(el);setTimeout(function(){el.remove();},4500);}
+}
+function celeb(title,msg){document.getElementById('cTitle').textContent=title;document.getElementById('cMsg').textContent=msg;document.getElementById('celebWrap').classList.add('show');cfetti();snd('ok');}
+function nextStage(){document.getElementById('celebWrap').classList.remove('show');stage++;updProg();render();}
+function render(){document.getElementById('gmain').innerHTML='';var fns=[s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,sFinal];if(stage<0){renderIntro();return;}if(stage<fns.length)fns[stage]();else sFinal();}
+function html(h){document.getElementById('gmain').innerHTML='<div class="card">'+h+'</div>';}
+function ms(){return '<svg class="mascot-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="22" r="18" fill="#CE93D8"/><circle cx="22" cy="18" r="3" fill="#1A237E"/><circle cx="38" cy="18" r="3" fill="#1A237E"/><circle cx="23" cy="17" r="1.2" fill="white"/><circle cx="39" cy="17" r="1.2" fill="white"/><path d="M22 28 Q30 35 38 28" stroke="#1A237E" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="18" cy="22" rx="4" ry="3" fill="#AB47BC" opacity=".7"/><ellipse cx="42" cy="22" rx="4" ry="3" fill="#AB47BC" opacity=".7"/><path d="M20 40 Q30 44 40 40 L38 55 Q30 58 22 55 Z" fill="#4A148C"/><circle cx="30" cy="6" r="4" fill="#F9A825"/></svg>';}
+
+// ── INTRO ─────────────────────────────────────
+function renderIntro(){
+  stage=-1;
+  html('<div class="intro"><div style="font-size:2.6rem;margin-bottom:8px;">✖️</div><div class="intro-title">ضرب ثلاثة أرقام في ثلاثة أرقام</div><div class="intro-sub">مرحباً! في هذا الدرس ستتعلم كيف تضرب عدداً من ثلاثة أرقام في عدد من ثلاثة أرقام! 🚀</div><div class="intro-grid"><div class="intro-item"><div class="intro-icon">🔍</div>نشاط: فكرة الضرب</div><div class="intro-item"><div class="intro-icon">📊</div>طريقة التوزيع</div><div class="intro-item"><div class="intro-icon">🎯</div>مثال ١: ٤٢١×٢٤٣</div><div class="intro-item"><div class="intro-icon">✏️</div>الطريقة العمودية</div><div class="intro-item"><div class="intro-icon">📖</div>مثال ٢: ٧٦٥×١٣٨</div><div class="intro-item"><div class="intro-icon">🎮</div>تمرين أ+ب</div><div class="intro-item"><div class="intro-icon">🎲</div>تمرين ج+د</div><div class="intro-item"><div class="intro-icon">⭐</div>تمرين هـ+و</div><div class="intro-item"><div class="intro-icon">💡</div>مسألة السلك</div><div class="intro-item"><div class="intro-icon">📦</div>مسألة الكرتونة</div><div class="intro-item"><div class="intro-icon">🏆</div>التحدي النهائي</div></div><button class="btn btn-primary" onclick="stage=0;updProg();render();">🚀 ابدأ!</button></div>');
+}
+
+// ══════════════════════════════════════════════
+// S0 — نشاط استكشافي: فكرة الضرب بالتوزيع
+// ══════════════════════════════════════════════
+function s0(){
+  html(
+    '<div class="badge">🔍 نشاط استكشافي</div>'+
+    '<div class="ctitle">كيف نضرب عدداً كبيراً في عدد كبير؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">لضرب ٢١ × ١٢ مثلاً:<br>نُفكّك الأول: ٢١ = ٢٠ + ١<br>ثم نضرب كل جزء في ١٢<br>هل يمكن تطبيق هذا على ٣ أرقام؟ 🤔</div></div>'+
+
+    '<div style="background:#F3E5F5;border-radius:14px;padding:14px;margin:12px 0;border:2px solid #CE93D8;">'+
+    '<div style="font-weight:800;color:#4A148C;margin-bottom:10px;">فكرة التوزيع — انقر لتكتشف!</div>'+
+    '<div onclick="showExpand(0)" class="step-box step-1">📌 مثال: ٤٢١ = ؟ — انقر!</div>'+
+    '<div id="exp0" style="display:none;background:#FFF3E0;border-radius:10px;padding:10px;margin-top:6px;font-size:1rem;font-weight:700;direction:ltr;text-align:center;color:#E65100;">٤٢١ = ٤٠٠ + ٢٠ + ١</div>'+
+    '<div onclick="showExpand(1)" class="step-box step-2" style="margin-top:8px;">📌 إذن ٤٢١ × ٣ = ؟ — انقر!</div>'+
+    '<div id="exp1" style="display:none;background:#E3F2FD;border-radius:10px;padding:10px;margin-top:6px;font-size:1rem;font-weight:700;direction:ltr;text-align:center;color:#1565C0;">(٤٠٠×٣) + (٢٠×٣) + (١×٣) = ١٢٠٠ + ٦٠ + ٣ = ١٢٦٣</div>'+
+    '</div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 ٢٤٣ = ؟ + ؟ + ؟</div>'+
+    '<button class="btn-choice" onclick="pick0(0)">أ) ٢٠٠ + ٤ + ٣</button>'+
+    '<button class="btn-choice" onclick="pick0(1)">ب) ٢٠٠ + ٤٠ + ٣ ✅</button>'+
+    '<button class="btn-choice" onclick="pick0(2)">ج) ٢٠٠ + ٤٠ + ٣٠</button>'+
+    '</div>'+
+    '<div class="fb" id="fb0"></div>'
+  );
+}
+function showExpand(i){document.getElementById('exp'+i).style.display='block';}
+function pick0(idx){
+  var fb=document.getElementById('fb0');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! ٢٤٣ = ٢٠٠ + ٤٠ + ٣. هذا التفكيك يساعدنا في الضرب خطوة بخطوة!';addScore(10);snd('ok');setTimeout(function(){celeb('🔍 فهمت فكرة التوزيع!','الآن نُطبّق على مثال كامل!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ ٢٤٣: المئات=٢، العشرات=٤، الآحاد=٣ → ٢٠٠+٤٠+٣';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S1 — طريقة التوزيع الكاملة لـ ٤٢١×٢٤٣
+// ══════════════════════════════════════════════
+function s1(){
+  html(
+    '<div class="badge">📊 طريقة التوزيع</div>'+
+    '<div class="ctitle">٤٢١ × ٢٤٣ — خطوة بخطوة</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">نُفكّك ٢٤٣ إلى ٢٠٠+٤٠+٣<br>ثم نضرب ٤٢١ في كل جزء على حدة! 📊</div></div>'+
+
+    '<div style="background:#F8F4FF;border-radius:14px;padding:14px;margin:12px 0;border:2px solid #CE93D8;">'+
+    '<div style="font-weight:800;color:#4A148C;margin-bottom:10px;text-align:center;">٤٢١ × ٢٤٣</div>'+
+    '<div onclick="revStep(\'s1a\')" class="step-box step-3">📌 الخطوة ١: ٤٢١ × ٣ — انقر!</div>'+
+    '<div id="s1a" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;direction:ltr;text-align:left;font-size:.9rem;font-weight:700;">(400×3)+(20×3)+(1×3) = 1200+60+3 = <span style="color:#7B1FA2;font-size:1.1rem;">1263</span></div>'+
+    '<div onclick="revStep(\'s1b\')" class="step-box step-2" style="margin-top:8px;">📌 الخطوة ٢: ٤٢١ × ٤٠ — انقر!</div>'+
+    '<div id="s1b" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;direction:ltr;text-align:left;font-size:.9rem;font-weight:700;">(400×40)+(20×40)+(1×40) = 16000+800+40 = <span style="color:#1565C0;font-size:1.1rem;">16840</span></div>'+
+    '<div onclick="revStep(\'s1c\')" class="step-box step-1" style="margin-top:8px;">📌 الخطوة ٣: ٤٢١ × ٢٠٠ — انقر!</div>'+
+    '<div id="s1c" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;direction:ltr;text-align:left;font-size:.9rem;font-weight:700;">(400×200)+(20×200)+(1×200) = 80000+4000+200 = <span style="color:#E65100;font-size:1.1rem;">84200</span></div>'+
+    '<div onclick="revStep(\'s1d\')" class="step-box step-4" style="margin-top:8px;">📌 الخطوة ٤: الجمع — انقر!</div>'+
+    '<div id="s1d" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;direction:ltr;text-align:left;font-size:.9rem;font-weight:700;">1263 + 16840 + 84200 = <span style="color:#2E7D32;font-size:1.2rem;font-weight:900;">102303</span></div>'+
+    '</div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 ٤٢١ × ٤٠ = ؟</div>'+
+    '<button class="btn-choice" onclick="pick1(0)">أ) ١٦٠٠</button>'+
+    '<button class="btn-choice" onclick="pick1(1)">ب) ١٦٨٤٠ ✅</button>'+
+    '<button class="btn-choice" onclick="pick1(2)">ج) ١٦٤٠٠</button>'+
+    '</div>'+
+    '<div class="fb" id="fb1"></div>'
+  );
+}
+function revStep(id){document.getElementById(id).style.display='block';}
+function pick1(idx){
+  var fb=document.getElementById('fb1');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! ٤٢١ × ٤٠ = ١٦٨٤٠. تذكّر: ٤٢١×٤=١٦٨٤ ثم أضف صفراً!';addScore(10);snd('ok');setTimeout(function(){celeb('📊 فهمت التوزيع!','الآن نتعلم الطريقة العمودية!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ ٤٢١ × ٤٠: اضرب ٤٢١ × ٤ = ١٦٨٤ ثم أضف صفراً = ١٦٨٤٠';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S2 — مثال (١) بالطريقة العمودية: ٤٢١×٢٤٣
+// ══════════════════════════════════════════════
+function s2(){
+  html(
+    '<div class="badge">🎯 مثال (١) — الطريقة العمودية</div>'+
+    '<div class="ctitle">٤٢١ × ٢٤٣ بالطريقة العمودية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">الطريقة العمودية أسرع وأسهل!<br>نبدأ من اليمين: آحاد ثم عشرات ثم مئات 📐</div></div>'+
+
+    '<div class="mult-box">'+
+    '<div class="mult-numbers">'+
+    '<div class="mult-num">٤٢١</div>'+
+    '<div style="direction:ltr;font-size:1.3rem;font-weight:900;color:#4A148C;">× ٢٤٣</div>'+
+    '<hr class="mult-separator">'+
+    '<div class="mult-partial p1" id="mp1" style="opacity:.3;">٨٤٢٠٠</div>'+
+    '<div class="mult-partial p2" id="mp2" style="opacity:.3;">١٦٨٤٠</div>'+
+    '<div class="mult-partial p3" id="mp3" style="opacity:.3;">١٢٦٣</div>'+
+    '<hr class="mult-separator">'+
+    '<div class="mult-result" id="mres" style="opacity:.3;">١٠٢٣٠٣</div>'+
+    '</div></div>'+
+
+    '<div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">'+
+    '<button class="btn btn-orange" onclick="showPart(1)">① نضع صفرين ثم نضرب ٢×٤٢١</button>'+
+    '<button class="btn btn-blue" onclick="showPart(2)">② نضع صفراً ثم نضرب ٤×٤٢١</button>'+
+    '<button class="btn btn-primary" onclick="showPart(3)">③ نضرب ٣×٤٢١</button>'+
+    '<button class="btn btn-green" onclick="showPart(4)">④ نجمع النواتج</button>'+
+    '</div>'+
+    '<div id="stepMsg" style="background:#F3E5F5;border-radius:12px;padding:10px;font-weight:700;font-size:.9rem;min-height:40px;text-align:center;color:#4A148C;"></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 ما هو ناتج ٤٢١ × ٢٤٣؟</div>'+
+    '<button class="btn-choice" onclick="pick2(0)">أ) ١٠٢٣٠٣ ✅</button>'+
+    '<button class="btn-choice" onclick="pick2(1)">ب) ١٠٢٠٣٣</button>'+
+    '<button class="btn-choice" onclick="pick2(2)">ج) ١٠٣٢٠٣</button>'+
+    '</div>'+
+    '<div class="fb" id="fb2"></div>'
+  );
+}
+function showPart(n){
+  var msgs=['','① ٢×٤٢١=٨٤٢ ثم نضع ٠٠ → ٨٤٢٠٠ 🟠','② ٤×٤٢١=١٦٨٤ ثم نضع ٠ → ١٦٨٤٠ 🔵','③ ٣×٤٢١=١٢٦٣ (بدون أصفار) 🟣','④ ٨٤٢٠٠+١٦٨٤٠+١٢٦٣ = ١٠٢٣٠٣ 🟢'];
+  document.getElementById('stepMsg').textContent=msgs[n];
+  if(n>=1)document.getElementById('mp1').style.opacity='1';
+  if(n>=2)document.getElementById('mp2').style.opacity='1';
+  if(n>=3)document.getElementById('mp3').style.opacity='1';
+  if(n>=4)document.getElementById('mres').style.opacity='1';
+}
+function pick2(idx){
+  var fb=document.getElementById('fb2');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===0){btns[0].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ ممتاز! ٤٢١ × ٢٤٣ = ١٠٢٣٠٣';addScore(10);snd('ok');setTimeout(function(){celeb('🎯 أحسنت!','تعلّمت الطريقة العمودية!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ راجع الخطوات: ٨٤٢٠٠+١٦٨٤٠+١٢٦٣=١٠٢٣٠٣';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S3 — الطريقة العمودية: تدريب على الخطوات
+// ══════════════════════════════════════════════
+function s3(){
+  html(
+    '<div class="badge">✏️ تدريب على الخطوات</div>'+
+    '<div class="ctitle">أكمل النواتج الجزئية</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">أكمل كل خطوة في ضرب ٤٢١ × ٢٤٣<br>تذكّر القاعدة: آحاد ← عشرات ← مئات 🔢</div></div>'+
+
+    '<div class="mult-box">'+
+    '<div class="mult-numbers">'+
+    '<div class="mult-num">٤٢١</div>'+
+    '<div style="direction:ltr;font-size:1.2rem;font-weight:900;color:#4A148C;">× ٢٤٣</div>'+
+    '<hr class="mult-separator">'+
+    '<div style="display:flex;align-items:center;gap:8px;direction:ltr;margin:4px 0;">'+
+    '<span style="font-size:.8rem;color:#E65100;font-weight:700;">٢×٤٢١ مع ٠٠:</span>'+
+    '<input id="pi1" type="number" placeholder="؟" class="num-input" style="width:110px;" oninput="chkPI(1,this,84200)">'+
+    '</div>'+
+    '<div style="display:flex;align-items:center;gap:8px;direction:ltr;margin:4px 0;">'+
+    '<span style="font-size:.8rem;color:#1565C0;font-weight:700;">٤×٤٢١ مع ٠:</span>'+
+    '<input id="pi2" type="number" placeholder="؟" class="num-input" style="width:110px;" oninput="chkPI(2,this,16840)">'+
+    '</div>'+
+    '<div style="display:flex;align-items:center;gap:8px;direction:ltr;margin:4px 0;">'+
+    '<span style="font-size:.8rem;color:#7B1FA2;font-weight:700;">٣×٤٢١:</span>'+
+    '<input id="pi3" type="number" placeholder="؟" class="num-input" style="width:110px;" oninput="chkPI(3,this,1263)">'+
+    '</div>'+
+    '</div></div>'+
+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-primary" onclick="checkS3()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb3"></div>'
+  );
+}
+function chkPI(n,el,correct){
+  var v=parseInt(el.value);
+  if(isNaN(v))return;
+  el.className='num-input '+(v===correct?'ok':'err');
+}
+function checkS3(){
+  var fb=document.getElementById('fb3');
+  var vals=[parseInt(document.getElementById('pi1').value),parseInt(document.getElementById('pi2').value),parseInt(document.getElementById('pi3').value)];
+  var expected=[84200,16840,1263];
+  if(vals.some(isNaN)){fb.className='fb err';fb.innerHTML='⚠️ أكمل جميع الخانات!';return;}
+  var wrong=expected.filter(function(v,i){return vals[i]!==v;});
+  if(wrong.length===0){fb.className='fb ok';fb.innerHTML='✅ جميع النواتج الجزئية صحيحة! المجموع: ٨٤٢٠٠+١٦٨٤٠+١٢٦٣ = ١٠٢٣٠٣';addScore(15);snd('ok');setTimeout(function(){celeb('✏️ ممتاز!','أتقنت حساب النواتج الجزئية!');},1100);}
+  else{fb.className='fb err';fb.innerHTML='❌ راجع: ٢×٤٢١=٨٤٢ ثم أضف ٠٠ | ٤×٤٢١=١٦٨٤ ثم أضف ٠ | ٣×٤٢١=١٢٦٣';snd('err');}
+}
+
+// ══════════════════════════════════════════════
+// S4 — مثال (٢): ٧٦٥ × ١٣٨
+// ══════════════════════════════════════════════
+function s4(){
+  html(
+    '<div class="badge">📖 مثال (٢)</div>'+
+    '<div class="ctitle">اضرب ٧٦٥ × ١٣٨</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">الآن نُطبّق الطريقة على مثال جديد!<br>انقر على كل خطوة لتكتشف الناتج 🔍</div></div>'+
+
+    '<div class="mult-box">'+
+    '<div class="mult-numbers">'+
+    '<div class="mult-num">٧٦٥</div>'+
+    '<div style="direction:ltr;font-size:1.2rem;font-weight:900;color:#4A148C;">× ١٣٨</div>'+
+    '<hr class="mult-separator">'+
+    '<div onclick="revStep(\'ex2a\')" style="cursor:pointer;color:#E65100;font-size:1.1rem;font-weight:900;direction:ltr;margin:3px 0;" id="ex2a_lbl">① بوضع صفرين وضرب ١×٧٦٥ = ؟ 👆</div>'+
+    '<div id="ex2a" style="display:none;color:#E65100;font-size:1.3rem;font-weight:900;direction:ltr;">٧٦٥٠٠</div>'+
+    '<div onclick="revStep(\'ex2b\')" style="cursor:pointer;color:#1565C0;font-size:1.1rem;font-weight:900;direction:ltr;margin:3px 0;" id="ex2b_lbl">② بوضع صفر وضرب ٣×٧٦٥ = ؟ 👆</div>'+
+    '<div id="ex2b" style="display:none;color:#1565C0;font-size:1.3rem;font-weight:900;direction:ltr;">٢٢٩٥٠</div>'+
+    '<div onclick="revStep(\'ex2c\')" style="cursor:pointer;color:#7B1FA2;font-size:1.1rem;font-weight:900;direction:ltr;margin:3px 0;">③ ضرب ٨×٧٦٥ = ؟ 👆</div>'+
+    '<div id="ex2c" style="display:none;color:#7B1FA2;font-size:1.3rem;font-weight:900;direction:ltr;">٦١٢٠</div>'+
+    '<hr class="mult-separator">'+
+    '<div onclick="revStep(\'ex2d\')" style="cursor:pointer;color:#2E7D32;font-size:1.1rem;font-weight:900;direction:ltr;">④ بالجمع = ؟ 👆</div>'+
+    '<div id="ex2d" style="display:none;color:#2E7D32;font-size:1.5rem;font-weight:900;direction:ltr;">١٠٥٥٧٠</div>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 ٣×٧٦٥ مع وضع صفر = ؟</div>'+
+    '<button class="btn-choice" onclick="pick4(0)">أ) ٢٢٩٥ </button>'+
+    '<button class="btn-choice" onclick="pick4(1)">ب) ٢٢٩٥٠ ✅</button>'+
+    '<button class="btn-choice" onclick="pick4(2)">ج) ٢٢٩٠٥</button>'+
+    '</div>'+
+    '<div class="fb" id="fb4"></div>'
+  );
+}
+function pick4(idx){
+  var fb=document.getElementById('fb4');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! ٣×٧٦٥=٢٢٩٥ ثم نضع صفراً للعشرات = ٢٢٩٥٠';addScore(10);snd('ok');setTimeout(function(){celeb('📖 أحسنت!','الآن للتمارين!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ ٣×٧٦٥=٢٢٩٥، ونضع صفراً (للعشرات) = ٢٢٩٥٠';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S5 — تمرين /١ أ وب: ٤٣١×٤٥٢ و ٣٤٧×٢٢٢
+// ══════════════════════════════════════════════
+function s5(){
+  renderDrill([
+    {a:431,b:452,result:194812},
+    {a:347,b:222,result:77034}
+  ],'🎮 تمرين /١ — أ وب',5);
+}
+
+// ══════════════════════════════════════════════
+// S6 — تمرين /١ ج ود: ٥١١×٢٠١ و ١٠٣×٩١٧
+// ══════════════════════════════════════════════
+function s6(){
+  renderDrill([
+    {a:511,b:201,result:102711},
+    {a:103,b:917,result:94451}
+  ],'🎲 تمرين /١ — ج ود',6);
+}
+
+// ══════════════════════════════════════════════
+// S7 — تمرين /١ هـ وو: ٧٢٣×٨٩٧ و ٦٤٠×٨٣٥
+// ══════════════════════════════════════════════
+function s7(){
+  renderDrill([
+    {a:723,b:897,result:648531},
+    {a:640,b:835,result:534400}
+  ],'⭐ تمرين /١ — هـ وو',7);
+}
+
+function renderDrill(items,title,stg){
+  var idx=0;
+  window._drillItems=items;
+  window._drillIdx=0;
+  window._drillStg=stg;
+  showDrillItem(0);
+}
+
+function showDrillItem(idx){
+  var items=window._drillItems;
+  if(idx>=items.length){
+    setTimeout(function(){celeb('🎉 أتممت التمرين!','جميع العمليات صحيحة!');},400);
+    return;
+  }
+  var item=items[idx];
+  var labels=['أ','ب','ج','د','هـ','و'];
+  var lbl=labels[idx]||ar(idx+1);
+  var h=Math.floor(item.b/100);
+  var t=Math.floor((item.b%100)/10);
+  var u=item.b%10;
+  var p1=h*item.a*100;
+  var p2=t*item.a*10;
+  var p3=u*item.a;
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🎮 التمرين</div>'+
+    '<div class="ctitle">احسب: '+ar(item.a)+' × '+ar(item.b)+'</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">'+
+    'الخطوات:<br>'+
+    '① المئات: '+ar(h)+'×'+ar(item.a)+' مع ٠٠ = '+ar(p1)+'<br>'+
+    '② العشرات: '+ar(t)+'×'+ar(item.a)+' مع ٠ = '+ar(p2)+'<br>'+
+    '③ الآحاد: '+ar(u)+'×'+ar(item.a)+' = '+ar(p3)+
+    '</div></div>'+
+
+    '<div class="mult-box">'+
+    '<div class="mult-numbers">'+
+    '<div class="mult-num">'+ar(item.a)+'</div>'+
+    '<div style="direction:ltr;font-size:1.2rem;font-weight:900;color:#4A148C;">× '+ar(item.b)+'</div>'+
+    '<hr class="mult-separator">'+
+    '<div style="color:#E65100;font-weight:700;font-size:1rem;direction:ltr;">'+ar(p1)+'</div>'+
+    '<div style="color:#1565C0;font-weight:700;font-size:1rem;direction:ltr;">'+ar(p2)+'</div>'+
+    '<div style="color:#7B1FA2;font-weight:700;font-size:1rem;direction:ltr;">'+ar(p3)+'</div>'+
+    '<hr class="mult-separator">'+
+    '<div style="font-size:.9rem;color:#555;font-weight:700;margin-top:5px;">الناتج = ؟</div>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:10px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">✏️ اكتب الناتج النهائي:</div>'+
+    '<div style="text-align:center;margin-bottom:10px;">'+
+    '<input id="drillInp" type="number" class="num-input" placeholder="اكتب الناتج" style="width:180px;">'+
+    '</div>'+
+    '<div style="text-align:center;">'+
+    '<button class="btn btn-primary" onclick="checkDrillItem()">✅ تحقق</button>'+
+    '</div>'+
+    '</div>'+
+    '<div style="font-size:.78rem;color:#888;text-align:center;margin-top:6px;">السؤال '+ar(idx+1)+' من '+ar(items.length)+'</div>'+
+    '<div class="fb" id="fbDrill"></div>'+
+    '</div>';
+}
+
+function checkDrillItem(){
+  var fb=document.getElementById('fbDrill');
+  var items=window._drillItems;
+  var idx=window._drillIdx;
+  var item=items[idx];
+  var val=parseInt(document.getElementById('drillInp').value);
+  if(isNaN(val)){fb.className='fb err';fb.innerHTML='⚠️ أدخل الناتج!';return;}
+  if(val===item.result){
+    fb.className='fb ok';fb.innerHTML='✅ صحيح! '+ar(item.a)+' × '+ar(item.b)+' = '+ar(item.result);
+    addScore(12);snd('ok');
+    window._drillIdx++;
+    setTimeout(function(){showDrillItem(window._drillIdx);},900);
+  }else{
+    fb.className='fb err';fb.innerHTML='❌ راجع الحساب! '+ar(item.a)+' × '+ar(item.b)+' ≠ '+ar(val)+'. تحقق من جمع النواتج الجزئية.';snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// S8 = s5 alias already set, s6, s7 set
+// We need explicit s8, s9, s10 for problems
+// ══════════════════════════════════════════════
+function s8(){
+  // Problem 2: سلك طوله ٣٥٢ متراً، كم طوله بالسنتمترات؟
+  html(
+    '<div class="badge">💡 مسألة — السلك الكهربائي</div>'+
+    '<div class="ctitle">سلك طوله ٣٥٢ متراً... كم طوله بالسنتمترات؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">تذكّر: ١ متر = ١٠٠ سنتيمتر<br>إذن: ٣٥٢ متر = ٣٥٢ × ١٠٠ سنتيمتر 📏</div></div>'+
+
+    '<div class="problem-box">'+
+    '<div class="problem-title">📋 المسألة:</div>'+
+    '<div class="problem-text">سلك كهربائي طوله <strong>٣٥٢ متراً</strong>، كم طوله بالسنتمترات؟</div>'+
+    '<div class="steps-area">'+
+    '<div onclick="revStep(\'pb2a\')" class="step-box step-1">📌 الخطوة ١: العلاقة — انقر!</div>'+
+    '<div id="pb2a" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;font-weight:700;font-size:.9rem;">١ متر = ١٠٠ سنتيمتر</div>'+
+    '<div onclick="revStep(\'pb2b\')" class="step-box step-2" style="margin-top:8px;">📌 الخطوة ٢: الحساب — انقر!</div>'+
+    '<div id="pb2b" style="display:none;background:white;border-radius:8px;padding:8px;margin-top:5px;font-weight:700;font-size:.9rem;">٣٥٢ × ١٠٠ = ٣٥٢٠٠ سنتيمتر</div>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 ما طول السلك بالسنتمترات؟</div>'+
+    '<button class="btn-choice" onclick="pick8(0)">أ) ٣٥٢٠ سنتيمتر</button>'+
+    '<button class="btn-choice" onclick="pick8(1)">ب) ٣٥٢٠٠ سنتيمتر ✅</button>'+
+    '<button class="btn-choice" onclick="pick8(2)">ج) ٣٠٥٢٠ سنتيمتر</button>'+
+    '</div>'+
+    '<div class="fb" id="fb8"></div>'
+  );
+}
+function pick8(idx){
+  var fb=document.getElementById('fb8');
+  var btns=document.querySelectorAll('#gmain .btn-choice');
+  btns.forEach(function(b){b.disabled=true;});
+  if(idx===1){btns[1].className='btn-choice correct';fb.className='fb ok';fb.innerHTML='✅ صحيح! ٣٥٢ × ١٠٠ = ٣٥٢٠٠ سنتيمتر';addScore(12);snd('ok');setTimeout(function(){celeb('💡 حللت المسألة!','٣٥٢ متر = ٣٥٢٠٠ سنتيمتر!');},1100);}
+  else{btns[idx].className='btn-choice wrong';fb.className='fb err';fb.innerHTML='❌ ١ متر = ١٠٠ سنتيمتر → ٣٥٢ × ١٠٠ = ٣٥٢٠٠';snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;}
+}
+
+// ══════════════════════════════════════════════
+// S9 — مسألة /٣: ٥٤٧ كرتونة × ٥٠٢ قلم
+// ══════════════════════════════════════════════
+function s9(){
+  html(
+    '<div class="badge">📦 مسألة — الكرتونات والأقلام</div>'+
+    '<div class="ctitle">كم قلماً في ٥٤٧ كرتونة؟</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">في كل كرتونة <strong>٥٠٢</strong> قلم<br>وعندنا <strong>٥٤٧</strong> كرتونة<br>إذن: عدد الأقلام = ٥٤٧ × ٥٠٢ 📦</div></div>'+
+
+    '<div class="problem-box">'+
+    '<div class="problem-title">📋 المسألة:</div>'+
+    '<div class="problem-text">كم قلماً في <strong>٥٤٧</strong> كرتونة إذا كان بكل كرتونة <strong>٥٠٢</strong> قلم؟</div>'+
+    '</div>'+
+
+    '<div class="mult-box">'+
+    '<div class="mult-numbers">'+
+    '<div class="mult-num">٥٤٧</div>'+
+    '<div style="direction:ltr;font-size:1.2rem;font-weight:900;color:#4A148C;">× ٥٠٢</div>'+
+    '<hr class="mult-separator">'+
+    '<div onclick="revStep(\'krt1\')" style="cursor:pointer;color:#E65100;font-weight:700;font-size:1rem;direction:ltr;">① ٥×٥٤٧ مع ٠٠ = ؟ 👆</div>'+
+    '<div id="krt1" style="display:none;color:#E65100;font-size:1.2rem;font-weight:900;direction:ltr;">٢٧٣٥٠٠</div>'+
+    '<div onclick="revStep(\'krt2\')" style="cursor:pointer;color:#1565C0;font-weight:700;font-size:1rem;direction:ltr;margin-top:4px;">② ٠×٥٤٧ مع ٠ = ؟ 👆</div>'+
+    '<div id="krt2" style="display:none;color:#1565C0;font-size:1.2rem;font-weight:900;direction:ltr;">٠٠٠٠</div>'+
+    '<div onclick="revStep(\'krt3\')" style="cursor:pointer;color:#7B1FA2;font-weight:700;font-size:1rem;direction:ltr;margin-top:4px;">③ ٢×٥٤٧ = ؟ 👆</div>'+
+    '<div id="krt3" style="display:none;color:#7B1FA2;font-size:1.2rem;font-weight:900;direction:ltr;">١٠٩٤</div>'+
+    '<hr class="mult-separator">'+
+    '<div onclick="revStep(\'krt4\')" style="cursor:pointer;color:#2E7D32;font-weight:700;font-size:1rem;direction:ltr;margin-top:4px;">④ المجموع = ؟ 👆</div>'+
+    '<div id="krt4" style="display:none;color:#2E7D32;font-size:1.4rem;font-weight:900;direction:ltr;">٢٧٤٥٩٤</div>'+
+    '</div></div>'+
+
+    '<div style="background:#FFF8E1;border-radius:13px;padding:13px;border:2px solid #F9A825;margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:#4E342E;">🎯 كم قلماً في ٥٤٧ كرتونة؟</div>'+
+    '<div style="text-align:center;margin-bottom:10px;">'+
+    '<input id="krtInp" type="number" class="num-input" placeholder="الناتج" style="width:180px;">'+
+    '</div>'+
+    '<div style="text-align:center;"><button class="btn btn-primary" onclick="checkKrt()">✅ تحقق</button></div>'+
+    '</div>'+
+    '<div class="fb" id="fb9"></div>'
+  );
+}
+function checkKrt(){
+  var fb=document.getElementById('fb9');
+  var val=parseInt(document.getElementById('krtInp').value);
+  if(isNaN(val)){fb.className='fb err';fb.innerHTML='⚠️ اكتب الإجابة!';return;}
+  if(val===274594){fb.className='fb ok';fb.innerHTML='✅ ممتاز! ٥٤٧ × ٥٠٢ = ٢٧٤٥٩٤ قلم';addScore(15);snd('ok');setTimeout(function(){celeb('📦 رائع!','حللت مسألة الكرتونات!');},1100);}
+  else{fb.className='fb err';fb.innerHTML='❌ راجع: ٢٧٣٥٠٠+٠+١٠٩٤ = ٢٧٤٥٩٤';snd('err');}
+}
+
+// ══════════════════════════════════════════════
+// S10 — تمرين سريع: قبل التحدي
+// ══════════════════════════════════════════════
+function s10(){
+  html(
+    '<div class="badge">🚀 تمرين سريع</div>'+
+    '<div class="ctitle">احسب العمليتين بسرعة!</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">تمرين أخير قبل التحدي النهائي!<br>احسب بالطريقة العمودية 💪</div></div>'+
+
+    '<div class="drill-grid">'+
+    '<div class="drill-item">'+
+    '<div class="drill-item-title">أ) ٨٩٧ × ٧٢٣</div>'+
+    '<div class="drill-nums">897 × 723</div>'+
+    '<div style="font-size:.78rem;color:#666;margin-bottom:6px;">٣×٨٩٧=٢٦٩١<br>٢×٨٩٧+٠=١٧٩٤٠<br>٧×٨٩٧+٠٠=٦٢٧٩٠٠</div>'+
+    '<input id="s10a" type="number" class="drill-input" placeholder="الناتج">'+
+    '</div>'+
+    '<div class="drill-item">'+
+    '<div class="drill-item-title">ب) ٨٣٥ × ٦٤٠</div>'+
+    '<div class="drill-nums">835 × 640</div>'+
+    '<div style="font-size:.78rem;color:#666;margin-bottom:6px;">٠×٨٣٥=٠<br>٤×٨٣٥=٣٣٤٠٠<br>٦×٨٣٥=٥٠١٠٠٠</div>'+
+    '<input id="s10b" type="number" class="drill-input" placeholder="الناتج">'+
+    '</div>'+
+    '</div>'+
+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-primary" onclick="checkS10()">✅ تحقق</button>'+
+    '</div>'+
+    '<div class="fb" id="fb10"></div>'
+  );
+}
+function checkS10(){
+  var fb=document.getElementById('fb10');
+  var a=parseInt(document.getElementById('s10a').value);
+  var b=parseInt(document.getElementById('s10b').value);
+  if(isNaN(a)||isNaN(b)){fb.className='fb err';fb.innerHTML='⚠️ أكمل الإجابتين!';return;}
+  var okA=a===648531,okB=b===534400;
+  if(okA&&okB){fb.className='fb ok';fb.innerHTML='✅ كلاهما صحيح! ٨٩٧×٧٢٣=٦٤٨٥٣١ | ٨٣٥×٦٤٠=٥٣٤٤٠٠';addScore(15);snd('ok');setTimeout(function(){celeb('🚀 ممتاز!','أنت جاهز للتحدي النهائي!');},1100);}
+  else{
+    var msg='';
+    if(!okA)msg+='❌ أ) ٨٩٧×٧٢٣: ٦٢٧٩+١٧٩٤٠+٢٦٩١٠٠=٦٤٨٥٣١ ';
+    if(!okB)msg+='❌ ب) ٨٣٥×٦٤٠: ٠+٣٣٤٠٠+٥٠١٠٠٠=٥٣٤٤٠٠';
+    fb.className='fb err';fb.innerHTML=msg;snd('err');
+  }
+}
+
+// ══════════════════════════════════════════════
+// FINAL — التحدي النهائي
+// ══════════════════════════════════════════════
+var finalA={};
+function sFinal(){
+  var Qs=[
+    {q:'٤٢١ × ٢٤٣ = ؟',opts:['١٠٢٣٠٣','١٠٣٢٠٣','١٠٢٠٣٣','١٠٢٣٣٠'],ans:0},
+    {q:'٧٦٥ × ١٣٨ = ؟',opts:['١٠٥٥٧٠','٩٥٥٧٠','١٠٥٧٥٠','١٠٧٥٥٠'],ans:0},
+    {q:'في الطريقة العمودية لـ ٤٢١ × ٢٤٣، أول ناتج جزئي هو:',opts:['١٢٦٣','١٦٨٤٠','٨٤٢٠٠','٨٤٢٠'],ans:2},
+    {q:'٣ × ٤٢١ = ؟',opts:['١٢٠٣','١٢٦٣','١٢٣٦','١٢٠٦'],ans:1},
+    {q:'عند ضرب رقم المئات (٢) في ٤٢١ × ٢٤٣، نضع كم صفراً؟',opts:['صفر واحد','صفرين','ثلاثة أصفار','بدون أصفار'],ans:1},
+    {q:'٤٣١ × ٤٥٢ = ؟',opts:['١٩٤٩١٢','١٩٤٢١٩','١٩٩٤١٢','١٩٠٤١٢'],ans:0},
+    {q:'٣٤٧ × ٢٢٢ = ؟',opts:['٧٧٠٣٤','٧٠٧٣٤','٧٧٣٠٤','٧٧٤٣٠'],ans:0},
+    {q:'سلك طوله ٣٥٢ متراً، طوله بالسنتمترات:',opts:['٣٥٢٠','٣٥٢٠٠','٣٠٥٢٠','٣٢٥٠٠'],ans:1},
+    {q:'٥٤٧ × ٥٠٢ = ؟',opts:['٢٧٥٤٩٤','٢٧٤٥٩٤','٢٤٧٥٩٤','٢٧٤٩٥٤'],ans:1},
+    {q:'٥١١ × ٢٠١ = ؟',opts:['١٠٢٧١١','١٠٧٢١١','١٠٢١٧١','١٠٢١١٧'],ans:0},
+    {q:'١٠٣ × ٩١٧ = ؟',opts:['٩٤٤٥١','٩٤١٥٤','٩٥٤٤١','٩٤٥١٤'],ans:0},
+    {q:'عند ضرب ٨ (آحاد) في ٧٦٥ × ١٣٨، كم صفراً نضع؟',opts:['صفرين','صفراً واحداً','بدون أصفار','ثلاثة أصفار'],ans:2},
+    {q:'٨ × ٧٦٥ = ؟',opts:['٦١٢٠','٦٢١٠','٦١٠٢','٦٢٠١'],ans:0},
+    {q:'الطريقة الصحيحة لحساب ٤×٤٢١ مع الصفر:',opts:['٤×٤٢١=١٦٨٤ ثم ١٦٨٤٠','٤×٤٢١=١٦٤٠','٤×٤٢١=١٦٠٨٤','٤×٤٢١=١٦٤٨٠'],ans:0},
+    {q:'٨٩٧ × ٧٢٣ = ؟',opts:['٦٤٨٣٥١','٦٤٨٥٣١','٦٤٥٨٣١','٦٤٣٨٥١'],ans:1}
+  ];
+  var qHTML='';
+  Qs.forEach(function(q,i){
+    qHTML+='<div style="background:#F8F4FF;border-radius:12px;padding:12px;margin-bottom:10px;border:2px solid #E1BEE7;">';
+    qHTML+='<div style="font-weight:800;color:#4A148C;margin-bottom:7px;">سؤال '+ar(i+1)+': '+q.q+'</div>';
+    q.opts.forEach(function(opt,oi){
+      qHTML+='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:white;border-radius:9px;padding:8px 11px;border:2px solid #F3E5F5;margin-bottom:5px;">';
+      qHTML+='<input type="radio" name="fq'+i+'" value="'+oi+'" style="width:16px;height:16px;accent-color:#7B1FA2;" onchange="finalA['+i+']=parseInt(this.value)">';
+      qHTML+='<span style="font-size:.88rem;direction:ltr;">'+opt+'</span></label>';
+    });
+    qHTML+='</div>';
+  });
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="badge">🏆 التحدي النهائي</div>'+
+    '<div class="ctitle">مراجعة شاملة — '+ar(Qs.length)+' سؤالاً</div>'+
+    '<div class="mascot-row">'+ms()+'<div class="mascot-txt">أثبت أنك أتقنت الضرب! 🏆<br>أجب على جميع الأسئلة ثم اضغط "إنهاء"!</div></div>'+
+    qHTML+
+    '<div style="text-align:center;margin-top:16px;"><button class="btn btn-orange" onclick="submitFinal()" style="font-size:1rem;padding:12px 24px;">🏁 إنهاء التحدي</button></div>'+
+    '<div class="fb" id="fbFinal" style="margin-top:12px;"></div>'+
+    '</div>';
+  window._finalQs=Qs;finalA={};
+}
+function submitFinal(){
+  var fb=document.getElementById('fbFinal');
+  var Qs=window._finalQs;
+  var correct=0,details='';
+  Qs.forEach(function(q,i){
+    var ok=finalA[i]===q.ans;
+    if(ok){correct++;details+='<div style="color:#1B5E20;font-size:.82rem;margin-bottom:2px;">✅ سؤال '+ar(i+1)+': صحيح</div>';}
+    else{details+='<div style="color:#C62828;font-size:.82rem;margin-bottom:2px;">❌ سؤال '+ar(i+1)+': الإجابة: '+q.opts[q.ans]+'</div>';}
+  });
+  var pct=Math.round(correct/Qs.length*100);
+  var stars=pct>=90?'⭐⭐⭐':pct>=70?'⭐⭐':'⭐';
+  addScore(correct*5);snd('ok');if(pct>=70)cfetti();
+  fb.className='fb ok';fb.style.display='block';
+  fb.innerHTML='<div style="font-size:1.4rem;text-align:center;margin-bottom:6px;">'+stars+'</div>'+
+    '<div style="font-size:1.1rem;font-weight:900;text-align:center;margin-bottom:10px;">أجبت بشكل صحيح على '+ar(correct)+' من '+ar(Qs.length)+' ('+ar(pct)+'%)</div>'+
+    '<div style="max-height:180px;overflow-y:auto;border-top:1px solid #ddd;padding-top:8px;">'+details+'</div>'+
+    '<div style="text-align:center;margin-top:12px;"><button class="btn btn-primary" onclick="stage=-1;score=0;updProg();renderIntro();">🔄 العب مجدداً</button></div>';
+  setTimeout(function(){fb.scrollIntoView({behavior:'smooth'});},300);
+}
+
+renderIntro();
+</script>
+</body>
+</html>
