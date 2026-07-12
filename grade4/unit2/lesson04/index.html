@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة قابلية القسمة على ٣ - النسخة الاحترافية المثبتة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            color: #2d3436;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        header {
+            background: #00b894;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .character {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            z-index: 100;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .guide-bubble {
+            position: fixed;
+            bottom: 150px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 250px;
+            z-index: 101;
+            display: none;
+            border: 2px solid #00b894;
+        }
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 30px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+        .game-container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            min-height: 400px;
+        }
+        .stage-header {
+            background: #00cec9;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        button {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            display: inline-block;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background: #e17055;
+        }
+        .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        .drop-zone {
+            border: 3px dashed #00cec9;
+            padding: 20px;
+            min-height: 100px;
+            border-radius: 15px;
+            margin: 15px 0;
+            background: #fdfdfd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .math-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 25px auto;
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 2px dashed #b2bec3;
+            max-width: 500px;
+        }
+        .digit-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .digit-box {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2d3436;
+            background: #dfe6e9;
+            width: 75px;
+            height: 75px;
+            line-height: 75px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        .digit-label {
+            font-size: 0.9em;
+            color: #2d3436;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        input[type="number"], input[type="text"] {
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            margin: 10px;
+            width: 160px;
+        }
+        .input-digit {
+            width: 75px !important;
+            height: 75px;
+            font-size: 2.3em !important;
+            font-weight: bold;
+            background: #fff9db !important;
+            border: 3px solid #ff9f1c !important;
+            margin: 0 !important;
+            border-radius: 10px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        th, td {
+            border: 2px solid #dfe6e9;
+            padding: 12px;
+            text-align: center;
+        }
+        th { background: #00cec9; color: white; }
+        ol {
+            text-align: right;
+            display: inline-block;
+            margin: 20px auto;
+        }
+        ol li {
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #dfe6e9;
+            transition: all 0.2s;
+        }
+        ol li:hover { background: #b2bec3; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧠 مغامرة قابلية القسمة على ٣ 🧠</h1>
+        <p>الدرس الرابع - الصف الرابع الابتدائي (النسخة الاحترافية المثبتة)</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble"></div>
+    <img id="guide" class="character" src="https://via.placeholder.com/120x150/00b894/ffffff?text=🦊" alt="المرشد" onclick="triggerGuideSpeech()">
+
+    <div class="game-container" id="mainContainer"></div>
+
+    <script>
+        let score = 0;
+        let finalChallengeIndex = 0;
+
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => arabicDigits[d]);
+        }
+
+        const guideMessages = [
+            "مرحباً بك يا بطل! تم إصلاح الكود بالكامل، اللعبة الآن جاهزة تماماً وشغالة! 🦊",
+            "القسمة على ٣ تحتاج لجمع بسيط! جرب تفكيك الأعداد بنفسك!",
+            "مذهل! لقد لاحظت التطابق العجيب بين باقي قسمة العدد وباقي قسمة مجموع أرقامه 🎉",
+            "القاعدة السحرية أصبحت جاهزة بين يديك الآن، دعنا نطبقها ونربح النجوم!",
+            "أنت عبقري حسابي لا مثيل لك!"
+        ];
+
+        function updateGuide(text) {
+            const bubble = document.getElementById('guideBubble');
+            if (bubble) {
+                bubble.textContent = text;
+                bubble.style.display = 'block';
+            }
+        }
+
+        function triggerGuideSpeech() {
+            updateGuide("اجمع أرقام العدد بسرعة لتكتشف سر الرقم ٣! 🦊");
+        }
+
+        function playSound(isSuccess) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audio = new AudioContext();
+                const oscillator = audio.createOscillator();
+                const gainNode = audio.createGain();
+                oscillator.frequency.setValueAtTime(isSuccess ? 950 : 320, audio.currentTime);
+                oscillator.type = 'sine';
+                oscillator.connect(gainNode);
+                gainNode.connect(audio.destination);
+                oscillator.start();
+                gainNode.gain.setValueAtTime(0.2, audio.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.3);
+                oscillator.stop(audio.currentTime + 0.3);
+            } catch(e) { 
+                console.log("Audio play blocked"); 
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">مرحباً بك في تحدي الرقم ٣ السحري المطور والمضمون!</div>
+                <div style="text-align:center; padding:40px;">
+                    <h2>🦊 رحلة الخانات الدقيقة ومجموع الأرقام</h2>
+                    <p style="font-size:1.5em; margin:30px 0;">
+                        سنتعلم اليوم خدعة عبقرية تمكنك من معرفة ما إذا كان أي عدد كبير يقبل القسمة على ${toEasternArabic(3)} في ثوانٍ معدودة!
+                    </p>
+                    <button onclick="stage1_Curiosity()" style="font-size:1.6em; padding:20px 50px;">
+                        انطلق للمغامرة 🚀
+                    </button>
+                </div>
+            `;
+            setTimeout(() => { updateGuide(guideMessages[0]); }, 200);
+        }
+
+        function stage1_Curiosity() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: إثارة الفضول 🧐</div>
+                <h2 style="text-align:center; margin:20px;">تأمل معي هذه المفاجأة من كتابك المدرسي:</h2>
+                <p style="font-size:1.5em; text-align:center; margin:30px; line-height:2.2; background:#fff9db; padding:20px; border-radius:15px;">
+                    العدد <strong>${toEasternArabic(48)}</strong> مجموع أرقامه هو: ${toEasternArabic(8)} + ${toEasternArabic(4)} = <strong>${toEasternArabic(12)}</strong> <br>
+                    والعدد <strong>${toEasternArabic(252)}</strong> مجموع أرقامه هو: ${toEasternArabic(2)} + ${toEasternArabic(5)} + ${toEasternArabic(2)} = <strong>${toEasternArabic(9)}</strong>
+                </p>
+                <h3 style="margin:20px; color:#6c5ce7;">هل هناك علاقة بين مجموع أرقام العدد وقابليته للقسمة على ٣؟</h3>
+                <button onclick="stage2_Exploration()">دعنا نكتشف هذا تفاعلياً بالمختبر! 🚀</button>
+            `;
+            updateGuide("انتبه لمجموع الأرقام، فهو المفتاح السري هنا!");
+        }
+
+        let currentDemoNum = 0;
+        let currentDemoDigitsSum = 0;
+        function stage2_Exploration() {
+            currentDemoNum = 0;
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: مختبر الآلة الحاسبة التفاعلية 🧪</div>
+                <h3>اختر عدداً من كتاب الطالب لتشغيل آلة الفحص التفكيكية:</h3>
+                
+                <div style="margin: 25px 0; font-size: 1.2em;">
+                    <button onclick="setDemo3(48, 12)">اختبار العدد: ${toEasternArabic(48)}</button>
+                    <button onclick="setDemo3(252, 9)">اختبار العدد: ${toEasternArabic(252)}</button>
+                    <button onclick="setDemo3(122, 5)">اختبار العدد: ${toEasternArabic(122)}</button>
+                </div>
+
+                <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin:30px 0;">
+                    <div class="drop-zone" style="min-width:220px;">العدد المختار: <span id="numVal" class="number">-</span></div>
+                    <div class="drop-zone" style="min-width:220px;">مجموع أرقامه: <span id="sumVal" class="number">-</span></div>
+                </div>
+                <div id="resultArea3" style="text-align:center; font-size:1.4em; min-height:80px; color: #2c3e50; font-weight:bold;"></div>
+                <button onclick="calculateDivisibility3()" style="background:#00b894;">شغّل آلة الفحص والتقسيم ⚙️</button>
+                <button onclick="stage3_Observation()">التالي لمعاينة الملاحظة ➡️</button>
+            `;
+            updateGuide(guideMessages[1]);
+        }
+
+        function setDemo3(num, sum) {
+            currentDemoNum = num;
+            currentDemoDigitsSum = sum;
+            document.getElementById('numVal').textContent = toEasternArabic(num);
+            document.getElementById('sumVal').textContent = toEasternArabic(sum);
+            document.getElementById('resultArea3').innerHTML = "";
+        }
+
+        function calculateDivisibility3() {
+            if(currentDemoNum === 0) {
+                alert("الرجاء اختيار عدد أولاً لتجربته!");
+                return;
+            }
+            const remNum = currentDemoNum % 3;
+            const remSum = currentDemoDigitsSum % 3;
+            const resultArea = document.getElementById('resultArea3');
+            
+            resultArea.innerHTML = `
+                📊 باقي قسمة العدد ${toEasternArabic(currentDemoNum)} على ٣ هو: [ <strong>${toEasternArabic(remNum)}</strong> ] <br>
+                📊 باقي قسمة مجموع أرقامه ${toEasternArabic(currentDemoDigitsSum)} على ٣ هو: [ <strong>${toEasternArabic(remSum)}</strong> ]
+                <br><span style="color:#6c5ce7;">لاحظ أن الباقي متطابق تماماً في الحالتين! ✨</span>
+            `;
+            playSound(true);
+            score += 10;
+        }
+
+        function stage3_Observation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: منصة الملاحظة الاستنتاجية 🔎</div>
+                <h3>عند مقارنة باقي قسمة العدد على ٣ بباقي قسمة مجموع أرقامه على ٣، ماذا تلاحظ؟</h3>
+                <div style="background:#f1f2f6; padding:25px; border-radius:15px; margin:20px 0; text-align:right; line-height:2.2;">
+                    <p style="font-size:1.4em;">• في العدد <strong>${toEasternArabic(48)}</strong> والعدد <strong>${toEasternArabic(252)}</strong>: الباقي صفر في الحالتين، إذن هما <strong style="color:#27ae60;">يقبلان القسمة على ٣</strong>.</p>
+                    <p style="font-size:1.4em;">• في العدد <strong>${toEasternArabic(122)}</strong>: مجموع أرقامه ٥ وباقي قسمتها على ٣ هو ٢، إذن العدد <strong style="color:#c0392b;">لا يقبل القسمة على ٣</strong> لقابليته لترك باقٍ.</p>
+                </div>
+                <button onclick="stage4_Conclusion()">هيا بنا لنصيغ القاعدة الذهبية الرسمية! 🚀</button>
+            `;
+            updateGuide(guideMessages[2]);
+        }
+        // المرحلة ٤: استنتاج المفهوم
+        function stage4_Conclusion() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٤: صياغة القاعدة الذهبية 🧠</div>
+                <h3 style="color:#2c3e50;">أكمل الفراغ لتكتشف قانون الرقم ٣ السحري بنفسك:</h3>
+                <p style="font-size:1.4em; margin:30px 0;">
+                    يقبل العدد القسمة على ٣ إذا كان ........ أرقامه يقبل القسمة على ٣.
+                </p>
+                <input type="text" id="studentConclusion3" placeholder="اكتب (مجموع) أو (آحاد)" style="width:280px;">
+                <br>
+                <button onclick="checkConclusion3()">تحقق من ذكائك 💎</button>
+            `;
+        }
+
+        function checkConclusion3() {
+            const answer = document.getElementById('studentConclusion3').value.trim();
+            if (answer.includes('مجموع')) {
+                score += 20;
+                playSound(true);
+                alert("🎉 مذهل جداً! نعم، العبرة دائماً بمجموع أرقام العدد وليس برقم آحاده بمفرده.");
+                stage5_SimpleExplanation();
+            } else {
+                playSound(false);
+                alert("فكر مجدداً يا بطل... تذكر أننا قمنا بجمع ٨ + ٤ للعدد ٤٨، فماذا يسمى هذا؟");
+            }
+        }
+
+        // المرحلة ٥: الشرح المبسط والتعاريف الرسمية
+        function stage5_SimpleExplanation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٥: قاموس ثعلب الرياضيات 📘</div>
+                <div style="background:#f5f6fa; padding:25px; border-radius:15px; text-align:right; line-height:2.4;">
+                    <h2 style="text-align:center; color:#00b894; margin-bottom:15px;">القاعدة الرسمية المقررة في كتابك:</h2>
+                    <div style="background:#e8f5e9; padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                        <p style="font-size:1.5em; color:#27ae60; font-weight:bold;">💡 قاعدة الرقم ٣ 💡</p>
+                        <p style="font-size:1.3em; color:#2d3436; font-weight:bold;">يقبل العدد القسمة على ٣ إذا كان مجموع أرقامه يقبل القسمة على ٣.</p>
+                    </div>
+                    <h3 style="color:#6c5ce7; margin-bottom:10px;">أمثلة توضيحية من الكتاب لترسيخ الفهم:</h3>
+                    <p style="font-size:1.2em;">⭐ <strong>${toEasternArabic(357)}:</strong> يقبل القسمة على ٣ لأن مجموع أرقامه (${toEasternArabic(7)} + ${toEasternArabic(5)} + ${toEasternArabic(3)} = ${toEasternArabic(15)}) والـ ${toEasternArabic(15)} تقبل القسمة على ٣.</p>
+                    <p style="font-size:1.2em;">⭐ <strong>${toEasternArabic(936)}:</strong> يقبل القسمة على ٣ لأن مجموع أرقامه (${toEasternArabic(6)} + ${toEasternArabic(3)} + ${toEasternArabic(9)} = ${toEasternArabic(18)}) والـ ${toEasternArabic(18)} تقبل القسمة على ٣.</p>
+                </div>
+                <button onclick="stage6_InteractiveExample(1)">لننتقل لتحدي المربع الخالي السحري! 🚀</button>
+            `;
+            updateGuide(guideMessages[3]);
+        }
+
+        // المرحلة ٦: مثال تفاعلي (تحدي أصغر رقم في المربع الخالي)
+        function stage6_InteractiveExample(step) {
+            const container = document.getElementById('mainContainer');
+            if(step === 1) {
+                container.innerHTML = `
+                    <div class="stage-header">المرحلة ٦: تدريب المربع الخالي (أصغر رقم مناسب) 📋</div>
+                    <h3>من تدريب الكتاب: ضع <strong>أصغر رقم مناسب</strong> في المربع الخالي ليصبح العدد يقبل القسمة على ٣:</h3>
+                    
+                    <div class="math-row">
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(3)}</div>
+                            <span class="digit-label">مئات</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(7)}</div>
+                            <span class="digit-label">عشرات</span>
+                        </div>
+                        <div class="digit-container">
+                            <input type="number" id="box1" max="9" min="0" class="input-digit" placeholder="؟">
+                            <span class="digit-label">آحاد</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للمئات والعشرات هو: ٣ + ٧ = ١٠، كم تحتاج في الآحاد لتصل لأقرب مضاعف للـ ٣?</p>
+                    <button onclick="checkBox1()">تحقق من الرقم</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="stage-header">تابع تدريب المربع الخالي (أصغر رقم مناسب) 📋</div>
+                    <h3>ضع <strong>أصغر رقم مناسب</strong> في المربع الخالي ليصبح العدد <strong>لا يقبل</strong> القسمة على ٣:</h3>
+                    
+                    <div class="math-row">
+                        <div class="digit-container">
+                            <input type="number" id="box2" max="9" min="0" class="input-digit" placeholder="؟">
+                            <span class="digit-label">مئات</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(3)}</div>
+                            <span class="digit-label">عشرات</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(4)}</div>
+                            <span class="digit-label">آحاد</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للعشرات والآحاد هو: ٣ + ٤ = ٧، إذا وضعت صفراً في المئات يظل المجموع ٧ وهو لا يقبل!</p>
+                    <button onclick="checkBox2()">تحقق من الرقم</button>
+                `;
+            }
+        }
+
+        function checkBox1() {
+            const val = document.getElementById('box1').value;
+            if (val == '2' || val == '٢') {
+                score += 25;
+                playSound(true);
+                alert("✅ رائع! بوضع الرقم ٢ في الآحاد يكتمل العدد الكلي ليصبح ٣٧٢، ومجموع أرقامه ١٢ وهي تقبل القسمة على ٣.");
+                stage6_InteractiveExample(2);
+            } else {
+                playSound(false);
+                alert("حاول مجدداً يا بطل... نريد أصغر رقم مكمل لتصبح الأرقام مساوية لـ ١٢!");
+            }
+        }
+
+        function checkBox2() {
+            const val = document.getElementById('box2').value;
+            if (val == '0' || val == '٠') {
+                score += 25;
+                playSound(true);
+                alert("✅ مظهر ذكاء خارق! بوضع الصفر في المئات يصبح العدد ٠٣٤ ومجموع أرقامه ٧ وهي لا تقبل القسمة على ٣.");
+                stage7_GuidedPractice();
+            } else {
+                playSound(false);
+                alert("نريد أصغر رقم على الإطلاق (يبدأ من الصفر)، جرب الصفر وانظر للمجموع!");
+            }
+        }
+
+        // المرحلة ٧: تدريب موجه (أكبر رقم مناسب)
+        function stage7_GuidedPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٧: التدريب الموجه (تحدي أكبر رقم) 🛠️</div>
+                <h3>من تمرين (٤) في الكتاب: ضع <strong>أكبر رقم مناسب</strong> في المربع الخالي ليقبل العدد القسمة على ٣:</h3>
+                
+                <div class="math-row">
+                    <div class="digit-container">
+                        <input type="number" id="maxBox" max="9" min="0" class="input-digit" style="background:#e8f5e9 !important; border-color:#2ecc71 !important;" placeholder="؟">
+                        <span class="digit-label">مئات</span>
+                    </div>
+                    <div class="digit-container">
+                        <div class="digit-box">${toEasternArabic(4)}</div>
+                        <span class="digit-label">عشرات</span>
+                    </div>
+                    <div class="digit-container">
+                        <div class="digit-box">${toEasternArabic(5)}</div>
+                        <span class="digit-label">آحاد</span>
+                    </div>
+                </div>
+                
+                <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للعشرات والآحاد هو ٤ + ٥ = ٩ وهو يقبل القسمة. ما هو أكبر رقم من (٠ إلى ٩) نضعه في المئات ويظل المجموع يقبل على ٣؟</p>
+                <button onclick="checkMaxBox()">تحقق من إجابتك</button>
+            `;
+        }
+
+        function checkMaxBox() {
+            const val = document.getElementById('maxBox').value;
+            if(val == '9' || val == '٩') {
+                score += 30;
+                playSound(true);
+                alert("✅ إجابة احترافية ممتازة! الرقم ٩ هو أكبر رقم مناسب لأن المجموع الكلي للعدد ٩٤٥ يصبح ١٨.");
+                stage8_IndependentPractice();
+            } else {
+                playSound(false);
+                alert("الرقم الذي اخترته صحيح ولكن هناك رقم أكبر منه في الخانات (من ٠ إلى ٩) يحقق الشرط، فكر في أكبر رقم ممكن وهو ٩!");
+            }
+        }
+
+        // المرحلة ٨: تدريب فرز مستقل
+        function stage8_IndependentPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٨: ميدان الفرز المستقل المستوحى من الكتاب 🎯</div>
+                <h3>اضغط على الأعداد التي (تقبل القسمة على ٣) لتلوينها بالأخضر:</h3>
+                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:15px; margin:30px 0;">
+                    <button onclick="selectNumber3(219, this)">${toEasternArabic(219)} (مجموعه: ١٢)</button>
+                    <button onclick="selectNumber3(11, this)">${toEasternArabic(11)} (مجموعه: ٢)</button>
+                    <button onclick="selectNumber3(126, this)">${toEasternArabic(126)} (مجموعه: ٩)</button>
+                    <button onclick="selectNumber3(37, this)">${toEasternArabic(37)} (مجموعه: ١٠)</button>
+                </div>
+                <div id="feedback3" style="min-height:50px; font-weight:bold; font-size:1.3em;"></div>
+                <button onclick="stage9_Challenge()" style="background:#00b894; color:white;">الانتقال إلى التحدي الختامي والجدول ➡️</button>
+            `;
+            updateGuide(guideMessages[4]);
+        }
+
+        function selectNumber3(num, btn) {
+            const feedback = document.getElementById('feedback3');
+            let sum = num.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            if (sum % 3 === 0) {
+                feedback.innerHTML = `<p style="color:#27ae60;">✅ إجابة صحيحة! العدد ${toEasternArabic(num)} يقبل القسمة لأن مجموع أرقامه هو ${toEasternArabic(sum)} وهو مضاعف للـ ٣.</p>`;
+                btn.style.background = "#2ecc71";
+                btn.style.color = "white";
+                score += 15;
+                playSound(true);
+            } else {
+                feedback.innerHTML = `<p style="color:#c0392b;">❌ خطأ! العدد ${toEasternArabic(num)} لا يقبل لأن مجموع أرقامه ${toEasternArabic(sum)} لا يقبل القسمة على ٣.</p>`;
+                btn.style.background = "#e74c3c";
+                btn.style.color = "white";
+                playSound(false);
+            }
+        }
+// المرحلة ٤: استنتاج المفهوم
+        function stage4_Conclusion() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٤: صياغة القاعدة الذهبية 🧠</div>
+                <h3 style="color:#2c3e50;">أكمل الفراغ لتكتشف قانون الرقم ٣ السحري بنفسك:</h3>
+                <p style="font-size:1.4em; margin:30px 0;">
+                    يقبل العدد القسمة على ٣ إذا كان ........ أرقامه يقبل القسمة على ٣.
+                </p>
+                <input type="text" id="studentConclusion3" placeholder="اكتب (مجموع) أو (آحاد)" style="width:280px;">
+                <br>
+                <button onclick="checkConclusion3()">تحقق من ذكائك 💎</button>
+            `;
+        }
+
+        function checkConclusion3() {
+            const answer = document.getElementById('studentConclusion3').value.trim();
+            if (answer.includes('مجموع')) {
+                score += 20;
+                playSound(true);
+                alert("🎉 مذهل جداً! نعم، العبرة دائماً بمجموع أرقام العدد وليس برقم آحاده بمفرده.");
+                stage5_SimpleExplanation();
+            } else {
+                playSound(false);
+                alert("فكر مجدداً يا بطل... تذكر أننا قمنا بجمع ٨ + ٤ للعدد ٤٨، فماذا يسمى هذا؟");
+            }
+        }
+
+        // المرحلة ٥: الشرح المبسط والتعاريف الرسمية
+        function stage5_SimpleExplanation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٥: قاموس ثعلب الرياضيات 📘</div>
+                <div style="background:#f5f6fa; padding:25px; border-radius:15px; text-align:right; line-height:2.4;">
+                    <h2 style="text-align:center; color:#00b894; margin-bottom:15px;">القاعدة الرسمية المقررة في كتابك:</h2>
+                    <div style="background:#e8f5e9; padding:20px; border-radius:10px; text-align:center; margin-bottom:20px;">
+                        <p style="font-size:1.5em; color:#27ae60; font-weight:bold;">💡 قاعدة الرقم ٣ 💡</p>
+                        <p style="font-size:1.3em; color:#2d3436; font-weight:bold;">يقبل العدد القسمة على ٣ إذا كان مجموع أرقامه يقبل القسمة على ٣.</p>
+                    </div>
+                    <h3 style="color:#6c5ce7; margin-bottom:10px;">أمثلة توضيحية من الكتاب لترسيخ الفهم:</h3>
+                    <p style="font-size:1.2em;">⭐ <strong>${toEasternArabic(357)}:</strong> يقبل القسمة على ٣ لأن مجموع أرقامه (${toEasternArabic(7)} + ${toEasternArabic(5)} + ${toEasternArabic(3)} = ${toEasternArabic(15)}) والـ ${toEasternArabic(15)} تقبل القسمة على ٣.</p>
+                    <p style="font-size:1.2em;">⭐ <strong>${toEasternArabic(936)}:</strong> يقبل القسمة على ٣ لأن مجموع أرقامه (${toEasternArabic(6)} + ${toEasternArabic(3)} + ${toEasternArabic(9)} = ${toEasternArabic(18)}) والـ ${toEasternArabic(18)} تقبل القسمة على ٣.</p>
+                </div>
+                <button onclick="stage6_InteractiveExample(1)">لننتقل لتحدي المربع الخالي السحري! 🚀</button>
+            `;
+            updateGuide(guideMessages[3]);
+        }
+
+        // المرحلة ٦: مثال تفاعلي (تحدي أصغر رقم في المربع الخالي) - ترتيب الخانات الرياضي الصحيح من اليمين لليسار
+        function stage6_InteractiveExample(step) {
+            const container = document.getElementById('mainContainer');
+            if(step === 1) {
+                container.innerHTML = `
+                    <div class="stage-header">المرحلة ٦: تدريب المربع الخالي (أصغر رقم مناسب) 📋</div>
+                    <h3>من تدريب الكتاب: ضع <strong>أصغر رقم مناسب</strong> في المربع الخالي ليصبح العدد يقبل القسمة على ٣:</h3>
+                    
+                    <div class="math-row">
+                        <div class="digit-container">
+                            <input type="number" id="box1" max="9" min="0" class="input-digit" placeholder="؟">
+                            <span class="digit-label">آحاد</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(7)}</div>
+                            <span class="digit-label">عشرات</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(3)}</div>
+                            <span class="digit-label">مئات</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للمئات والعشرات هو: ٣ + ٧ = ١٠، كم تحتاج في الآحاد لتصل لأقرب مضاعف للـ ٣؟</p>
+                    <button onclick="checkBox1()">تحقق من الرقم</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="stage-header">تابع تدريب المربع الخالي (أصغر رقم مناسب) 📋</div>
+                    <h3>ضع <strong>أصغر رقم مناسب</strong> في المربع الخالي ليصبح العدد <strong>لا يقبل</strong> القسمة على ٣:</h3>
+                    
+                    <div class="math-row">
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(4)}</div>
+                            <span class="digit-label">آحاد</span>
+                        </div>
+                        <div class="digit-container">
+                            <div class="digit-box">${toEasternArabic(3)}</div>
+                            <span class="digit-label">عشرات</span>
+                        </div>
+                        <div class="digit-container">
+                            <input type="number" id="box2" max="9" min="0" class="input-digit" placeholder="؟">
+                            <span class="digit-label">مئات</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للعشرات والآحاد هو: ٣ + ٤ = ٧، إذا وضعت صفراً في المئات يظل المجموع ٧ وهو لا يقبل!</p>
+                    <button onclick="checkBox2()">تحقق من الرقم</button>
+                `;
+            }
+        }
+
+        function checkBox1() {
+            const val = document.getElementById('box1').value;
+            if (val == '2' || val == '٢') {
+                score += 25;
+                playSound(true);
+                alert("✅ رائع! بوضع الرقم ٢ في الآحاد يكتمل العدد الكلي ليصبح ٣٧٢، ومجموع أرقامه ١٢ وهي تقبل القسمة على ٣.");
+                stage6_InteractiveExample(2);
+            } else {
+                playSound(false);
+                alert("حاول مجدداً يا بطل... نريد أصغر رقم مكمل لتصبح الأرقام مساوية لـ ١٢!");
+            }
+        }
+
+        function checkBox2() {
+            const val = document.getElementById('box2').value;
+            if (val == '0' || val == '٠') {
+                score += 25;
+                playSound(true);
+                alert("✅ مظهر ذكاء خارق! بوضع الصفر في المئات يصبح العدد ٠٣٤ ومجموع أرقامه ٧ وهي لا تقبل القسمة على ٣.");
+                stage7_GuidedPractice();
+            } else {
+                playSound(false);
+                alert("نريد أصغر رقم على الإطلاق (يبدأ من الصفر)، جرب الصفر وانظر للمجموع!");
+            }
+        }
+
+        // المرحلة ٧: تدريب موجه (أكبر رقم مناسب) - ترتيب الخانات الرياضي الصحيح من اليمين لليسار
+        function stage7_GuidedPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٧: التدريب الموجه (تحدي أكبر رقم) 🛠️</div>
+                <h3>من تمرين (٤) في الكتاب: ضع <strong>أكبر رقم مناسب</strong> في المربع الخالي ليقبل العدد القسمة على ٣:</h3>
+                
+                <div class="math-row">
+                    <div class="digit-container">
+                        <div class="digit-box">${toEasternArabic(5)}</div>
+                        <span class="digit-label">آحاد</span>
+                    </div>
+                    <div class="digit-container">
+                        <div class="digit-box">${toEasternArabic(4)}</div>
+                        <span class="digit-label">عشرات</span>
+                    </div>
+                    <div class="digit-container">
+                        <input type="number" id="maxBox" max="9" min="0" class="input-digit" style="background:#e8f5e9 !important; border-color:#2ecc71 !important;" placeholder="؟">
+                        <span class="digit-label">مئات</span>
+                    </div>
+                </div>
+                
+                <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">المجموع الحالي للعشرات والآحاد هو ٤ + ٥ = ٩ وهو يقبل القسمة. ما هو أكبر رقم من (٠ إلى ٩) نضعه في المئات ويظل المجموع يقبل على ٣؟</p>
+                <button onclick="checkMaxBox()">تحقق من إجابتك</button>
+            `;
+        }
+
+        function checkMaxBox() {
+            const val = document.getElementById('maxBox').value;
+            if(val == '9' || val == '٩') {
+                score += 30;
+                playSound(true);
+                alert("✅ إجابة احترافية ممتازة! الرقم ٩ هو أكبر رقم مناسب لأن المجموع الكلي للعدد ٩٤٥ يصبح ١٨.");
+                stage8_IndependentPractice();
+            } else {
+                playSound(false);
+                alert("الرقم الذي اخترته صحيح ولكن هناك رقم أكبر منه في الخانات (من ٠ إلى ٩) يحقق الشرط، فكر في أكبر رقم ممكن وهو ٩!");
+            }
+        }
+
+        // المرحلة ٨: تدريب فرز مستقل
+        function stage8_IndependentPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٨: ميدان الفرز المستقل المستوحى من الكتاب 🎯</div>
+                <h3>اضغط على الأعداد التي (تقبل القسمة على ٣) لتلوينها بالأخضر:</h3>
+                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:15px; margin:30px 0;">
+                    <button onclick="selectNumber3(219, this)">${toEasternArabic(219)} (مجموعه: ١٢)</button>
+                    <button onclick="selectNumber3(11, this)">${toEasternArabic(11)} (مجموعه: ٢)</button>
+                    <button onclick="selectNumber3(126, this)">${toEasternArabic(126)} (مجموعه: ٩)</button>
+                    <button onclick="selectNumber3(37, this)">${toEasternArabic(37)} (مجموعه: ١٠)</button>
+                </div>
+                <div id="feedback3" style="min-height:50px; font-weight:bold; font-size:1.3em;"></div>
+                <button onclick="stage9_Challenge()" style="background:#00b894; color:white;">الانتقال إلى التحدي الختامي والجدول ➡️</button>
+            `;
+            updateGuide(guideMessages[4]);
+        }
+
+        function selectNumber3(num, btn) {
+            const feedback = document.getElementById('feedback3');
+            let sum = num.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            if (sum % 3 === 0) {
+                feedback.innerHTML = `<p style="color:#27ae60;">✅ إجابة صحيحة! العدد ${toEasternArabic(num)} يقبل القسمة لأن مجموع أرقامه هو ${toEasternArabic(sum)} وهو مضاعف للـ ٣.</p>`;
+                btn.style.background = "#2ecc71";
+                btn.style.color = "white";
+                score += 15;
+                playSound(true);
+            } else {
+                feedback.innerHTML = `<p style="color:#c0392b;">❌ خطأ! العدد ${toEasternArabic(num)} لا يقبل لأن مجموع أرقامه ${toEasternArabic(sum)} لا يقبل القسمة على ٣.</p>`;
+                btn.style.background = "#e74c3c";
+                btn.style.color = "white";
+                playSound(false);
+            }
+        }
+        // المرحلة ٩: تحدٍ قصير (التأكيد السريع)
+        function stage9_Challenge() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٩: التحدي البرق الخاطف ⚡</div>
+                <h3>اضغط على العبارة الصحيحة علمياً وفقاً لما تعلمته:</h3>
+                <ol style="font-size:1.4em; line-height: 2.5; width: 100%;">
+                    <li onclick="quickCheck3(this, true)">العدد يقبل القسمة على ٣ إذا كان مجموع أرقامه يقبل القسمة على ٣.</li>
+                    <li onclick="quickCheck3(this, false)">نعرف قابليّة القسمة على ٣ بمجرد النظر إلى رقم الآحاد فقط.</li>
+                    <li onclick="quickCheck3(this, true)">العدد ١٢٢ لا يقبل القسمة على ٣ لأن مجموع أرقامه يساوي ٥.</li>
+                </ol>
+                <br>
+                <button onclick="stage10_FinalFeedback()" style="background:#ff6b6b; color:white;">انتقل لجدول الاستكشاف والاختبار ➡️</button>
+            `;
+        }
+
+        function quickCheck3(el, isCorrectAnswer) {
+            if (isCorrectAnswer) {
+                el.style.background = '#2ecc71';
+                el.style.color = 'white';
+                score += 15;
+                playSound(true);
+            } else {
+                el.style.background = '#e74c3c';
+                el.style.color = 'white';
+                playSound(false);
+            }
+        }
+
+        // المرحلة ١٠: التهنئة التمهيدية والتحضير للجدول
+        function stage10_FinalFeedback() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#ff6b6b;">المرحلة ١٠: مبروك يا بطل! 🎉</div>
+                <h2 style="text-align:center; margin:40px;">لقد استوعبت سر مجموع الأرقام للعدد ٣ بنجاح!</h2>
+                <p style="font-size:2em; text-align:center;">مجموع نقاطك التراكمي الحالي: <span style="color:#ff9f1c; font-weight:bold;">${toEasternArabic(score)}</span></p>
+                <br><br>
+                <button onclick="startTableActivity3()" style="background:#2c3e50; color:white; font-size:1.3em; padding:15px 40px;">الآن نملأ جدول كتاب الطالب الشامل 📊</button>
+            `;
+        }
+
+        // نشاط الجدول الاستكشافي المقتبس من مقدمة الدرس الرابع في كتاب الطالب
+        function startTableActivity3() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">نشاط جدول مقارنة البواقي (تمرين الكتاب المدرسي) 📊</div>
+                <p style="margin:10px; font-size:1.2em;">أكمل الخلايا الفارغة في الجدول بمقارنة باقي قسمة العدد على ٣ وباقي قسمة مجموع أرقامه:</p>
+                <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+                    <tr style="background:#00cec9; color:white;">
+                        <th>العدد</th>
+                        <th>مجموع أرقام العدد</th>
+                        <th>باقي قسمة العدد على ٣</th>
+                        <th>باقي قسمة مجموع أرقامه على ٣</th>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(122)}</strong></td>
+                        <td>${toEasternArabic(5)}</td>
+                        <td>${toEasternArabic(2)}</td>
+                        <td>${toEasternArabic(2)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(183)}</strong></td>
+                        <td><input type="number" id="sum183" style="width:70px; padding:5px;"></td>
+                        <td><input type="number" id="remNum183" style="width:70px; padding:5px;"></td>
+                        <td><input type="number" id="remSum183" style="width:70px; padding:5px;"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(252)}</strong></td>
+                        <td>${toEasternArabic(9)}</td>
+                        <td>${toEasternArabic(0)}</td>
+                        <td>${toEasternArabic(0)}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(48)}</strong></td>
+                        <td><input type="number" id="sum48" style="width:70px; padding:5px;"></td>
+                        <td><input type="number" id="remNum48" style="width:70px; padding:5px;"></td>
+                        <td><input type="number" id="remSum48" style="width:70px; padding:5px;"></td>
+                    </tr>
+                </table>
+                <button onclick="validateTable3()">تحقق وتدقيق جدول البواقي ⚙️</button>
+            `;
+        }
+
+        function validateTable3() {
+            const s183 = document.getElementById('sum183').value;
+            const rn183 = document.getElementById('remNum183').value;
+            const rs183 = document.getElementById('remSum183').value;
+            
+            const s48 = document.getElementById('sum48').value;
+            const rn48 = document.getElementById('remNum48').value;
+            const rs48 = document.getElementById('remSum48').value;
+
+            if((s183 == 12 || s183 == '١٢') && (rn183 == 0 || rn183 == '٠') && (rs183 == 0 || rs183 == '٠') &&
+               (s48 == 12 || s48 == '١٢') && (rn48 == 0 || rn48 == '٠') && (rs48 == 0 || rs48 == '٠')) {
+                
+                alert("🎉 مذهل وعلامة كاملة! لقد لاحظت أن باقي قسمة العدد يساوي دائماً باقي قسمة مجموع أرقامه!");
+                score += 50;
+                playSound(true);
+                startFinalChallenge3();
+            } else {
+                playSound(false);
+                alert("تنبيه من الثعلب 🦊: بعض القيم تحتاج مراجعة، اجمع الأرقام بدقة (١+٨+٣) و (٤+٨)، وتذكر أن الأعداد المتبقية تقبل القسمة بدون باقي!");
+            }
+        }
+
+        // التحدي النهائي المكون من 15 سؤالاً تفاعلياً شاملاً للدرس الرابع بعد تصحيح السؤال ١٣ هندسياً ورقمياً
+        const finalQuestionsSet3 = [
+            { q: "ما هي القاعدة الذهبية لمعرفة قابلية القسمة على ٣؟", choiceA: "أن يكون مجموع أرقامه يقبل القسمة على ٣", choiceB: "أن يكون آحاده عدداً زوجياً", correct: "A" },
+            { q: "هل العدد ٢١٩ يقبل القسمة على ٣؟", choiceA: "نعم، لأن مجموع أرقامه ١٢ وهي تقبل على ٣", choiceB: "لا، لأن آحاده فردي", correct: "A" },
+            { q: "تمرين الكتاب: أي من الأعداد التالية يقبل القسمة على ٣؟", choiceA: "١١", choiceB: "١٢٦", correct: "B" },
+            { q: "إذا كان مجموع أرقام العدد هو ٩، فهل يقبل القسمة على ٣؟", choiceA: "نعم، لأن ٩ ÷ ٣ = ٣ بدون باقي", choiceB: "لا يقبل", correct: "A" },
+            { q: "ما هو مجموع أرقام العدد ٣٥٧؟", choiceA: "١٥", choiceB: "١٠", correct: "A" },
+            { q: "هل العدد ١٠ يقبل القسمة على ٣؟", choiceA: "لا، لأن مجموع أرقامه ١ والباقي ١", choiceB: "نعم يقبل", correct: "A" },
+            { q: "ما أصغر رقم نضعه في المربع ليكون العدد لا يقبل القسمة على ٣؟ ونضعه في مئات العدد ( آحاد: ٤ | عشرات: ٣ | مئات: ☐ )", choiceA: "٠ (الصفر)", choiceB: "٢", correct: "A" },
+            { q: "تمرين الكتاب: هل العدد ٢٢ يقبل القسمة على ٣؟", choiceA: "لا، الباقي واحد ومجموع أرقامه ٤", choiceB: "نعم يقبل", correct: "A" },
+            { q: "ما أكبر رقم مناسب نضعه في المربع ليقبل العدد القسمة على ٣؟ ونضعه في مئات العدد ( آحاد: ٥ | عشرات: ٤ | مئات: ☐ )", choiceA: "٩", choiceB: "٧", correct: "A" },
+            { q: "إذا كان باقي قسمة مجموع أرقام العدد على ٣ يساوي ٢، فإن باقي قسمة العدد نفسه على ٣ هو:", choiceA: "٢", choiceB: "صفر", correct: "A" },
+            { q: "هل العدد ٢٦٠ يقبل القسمة على ٣؟", choiceA: "لا، لأن مجموع أرقامه ٨", choiceB: "نعم يقبل", correct: "A" },
+            { q: "أي الأعداد التالية لا يقبل القسمة على ٣؟", choiceA: "٣٧", choiceB: "٤٨", correct: "A" },
+            { q: "تمرين الكتاب المعدل: ضع أصغر رقم في المربع ليقبل القسمة على ٣ ونضعه في مئات العدد المكون من ( آحاد: ٣ | عشرات: ٦ | مئات: ☐ )", choiceA: "٠ (الصفر) ليصبح العدد المكتوب ٠٦٣ (أي ٦٣) ومجموعه ٩", choiceB: "١ ليكون العدد ١٦٣ ومجموعه ١٠", correct: "A" },
+            { q: "العدد ٣٠٠ يقبل القسمة على ٣ لأن مجموع أرقامه هو:", choiceA: "٣", choiceB: "صفر", correct: "A" },
+            { q: "السؤال الذهبي: متى يقبل العدد القسمة على ٢ و ٣ في آن واحد؟", choiceA: "إذا كان آحاده زوجياً ومجموع أرقامه يقبل على ٣", choiceB: "إذا كان آحاده ٥ دائماً", correct: "A" }
+        ];
+
+        function startFinalChallenge3() {
+            finalChallengeIndex = 0;
+            renderChallengeQuestion3();
+        }
+
+        function renderChallengeQuestion3() {
+            const container = document.getElementById('mainContainer');
+            if (finalChallengeIndex < finalQuestionsSet3.length) {
+                const currentQ = finalQuestionsSet3[finalChallengeIndex];
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#ff6b6b; color:white;">الاختبار النهائي الكبير - السؤال (${toEasternArabic(finalChallengeIndex + 1)} من ${toEasternArabic(15)})</div>
+                    <p style="text-align:center; font-size:1.6em; margin:30px; font-weight:bold; color:#2c3e50;">${currentQ.q}</p>
+                    <div>
+                        <button onclick="answerFinal3('A')" style="font-size:1.2em; padding:15px 35px; background:#00b894; color:white; width:80%; max-width:600px; margin:10px auto; display:block;">${currentQ.choiceA}</button>
+                        <button onclick="answerFinal3('B')" style="font-size:1.2em; padding:15px 35px; background:#00b894; color:white; width:80%; max-width:600px; margin:10px auto; display:block;">${currentQ.choiceB}</button>
+                    </div>
+                    <p style="margin-top:25px; color:#7f8c8d; font-size:1.1em;">النقاط المحرزة حالياً: ${toEasternArabic(score)}</p>
+                `;
+            } else {
+                completeGame3();
+            }
+        }
+
+        function answerFinal3(studentChoice) {
+            const currentQ = finalQuestionsSet3[finalChallengeIndex];
+            if (studentChoice === currentQ.correct) {
+                score += 20;
+                playSound(true);
+                alert("✅ أحسنت! تطبيق ذكي وممتاز لقاعدة الدرس.");
+            } else {
+                playSound(false);
+                alert("❌ تذكر القاعدة: اجمع الأرقام دائماً لتتحقق من صحة الحل!");
+            }
+            finalChallengeIndex++;
+            renderChallengeQuestion3();
+        }
+
+        function completeGame3() {
+            const container = document.getElementById('mainContainer');
+            const totalStars = Math.min(5, Math.floor(score / 90));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px; background:linear-gradient(#00cec9, #ffeaa7); border-radius:25px; box-shadow:0 10px 20px rgba(0,0,0,0.15);">
+                    <h1 style="font-size:2.8em; color:#2c3e50;">🎉 بطل سحر الرقم ٣ الفذ! 🎉</h1>
+                    <p style="font-size:1.8em; margin:25px 0; color:#2c3e50;">تهانينا الفائقة! لقد أتممت الدرس الرابع كاملاً وحللت كافة مسائل المربعات الخالية بنجاح الخانات المضبوطة هندسياً والمنظمة تربوياً.</p>
+                    <div style="font-size:4.5em; margin:20px; letter-spacing:10px;">${'⭐'.repeat(totalStars === 0 ? 1 : totalStars)}</div>
+                    <p style="font-size:1.8em; color:#2c3e50;">رصيدك النهائي الفاخر: <strong>${toEasternArabic(score)} نقطة</strong></p>
+                    <br>
+                    <button onclick="startGame()" style="background:#ff6b6b; color:white; padding:20px 45px; font-size:1.4em; border-radius:50px;">
+                        إعادة مغامرة الاستكشاف 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            updateGuide("عمل أسطوري يا بطل! لقد حصلت على الأوسمة الكاملة لدرس قابلية القسمة على ٣! 🦊");
+        }
+
+        window.onload = function() {
+            startGame();
+        };
+    </script>
+</body>
+</html>
