@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة قابلية القسمة - الصف الرابع</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf, #d0f0c0);
+            color: #333;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+        header {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .character {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            z-index: 100;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .guide-bubble {
+            position: fixed;
+            bottom: 150px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 250px;
+            z-index: 101;
+            display: none;
+            border: 2px solid #4ecdc4;
+        }
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 30px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+        .game-container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stage-header {
+            background: #4ecdc4;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        button {
+            background: #ff9f1c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 8px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background: #ff6b6b;
+        }
+        .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .drop-zone {
+            border: 3px dashed #4ecdc4;
+            padding: 20px;
+            min-height: 100px;
+            border-radius: 15px;
+            margin: 15px 0;
+            background: #fdfdfd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        input[type="number"], input[type="text"] {
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            margin: 10px;
+            width: 150px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        th, td {
+            border: 2px solid #bdc3c7;
+            padding: 12px;
+            text-align: center;
+        }
+        th { background: #4ecdc4; color: white; }
+        .table-select {
+            padding: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+        ol {
+            text-align: right;
+            display: inline-block;
+            margin: 20px auto;
+        }
+        ol li {
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #f0f0f0;
+            transition: all 0.2s;
+        }
+        ol li:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧠 مغامرة قابلية القسمة 🧠</h1>
+        <p>الصف الرابع الابتدائي</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble"></div>
+    <img id="guide" class="character" src="https://via.placeholder.com/120x150/4ecdc4/ffffff?text=🦊" alt="المرشد" onclick="triggerGuideSpeech()">
+
+    <div class="game-container" id="mainContainer">
+        <!-- المحتوى الديناميكي -->
+    </div>
+
+    <script>
+        let score = 0;
+        let finalChallengeIndex = 0;
+
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => arabicDigits[d]);
+        }
+
+        const guideMessages = [
+            "مرحبا! أنا ثعلب القسمة، سنكتشف معًا متى يقبل العدد القسمة! 🦊",
+            "جرب بنفسك... لا تخف من التجربة!",
+            "رائع! اكتشفت القاعدة بنفسك 🎉",
+            "دعنا نجرب مثالاً آخر",
+            "الآن نفهم القاعدة جيدًا!",
+            "شكرًا لك على الاكتشاف الممتع! 🦊"
+        ];
+
+        function updateGuide(text) {
+            const bubble = document.getElementById('guideBubble');
+            if (bubble) {
+                bubble.textContent = text;
+                bubble.style.display = 'block';
+            }
+        }
+
+        function triggerGuideSpeech() {
+            updateGuide("استمر في اللعب يا بطل لتحقيق النجوم الكاملة! 🦊");
+        }
+
+        // تم إصلاح دالة الصوت وعزلها تماماً لتجنب إيقاف اللعبة
+        function playSound(isSuccess) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audio = new AudioContext();
+                const oscillator = audio.createOscillator();
+                const gainNode = audio.createGain();
+                oscillator.frequency.setValueAtTime(isSuccess ? 800 : 300, audio.currentTime);
+                oscillator.type = 'sine';
+                oscillator.connect(gainNode);
+                gainNode.connect(audio.destination);
+                oscillator.start();
+                gainNode.gain.setValueAtTime(0.2, audio.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.3);
+                oscillator.stop(audio.currentTime + 0.3);
+            } catch(e) { 
+                console.log("Audio play blocked or not supported yet"); 
+            }
+        }
+
+        // المرحلة 0: البداية
+        function startGame() {
+            score = 0;
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">مرحبًا في مغامرة قابلية القسمة!</div>
+                <div style="text-align:center; padding:40px;">
+                    <h2>🦊 مع ثعلب القسمة</h2>
+                    <p style="font-size:1.5em; margin:30px 0;">
+                        سنكتشف متى يقبل العدد القسمة بدون باقي<br>
+                        من خلال اللعب والتجربة
+                    </p>
+                    <button onclick="stage1_Curiosity()" style="font-size:1.6em; padding:20px 50px;">
+                        ابدأ المغامرة 🚀
+                    </button>
+                </div>
+            `;
+            setTimeout(() => { updateGuide(guideMessages[0]); }, 200);
+        }
+
+        // المرحلة ١: إثارة الفضول
+        function stage1_Curiosity() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: إثارة الفضول</div>
+                <h2 style="text-align:center; margin:30px;">🧐 ما رأيك؟</h2>
+                <p style="font-size:1.6em; text-align:center; margin:40px; line-height:2;">
+                    لاحظ هذه العمليات:<br>
+                    ${toEasternArabic(8)} ÷ ${toEasternArabic(4)} = ${toEasternArabic(2)} (بدون باقي)<br>
+                    ${toEasternArabic(9)} ÷ ${toEasternArabic(4)} = ${toEasternArabic(2)} وباقي ${toEasternArabic(1)}
+                </p>
+                <button onclick="stage2_Exploration()">هيا نكتشف لماذا يحدث هذا! 🚀</button>
+            `;
+            updateGuide(guideMessages[1]);
+        }
+
+        // المرحلة ٢: نشاط استكشافي
+        let demoA = 0, demoB = 0;
+        function stage2_Exploration() {
+            demoA = 0; demoB = 0;
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: نشاط استكشافي</div>
+                <h3>اضغط على الأرقام لتجربتها في خانات القسمة:</h3>
+                
+                <div style="margin: 20px 0; font-size: 1.2em;">
+                    <button onclick="setDemoNumbers(12, 3)">تجرِبة: ${toEasternArabic(12)} ÷ ${toEasternArabic(3)}</button>
+                    <button onclick="setDemoNumbers(14, 4)">تجرِبة: ${toEasternArabic(14)} ÷ ${toEasternArabic(4)}</button>
+                    <button onclick="setDemoNumbers(20, 5)">تجرِبة: ${toEasternArabic(20)} ÷ ${toEasternArabic(5)}</button>
+                </div>
+
+                <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin:30px 0;">
+                    <div class="drop-zone">المقسوم: <span id="valA" class="number">-</span></div>
+                    <div class="drop-zone">المقسوم عليه: <span id="valB" class="number">-</span></div>
+                </div>
+                <div id="resultArea" style="text-align:center; font-size:1.5em; min-height:80px; color: #2c3e50;"></div>
+                <button onclick="checkDivisibilityDemo()">تحقق من القسمة</button>
+                <button onclick="stage3_Observation()">التالي ➡️</button>
+            `;
+            updateGuide("اختر أحد أزرار الأرقام بالخلف لتجربتها!");
+        }
+
+        function setDemoNumbers(a, b) {
+            demoA = a;
+            demoB = b;
+            document.getElementById('valA').textContent = toEasternArabic(a);
+            document.getElementById('valB').textContent = toEasternArabic(b);
+            document.getElementById('resultArea').innerHTML = "";
+        }
+
+        function checkDivisibilityDemo() {
+            if(demoA === 0 || demoB === 0) {
+                alert("الرجاء اختيار أحد أزرار الأرقام أولاً!");
+                return;
+            }
+            const q = Math.floor(demoA / demoB);
+            const r = demoA % demoB;
+            const resultArea = document.getElementById('resultArea');
+            
+            if(r === 0) {
+                resultArea.innerHTML = `🎉 الناتج هو ${toEasternArabic(q)} والباقي ${toEasternArabic(r)} (بما أن الباقي صفر، يقبل القسمة!)`;
+                playSound(true);
+            } else {
+                resultArea.innerHTML = `⚡ الناتج هو ${toEasternArabic(q)} والباقي ${toEasternArabic(r)} (يوجد باقي، إذن لا يقبل القسمة)`;
+                playSound(false);
+            }
+            score += 10;
+        }
+
+        // المرحلة ٣: ملاحظة النتائج
+        function stage3_Observation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: ملاحظة النتائج</div>
+                <h3>ما الذي لاحظته من تجاربك؟</h3>
+                <div style="background:#f0f8ff; padding:25px; border-radius:15px; margin:20px 0; text-align:right; line-height:2;">
+                    <p style="font-size:1.4em;">عندما يكون الباقي = ${toEasternArabic(0)} نقول: العدد <strong style="color:green;">يقبل القسمة</strong></p>
+                    <p style="font-size:1.4em;">عندما يكون الباقي &gt; ${toEasternArabic(0)} نقول: العدد <strong style="color:red;">لا يقبل القسمة</strong></p>
+                </div>
+                <button onclick="stage4_Conclusion()">فهمت الملاحظة ولنستنتج المفهوم! 🚀</button>
+            `;
+            updateGuide(guideMessages[2]);
+        }
+
+        // المرحلة ٤: استنتاج المفهوم
+        function stage4_Conclusion() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٤: استنتاج المفهوم</div>
+                <h3 style="color:#2c3e50;">استنتج بنفسك واكمل الفراغ التالي:</h3>
+                <p style="font-size:1.4em; margin:30px 0;">يقبل العدد القسمة على عدد آخر إذا كان الباقي يساوي...</p>
+                <input type="text" id="studentConclusion" placeholder="اكتب الناتج هنا" style="width:250px;">
+                <br>
+                <button onclick="checkConclusion()">تحقق من استنتاجي</button>
+            `;
+        }
+
+        function checkConclusion() {
+            const answer = document.getElementById('studentConclusion').value.trim();
+            if (answer.includes('0') || answer.includes('٠') || answer.includes('صفر')) {
+                score += 20;
+                playSound(true);
+                alert("🎉 ممتاز! استنتاجك صحيح، الباقي يجب أن يكون صفراً.");
+                stage5_SimpleExplanation();
+            } else {
+                playSound(false);
+                alert("حاول مرة أخرى... فكر كم يجب أن يكون باقي القسمة لكي تقبل القسمة بالكامل؟ (تلميح: صفر)");
+            }
+        }
+
+        // المرحلة ٥: الشرح المبسط
+        function stage5_SimpleExplanation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٥: الشرح المبسط</div>
+                <div style="background:#e8f5e9; padding:25px; border-radius:15px; text-align:center; line-height:2.2;">
+                    <h2>القاعدة البسيطة المعتمدة:</h2>
+                    <p style="font-size:1.6em; margin:20px; color:#27ae60;">إذا كان الباقي = ${toEasternArabic(0)} ← يقبل القسمة</p>
+                    <p style="font-size:1.6em; color:#c0392b;">إذا كان الباقي ≠ ${toEasternArabic(0)} ← لا يقبل القسمة</p>
+                </div>
+                <button onclick="stage6_InteractiveExample(1)">هيا لمثال تفاعلي 📊</button>
+            `;
+            updateGuide(guideMessages[4]);
+        }
+
+        // المرحلة ٦: مثال تفاعلي
+        function stage6_InteractiveExample(exampleNum) {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">مثال تفاعلي ${toEasternArabic(exampleNum)}</div>
+                <h3>هل العدد ${toEasternArabic(16)} يقبل القسمة على ${toEasternArabic(4)}؟</h3>
+                <div style="font-size:2.5em; margin:30px;">${toEasternArabic(16)} ÷ ${toEasternArabic(4)} = </div>
+                <input type="number" id="quotient" placeholder="الناتج">
+                <br>
+                <button onclick="checkExample1()">تحقق من الإجابة</button>
+            `;
+        }
+
+        function checkExample1() {
+            const quot = document.getElementById('quotient').value;
+            if (quot == 4 || quot == '٤') {
+                score += 30;
+                playSound(true);
+                alert(`✅ صحيح ومبدع! ${toEasternArabic(16)} = ${toEasternArabic(4)} × ${toEasternArabic(4)} (والباقي صفر)`);
+                stage7_GuidedPractice();
+            } else {
+                playSound(false);
+                alert(`حاول مرة أخرى. تذكر: ما هو العدد الذي نضربه في ${toEasternArabic(4)} ليعطينا ${toEasternArabic(16)}؟`);
+            }
+        }
+
+        // المرحلة ٧: تدريب موجه
+        function stage7_GuidedPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٧: تدريب موجه</div>
+                <h3>هل العدد ${toEasternArabic(37)} يقبل القسمة على ${toEasternArabic(5)}؟</h3>
+                <p style="margin:15px; font-size:1.2em;">اكتب ناتج القسمة والباقي المتبقي:</p>
+                <input type="number" id="q1" placeholder="الناتج">
+                <input type="number" id="r1" placeholder="الباقي">
+                <br>
+                <button onclick="checkGuided()">تحقق من التدريب</button>
+            `;
+        }
+
+        function checkGuided() {
+            const q = document.getElementById('q1').value;
+            const r = document.getElementById('r1').value;
+            if ((q == 7 || q == '٧') && (r == 2 || r == '٢')) {
+                playSound(true);
+                alert(`✅ ممتاز جداً! ${toEasternArabic(37)} = (${toEasternArabic(7)} × ${toEasternArabic(5)}) + باقي ${toEasternArabic(2)} ← إذن لا يقبل القسمة`);
+                stage8_IndependentPractice();
+            } else {
+                playSound(false);
+                alert(`تلميح 🦊: أقرب عدد في جدول ٥ للعدد ${toEasternArabic(37)} هو ${toEasternArabic(35)} وهو ناتج ضرب ٥ × ٧.`);
+            }
+        }
+
+        // المرحلة ٨: تدريب مستقل
+        function stage8_IndependentPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٨: تدريب مستقل</div>
+                <h3>من الأعداد التالية، اضغط على الأعداد التي تقبل القسمة على ${toEasternArabic(5)} فقط:</h3>
+                <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:15px; margin:30px 0;">
+                    <button onclick="selectNumber(5, this)">${toEasternArabic(5)}</button>
+                    <button onclick="selectNumber(14, this)">${toEasternArabic(14)}</button>
+                    <button onclick="selectNumber(15, this)">${toEasternArabic(15)}</button>
+                    <button onclick="selectNumber(23, this)">${toEasternArabic(23)}</button>
+                    <button onclick="selectNumber(30, this)">${toEasternArabic(30)}</button>
+                    <button onclick="selectNumber(32, this)">${toEasternArabic(32)}</button>
+                </div>
+                <div id="feedback" style="min-height:50px; font-weight:bold;"></div>
+                <button onclick="stage9_Challenge()" style="background:#2ecc71;">الانتقال للمرحلة التالية ➡️</button>
+            `;
+        }
+
+        function selectNumber(num, btn) {
+            const feedback = document.getElementById('feedback');
+            if (num % 5 === 0) {
+                feedback.innerHTML = `<p style="color:green; font-size:1.5em;">✅ ممتاز! العدد ${toEasternArabic(num)} يقبل القسمة على ٥ لأن آحادها ٠ أو ٥.</p>`;
+                btn.style.background = "#2ecc71";
+                score += 15;
+                playSound(true);
+            } else {
+                feedback.innerHTML = `<p style="color:#e74c3c; font-size:1.5em;">❌ خطأ! العدد ${toEasternArabic(num)} لا يقبل القسمة على ٥ (الباقي هو ${toEasternArabic(num % 5)})</p>`;
+                btn.style.background = "#e74c3c";
+                playSound(false);
+            }
+        }
+
+        // المرحلة ٩: تحدٍ قصير
+        function stage9_Challenge() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٩: تحدٍ قصير</div>
+                <h3>اضغط على المسائل الصحيحة التي تعبر عن عملية قسمة "بدون باقي":</h3>
+                <ol style="font-size:1.4em; line-height: 2.5;">
+                    <li onclick="quickCheck(this, true)">${toEasternArabic(24)} ÷ ${toEasternArabic(3)}</li>
+                    <li onclick="quickCheck(this, false)">${toEasternArabic(31)} ÷ ${toEasternArabic(6)}</li>
+                    <li onclick="quickCheck(this, true)">${toEasternArabic(25)} ÷ ${toEasternArabic(5)}</li>
+                </ol>
+                <br>
+                <button onclick="stage10_FinalFeedback()" style="background:#9b59b6;">عرض صفحة النقاط 🌟</button>
+            `;
+        }
+
+        function quickCheck(el, isCorrectAnswer) {
+            if (isCorrectAnswer) {
+                el.style.background = '#4caf50';
+                el.style.color = 'white';
+                score += 10;
+                playSound(true);
+            } else {
+                el.style.background = '#e74c3c';
+                el.style.color = 'white';
+                playSound(false);
+            }
+        }
+
+        // المرحلة ١٠: التهنئة التمهيدية
+        function stage10_FinalFeedback() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#9b59b6;">المرحلة ١٠: تهانينا! 🎉</div>
+                <h2 style="text-align:center; margin:40px;">لقد أكملت دراسة المفهوم النظري لقابلية القسمة بنجاح!</h2>
+                <p style="font-size:2em; text-align:center;">نقاطك التراكمية الحالية هي: <span style="color:#e67e22; font-weight:bold;">${toEasternArabic(score)}</span></p>
+                <br><br>
+                <button onclick="startTableActivity()" style="background:#34495e; font-size:1.3em; padding:15px 40px;">الآن نلعب مع الجدول التفاعلي 📊</button>
+            `;
+        }
+
+        // نشاط مستقل للجدول
+        function startTableActivity() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">نشاط الجدول التفاعلي المتكامل</div>
+                <p style="margin:10px; font-size:1.2em;">حدد لكل عدد من الجدول التالي إن كان (نعم) يقبل القسمة أو (لا) يقبل القسمة:</p>
+                <table style="width:100%; border-collapse:collapse; margin:20px 0;">
+                    <tr style="background:#4ecdc4; color:white;">
+                        <th>العدد</th><th>${toEasternArabic(2)}</th><th>${toEasternArabic(3)}</th><th>${toEasternArabic(5)}</th><th>${toEasternArabic(10)}</th>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(10)}</strong></td>
+                        <td>نعم</td><td>لا</td><td>نعم</td><td>نعم</td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(15)}</strong></td>
+                        <td><select id="c15_2" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c15_3" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c15_5" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c15_10" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(20)}</strong></td>
+                        <td><select id="c20_2" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c20_3" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c20_5" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c20_10" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                    </tr>
+                    <tr>
+                        <td><strong>${toEasternArabic(30)}</strong></td>
+                        <td><select id="c30_2" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c30_3" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c30_5" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                        <td><select id="c30_10" class="table-select"><option value="لا">لا</option><option value="نعم">نعم</option></select></td>
+                    </tr>
+                </table>
+                <button onclick="fillTable()">املأ الجدول وتحقق من صحة الإجابات</button>
+            `;
+        }
+
+        function fillTable() {
+            const ans15_2 = document.getElementById('c15_2').value;
+            const ans15_3 = document.getElementById('c15_3').value;
+            const ans15_5 = document.getElementById('c15_5').value;
+            const ans15_10 = document.getElementById('c15_10').value;
+
+            const ans20_2 = document.getElementById('c20_2').value;
+            const ans20_3 = document.getElementById('c20_3').value;
+            const ans20_5 = document.getElementById('c20_5').value;
+            const ans20_10 = document.getElementById('c20_10').value;
+
+            const ans30_2 = document.getElementById('c30_2').value;
+            const ans30_3 = document.getElementById('c30_3').value;
+            const ans30_5 = document.getElementById('c30_5').value;
+            const ans30_10 = document.getElementById('c30_10').value;
+
+            if(ans15_2 === "لا" && ans15_3 === "نعم" && ans15_5 === "نعم" && ans15_10 === "لا" &&
+               ans20_2 === "نعم" && ans20_3 === "لا" && ans20_5 === "نعم" && ans20_10 === "نعم" &&
+               ans30_2 === "نعم" && ans30_3 === "نعم" && ans30_5 === "نعم" && ans30_10 === "نعم") {
+                
+                alert("✅ رائع! الجدول صحيح بالكامل!");
+                score += 50;
+                playSound(true);
+                startFinalChallenge();
+            } else {
+                playSound(false);
+                alert("تنبيه 🦊: هناك بعض الخانات غير الصحيحة بالجدول، أعد مراجعتها والتحقق منها.");
+            }
+        }
+
+        // التحدي النهائي (15 سؤالاً)
+        const finalQuestionsSet = [
+            { q: "هل ٢٤ يقبل القسمة على ٤؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "هل ١٥ يقبل القسمة على ٢؟", choiceA: "نعم", choiceB: "لا", correct: "B" },
+            { q: "ما هو باقي قسمة العدد ١٧ على ٥؟", choiceA: "٢", choiceB: "١", correct: "A" },
+            { q: "هل العدد ٣٠ يقبل القسمة على ١٠؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "العدد الذي يقبل القسمة على جميع الأعداد هو الصفر؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "هل العدد ١٨ يقبل القسمة على ٣؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "أي عدد آحاده ٠ يقبل القسمة على ٥ و ١٠ معاً؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "هل العدد ٢٢ يقبل القسمة على ٣؟", choiceA: "نعم", choiceB: "لا", correct: "B" },
+            { q: "إذا كان باقي القسمة صفراً، فإن المقسوم يقبل القسمة؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "هل العدد ٤٥ يقبل القسمة على ٥؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "ما هو ناتج قسمة ١٢ ÷ ٣ وبدون باقي؟", choiceA: "٤", choiceB: "٥", correct: "A" },
+            { q: "هل العدد ١٦ يقبل القسمة على ٥؟", choiceA: "نعم", choiceB: "لا", correct: "B" },
+            { q: "هل العدد ٤٠ يقبل القسمة على ٢؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "أي عدد زوجي يقبل القسمة على ٢؟", choiceA: "نعم", choiceB: "لا", correct: "A" },
+            { q: "هل العدد ٣٥ يقبل القسمة على ١٠؟", choiceA: "نعم", choiceB: "لا", correct: "B" }
+        ];
+
+        function startFinalChallenge() {
+            finalChallengeIndex = 0;
+            renderChallengeQuestion();
+        }
+
+        function renderChallengeQuestion() {
+            const container = document.getElementById('mainContainer');
+            if (finalChallengeIndex < finalQuestionsSet.length) {
+                const currentQ = finalQuestionsSet[finalChallengeIndex];
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#e74c3c; color:white;">التحدي النهائي - السؤال (${toEasternArabic(finalChallengeIndex + 1)} من ${toEasternArabic(15)})</div>
+                    <p style="text-align:center; font-size:1.5em; margin:30px;">${currentQ.q}</p>
+                    <div>
+                        <button onclick="answerFinal('A')">${currentQ.choiceA}</button>
+                        <button onclick="answerFinal('B')">${currentQ.choiceB}</button>
+                    </div>
+                    <p style="margin-top:20px; color:#7f8c8d;">النقاط الحالية: ${toEasternArabic(score)}</p>
+                `;
+            } else {
+                completeGame();
+            }
+        }
+
+        function answerFinal(studentChoice) {
+            const currentQ = finalQuestionsSet[finalChallengeIndex];
+            if (studentChoice === currentQ.correct) {
+                score += 20;
+                playSound(true);
+                alert("✅ إجابة صحيحة!");
+            } else {
+                playSound(false);
+                alert("❌ إجابة خاطئة! ركز في السؤال القادم.");
+            }
+            finalChallengeIndex++;
+            renderChallengeQuestion();
+        }
+
+        function completeGame() {
+            const container = document.getElementById('mainContainer');
+            const totalStars = Math.min(5, Math.floor(score / 80));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px; background:linear-gradient(#ffd700, #ffeb3b); border-radius:25px;">
+                    <h1 style="font-size:3em; color:#2c3e50;">🎉 تهانينا يا بطل الرياضيات! 🎉</h1>
+                    <p style="font-size:2em; margin:30px 0;">لقد أتقنت درس ومفاهيم «قابلية القسمة» بالكامل</p>
+                    <div style="font-size:4em; margin:20px;">${'⭐'.repeat(totalStars === 0 ? 1 : totalStars)}</div>
+                    <p style="font-size:1.8em;">نقاطك النهائية: <strong>${toEasternArabic(score)}</strong></p>
+                    <br>
+                    <button onclick="startGame()" style="background:#27ae60; padding:20px 40px; font-size:1.4em;">
+                        العب واكتشف مرة أخرى 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            updateGuide(guideMessages[5]);
+        }
+
+        window.onload = function() {
+            startGame();
+        };
+    </script>
+</body>
+</html>
