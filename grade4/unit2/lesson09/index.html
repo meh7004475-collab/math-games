@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة فرسان الأرقام: المضاعف المشترك الأصغر (م.م.أ) 🏆</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            color: #1a237e;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            text-align: right;
+        }
+
+        header {
+            background: #1a237e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-bottom: 5px solid #0d47a1;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* الشخصية التفاعلية المرشد الذكي */
+        .character-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 100px;
+            z-index: 100;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .character-box:hover {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .guide-bubble {
+            position: fixed;
+            bottom: 130px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            max-width: 280px;
+            z-index: 101;
+            border: 3px solid #1a237e;
+            font-weight: bold;
+            font-size: 1em;
+            line-height: 1.5;
+            color: #1a237e;
+        }
+
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 35px;
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* حاوية اللعبة الرئيسية */
+        .game-container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+            min-height: 480px;
+            position: relative;
+        }
+
+        .stage-header {
+            background: #3f51b5;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* تصاميم العناصر التفاعلية والبطاقات */
+        .interactive-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .number-card {
+            background: #f5f5f5;
+            border: 2px solid #c5cae9;
+            border-radius: 12px;
+            padding: 15px 25px;
+            font-size: 1.6em;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            color: #1a237e;
+        }
+
+        .number-card:hover {
+            background: #e8eaf6;
+            transform: scale(1.05);
+        }
+
+        .number-card.selected {
+            background: #3f51b5 !important;
+            color: white !important;
+            border-color: #1a237e;
+        }
+
+        /* حاوية عرض المعادلات من اليمين لليسار بدقة */
+        .equation-box {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 25px 0;
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 15px;
+            color: #1a237e;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+            line-height: 1.8;
+        }
+
+        .math-text {
+            display: inline-block;
+            direction: ltr;
+            unicode-bidi: embed;
+        }
+
+        /* الأزرار وتفاعلاتها */
+        button {
+            background: #3f51b5;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            margin: 15px auto;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            display: block;
+            box-shadow: 0 4px 10px rgba(63,81,181,0.3);
+        }
+
+        button:hover {
+            background: #1a237e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(26,35,126,0.4);
+        }
+
+        .choice-button {
+            background: #1a237e;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            text-align: right;
+            padding: 15px 25px;
+            margin: 10px auto;
+            color: white;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: block;
+            transition: 0.2s;
+        }
+
+        .choice-button:hover {
+            background: #0d47a1;
+            border-color: #e8eaf6;
+            transform: scale(1.01);
+        }
+
+        /* المدخلات وقوالب ملء الفراغات لدرس التحليل */
+        .fill-blank-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+            direction: rtl;
+        }
+
+        .factor-line {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            direction: rtl;
+            background: #fafafa;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 2px solid #c5cae9;
+            width: 100%;
+            max-width: 480px;
+            justify-content: space-between;
+        }
+
+        .factor-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            direction: ltr;
+        }
+
+        .factor-line input {
+            width: 45px;
+            height: 45px;
+            font-size: 0.9em;
+            text-align: center;
+            border: 2px dashed #3f51b5;
+            border-radius: 8px;
+            color: #d32f2f;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            outline: none;
+            background: white;
+        }
+
+        .factor-line input:focus {
+            border-color: #1a237e;
+            background: #e8eaf6;
+        }
+
+        input[type="text"].normal-input {
+            padding: 12px;
+            border: 3px solid #c5cae9;
+            border-radius: 12px;
+            font-size: 1.4em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            width: 180px;
+            margin: 15px auto;
+            display: block;
+            color: #1a237e;
+            background: white;
+            outline: none;
+        }
+        
+        input[type="text"].normal-input:focus {
+            border-color: #3f51b5;
+        }
+
+        /* لوحة النقاط والتأثيرات البصرية */
+        .score-display {
+            text-align: center;
+            font-size: 1.3em;
+            color: #1a237e;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success-flash {
+            color: #2e7d32;
+            font-weight: bold;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏆 مغامرة فرسان الأرقام: المضاعف المشترك الأصغر (م.م.أ) 🏆</h1>
+        <p>الدرس التاسع: إيجاد م.م.أ بالتحليل وبالمضاعفات - المنهج التفاعلي المطور</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble">أهلاً بك يا بطل الرياضيات! أنا صديقك الذكي "مفكر"، دعنا نتعلم كيف نحسب المضاعف المشترك الأصغر (م.م.أ) للأعداد! 🦊</div>
+    <svg class="character-box" id="characterImage" viewBox="0 0 100 100" onclick="speakAgain()">
+        <circle cx="50" cy="50" r="45" fill="#1a237e"/>
+        <polygon points="50,25 30,55 70,55" fill="#ffb74d" />
+        <circle cx="40" cy="48" r="4" fill="#ffffff"/>
+        <circle cx="40" cy="48" r="2" fill="#000000"/>
+        <circle cx="60" cy="48" r="4" fill="#ffffff"/>
+        <circle cx="60" cy="48" r="2" fill="#000000"/>
+        <polygon points="50,55 45,62 55,62" fill="#d32f2f"/>
+        <path d="M 35 70 Q 50 80 65 70" stroke="#ffffff" stroke-width="4" fill="none"/>
+    </svg>
+
+    <div class="game-container" id="mainContainer"></div>
+
+    <script>
+        let score = 0;
+        let quizIndex = 0;
+        let selectedStage1Cards = [];
+
+        // الأرقام الهندية بالكامل للالتزام بالمنهج المدرسي المعتمد
+        const easternDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => easternDigits[d]);
+        }
+
+        // تحويل الأرقام المدخلة تلقائياً
+        function parseInputNumber(str) {
+            let result = '';
+            for (let char of str) {
+                let idx = easternDigits.indexOf(char);
+                if (idx !== -1) {
+                    result += idx;
+                } else if (/[0-9]/.test(char)) {
+                    result += char;
+                }
+            }
+            return parseInt(result, 10);
+        }
+
+        function playSound(success) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitIdeaContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                if (success) {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                }
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) { 
+                console.log("Audio block bypass"); 
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.onload = function() {
+            stage1_MultiplesMatch();
+        };
+
+        // المرحلة ١: إيجاد المضاعفات المشتركة لـ ٢ و ٣ (ص ٤٠)
+        function stage1_MultiplesMatch() {
+            selectedStage1Cards = [];
+            const container = document.getElementById('mainContainer');
+            
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: صائد المضاعفات المشتركة لـ ${toEasternArabic(2)} و ${toEasternArabic(3)} 🎯</div>
+                <p style="font-size:1.3em; text-align:center; margin-bottom:15px; font-weight:bold;">
+                    انقر على المضاعفات المشتركة للعددين <span style="color:#d32f2f;">${toEasternArabic(2)}</span> و <span style="color:#d32f2f;">${toEasternArabic(3)}</span> الأصغر من ٢٠:
+                </p>
+                
+                <div class="equation-box">
+                    مضاعفات العدد ٢ هي: ٢ ، ٤ ، ٦ ، ٨ ، ١٠ ، ١٢ ، ١٤ ، ١٦ ، ١٨ ، ٢٠ ... <br>
+                    مضاعفات العدد ٣ هي: ٣ ، ٦ ، ٩ ، ١٢ ، ١٥ ، ١٨ ، ٢١ ...
+                </div>
+
+                <div class="interactive-row">
+                    <div class="number-card" onclick="toggleStage1Card(this, 4)">${toEasternArabic(4)}</div>
+                    <div class="number-card" onclick="toggleStage1Card(this, 6)">${toEasternArabic(6)}</div>
+                    <div class="number-card" onclick="toggleStage1Card(this, 9)">${toEasternArabic(9)}</div>
+                    <div class="number-card" onclick="toggleStage1Card(this, 12)">${toEasternArabic(12)}</div>
+                    <div class="number-card" onclick="toggleStage1Card(this, 15)">${toEasternArabic(15)}</div>
+                    <div class="number-card" onclick="toggleStage1Card(this, 18)">${toEasternArabic(18)}</div>
+                </div>
+
+                <button onclick="checkStage1()" style="margin-top:25px;">تحقق من الإجابة ✔️</button>
+            `;
+            document.getElementById('guideBubble').textContent = "اضغط على الأرقام المشتركة المتواجدة في مضاعفات ٢ ومضاعفات ٣ معاً! 🦊";
+        }
+
+        function toggleStage1Card(card, val) {
+            playSound(true);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedStage1Cards = selectedStage1Cards.filter(item => item !== val);
+            } else {
+                card.classList.add('selected');
+                selectedStage1Cards.push(val);
+            }
+        }
+
+        function checkStage1() {
+            const correctAnswers = [6, 12, 18];
+            const isMatch = selectedStage1Cards.length === correctAnswers.length && 
+                            selectedStage1Cards.every(f => correctAnswers.includes(f));
+            
+            if (isMatch) {
+                score += 30;
+                playSound(true);
+                alert("إجابة صحيحة ورائعة! المضاعفات المشتركة هي ٦، ١٢، ١٨، وأصغرها هو المضاعف المشترك الأصغر (م.م.أ) ويساوي ٦.");
+                stage2_PrimeFactorization24_32();
+            } else {
+                playSound(false);
+                alert("حاول مجدداً! ابحث عن الأرقام المشتركة بدقة: ٦، ١٢، ١٨.");
+            }
+        }
+
+        // المرحلة ٢: التحليل إلى العوامل الأولية للعددين ٢٤ و ٣٢ (ص ٤٠)
+        function stage2_PrimeFactorization24_32() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: تحليل العددين ${toEasternArabic(24)} و ${toEasternArabic(32)} 🔍</div>
+                <p style="font-size:1.3em; text-align:center; margin-bottom:15px; font-weight:bold;">
+                    أكمل التحليل إلى العوامل الأولية لاستنتاج (م.م.أ) للعددين:
+                </p>
+
+                <div class="fill-blank-container">
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(24)}:</span>
+                        <div class="factor-inputs">
+                            <span>٣ ×</span>
+                            <input type="text" id="fact24_1" maxlength="1" placeholder="؟">
+                            <span>×</span>
+                            <input type="text" id="fact24_2" maxlength="1" placeholder="؟">
+                            <span>×</span>
+                            <input type="text" id="fact24_3" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(32)}:</span>
+                        <div class="factor-inputs">
+                            <span>٢ × ٢ × ٢ ×</span>
+                            <input type="text" id="fact32_1" maxlength="1" placeholder="؟">
+                            <span>×</span>
+                            <input type="text" id="fact32_2" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equation-box">
+                    💡 حاصل ضرب العوامل المشتركة وغير المشتركة للعددين يعطينا م.م.أ:<br>
+                    <span style="color:#d32f2f;">م.م.أ = ٢ × ٢ × ٢ × ٢ × ٢ × ٣ = </span>
+                    <input type="text" id="finalLcmInput" class="normal-input" placeholder="اكتب الناتج النهائي" style="display:inline-block; vertical-align:middle; margin:0 10px;">
+                </div>
+
+                <button onclick="checkStage2()">تحقق من التحليل والناتج 🎯</button>
+            `;
+            document.getElementById('guideBubble').textContent = "املأ الفراغات بالعدد ٢ لتحليل الأعداد، ثم احسب حاصل ضرب العوامل كلها لتجد م.م.أ! 🦊";
+        }
+
+        function checkStage2() {
+            const f24_1 = parseInputNumber(document.getElementById('fact24_1').value.trim());
+            const f24_2 = parseInputNumber(document.getElementById('fact24_2').value.trim());
+            const f24_3 = parseInputNumber(document.getElementById('fact24_3').value.trim());
+            const f32_1 = parseInputNumber(document.getElementById('fact32_1').value.trim());
+            const f32_2 = parseInputNumber(document.getElementById('fact32_2').value.trim());
+            const lcm = parseInputNumber(document.getElementById('finalLcmInput').value.trim());
+
+            const isF24Correct = (f24_1 === 2 && f24_2 === 2 && f24_3 === 2);
+            const isF32Correct = (f32_1 === 2 && f32_2 === 2);
+
+            if (isF24Correct && isF32Correct && lcm === 96) {
+                score += 35;
+                playSound(true);
+                alert("عمل رائع ومثالي! م.م.أ للعددين ٢٤ و ٣٢ هو بالفعل ٩٦!");
+                stage3_ThreeNumbersLCM();
+            } else {
+                playSound(false);
+                alert("انتبه يا بطل! جميع الفراغات المفتوحة في التحليل قيمتها (٢)، والناتج النهائي لحاصل ضرب العوامل هو ٩٦.");
+            }
+        }
+
+        // المرحلة ٣: م.م.أ للأعداد الثلاثة ٤٥ و ٦٠ و ٩٠ (ص ٤١)
+        function stage3_ThreeNumbersLCM() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: تحدي الأعداد الثلاثة ${toEasternArabic(45)} ، ${toEasternArabic(60)} ، ${toEasternArabic(90)} ✏️</div>
+                <p style="font-size:1.3em; text-align:center; margin-bottom:15px; font-weight:bold;">
+                    أكمل المربعات لتحليل الأعداد الثلاثة واستخراج م.م.أ كما ورد بمثال كتابك المدرسي:
+                </p>
+
+                <div class="fill-blank-container">
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(45)}:</span>
+                        <div class="factor-inputs">
+                            <span>٥ ×</span>
+                            <input type="text" id="fact45_1" maxlength="1" placeholder="؟">
+                            <span>×</span>
+                            <input type="text" id="fact45_2" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(60)}:</span>
+                        <div class="factor-inputs">
+                            <span>٥ × ٣ ×</span>
+                            <input type="text" id="fact60_1" maxlength="1" placeholder="؟">
+                            <span>×</span>
+                            <input type="text" id="fact60_2" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(90)}:</span>
+                        <div class="factor-inputs">
+                            <span>٥ × ٣ × ٣ ×</span>
+                            <input type="text" id="fact90_1" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equation-box">
+                    م.م.أ للأعداد ( ٤٥ ، ٦٠ ، ٩٠ ) هو حاصل ضرب القوى العظمى للعوامل:<br>
+                    <span style="color:#d32f2f;">٥ × ٣ × ٣ × ٢ × ٢ = </span>
+                    <input type="text" id="threeLcmInput" class="normal-input" placeholder="اكتب م.م.أ" style="display:inline-block; vertical-align:middle; margin:0 10px;">
+                </div>
+
+                <button onclick="checkStage3()">تأكيد وحساب التحليل ✔️</button>
+            `;
+            document.getElementById('guideBubble').textContent = "قم بتحليل الأعداد؛ تحليل ٤٥ هو ٥ × ٣ × ٣، وتحليل ٦٠ هو ٥ × ٣ × ٢ × ٢، والناتج النهائي هو ١٨٠! 🦊";
+        }
+
+        function checkStage3() {
+            const f45_1 = parseInputNumber(document.getElementById('fact45_1').value.trim());
+            const f45_2 = parseInputNumber(document.getElementById('fact45_2').value.trim());
+            const f60_1 = parseInputNumber(document.getElementById('fact60_1').value.trim());
+            const f60_2 = parseInputNumber(document.getElementById('fact60_2').value.trim());
+            const f90_1 = parseInputNumber(document.getElementById('fact90_1').value.trim());
+            const finalLcm = parseInputNumber(document.getElementById('threeLcmInput').value.trim());
+
+            const isF45Correct = (f45_1 === 3 && f45_2 === 3);
+            const isF60Correct = (f60_1 === 2 && f60_2 === 2);
+            const isF90Correct = (f90_1 === 2);
+
+            if (isF45Correct && isF60Correct && isF90Correct && finalLcm === 180) {
+                score += 45;
+                playSound(true);
+                alert("يا لك من عبقري! التحليل سليم تماماً، والمضاعف المشترك الأصغر للقيم الثلاث هو ١٨٠!");
+                stage4_IntroToBigQuiz();
+            } else {
+                playSound(false);
+                alert("تأكد من إدخال الأرقام الصحيحة: فراغات ٤٥ هي (٣، ٣)، فراغات ٦٠ هي (٢، ٢)، فراغ ٩٠ هو (٢)، وناتج م.م.أ هو ١٨٠!");
+            }
+        }
+
+        // المرحلة ٤: مدخل التحدي الشامل لأسئلة تمرين (٩)
+        function stage4_IntroToBigQuiz() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#1a237e;">المرحلة الرابعة: تحدي فرسان (م.م.أ) الشامل 🚀</div>
+                <h2 style="text-align:center; margin:25px 0; color:#1a237e;">مستوى مذهل يا بطل!</h2>
+                <p style="font-size:1.4em; text-align:center; margin-bottom:30px; line-height:1.8;">
+                    أنت الآن جاهز لمواجهة التحدي الكبير وحل الأسئلة والتمارين المأخوذة مباشرة من كتابك المدرسي!
+                </p>
+                <button onclick="startFinalQuiz()" style="font-size:1.3em; padding:15px 50px; border-radius:50px;">ابتدئ التحدي الأخير 🦊🔥</button>
+            `;
+            document.getElementById('guideBubble').textContent = "استعد جيداً لتصبح سيد المضاعفات المشتركة! 🦊";
+        }
+
+        // الأسئلة التفاعلية المأخوذة من تمارين الصفحة الثانية
+        const quizDatabase = [
+            { q: "ما هو المضاعف المشترك الأصغر ويكتب اختصاراً ( م . م . أ)؟", choices: ["أصغر عدد يقبل القسمة على هذه الأعداد", "أكبر عدد تقبل هذه الأعداد القسمة عليه", "مجموع الأعداد المعطاة"], correct: "أصغر عدد يقبل القسمة على هذه الأعداد" },
+            { q: "من تمرين (٩) رقم ١: ما هو م.م.أ للعددين ٤٢ ، ٦٦؟", choices: ["٤٦٢", "١٣٢", "٦٦"], correct: "٤٦٢" },
+            { q: "من تمرين (٩) رقم ٢: ما هو م.م.أ للأعداد ٥ ، ١٠ ، ١٥؟", choices: ["٣٠", "١٥", "٦٠"], correct: "٣٠" },
+            { q: "من تمرين (٩) رقم ٤: ما هو م.م.أ للأعداد ١٢ ، ١٨ ، ٢٤؟", choices: ["٧٢", "٣٦", "٤٨"], correct: "٧٢" },
+            { q: "ما هو المضاعف المشترك الأصغر للعددين ٢ و ٣ كما ورد بأول الدرس؟", choices: ["٦", "٥", "١٢"], correct: "٦" }
+        ];
+
+        function startFinalQuiz() {
+            quizIndex = 0;
+            shuffleArray(quizDatabase);
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('mainContainer');
+            if (quizIndex < quizDatabase.length) {
+                const currentQ = quizDatabase[quizIndex];
+                const shuffledChoices = shuffleArray([...currentQ.choices]);
+
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#1a237e;">التحدي الكبير: سؤال (${toEasternArabic(quizIndex + 1)} من ${toEasternArabic(quizDatabase.length)})</div>
+                    <p style="text-align:center; font-size:1.5em; margin:25px; font-weight:bold; color:#1a237e; line-height:1.6;">${currentQ.q}</p>
+                    
+                    <div id="choicesBlock">
+                        ${shuffledChoices.map(choice => `
+                            <button class="choice-button" onclick="submitAnswer('${choice.replace(/'/g, "\\'")}')">${choice}</button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="score-display">نقاطك الذهبية الحالية: <span class="success-flash">${toEasternArabic(score)}</span></div>
+                `;
+                document.getElementById('guideBubble').textContent = `السؤال رقم ${toEasternArabic(quizIndex + 1)} في انتظار إجابتك الفطنة! 🦊`;
+            } else {
+                renderVictoryScreen();
+            }
+        }
+
+        function submitAnswer(selected) {
+            const currentQ = quizDatabase[quizIndex];
+            if (selected === currentQ.correct) {
+                score += 30;
+                playSound(true);
+                alert("✅ جواب عبقري وممتاز تماماً! بارك الله فيك!");
+            } else {
+                playSound(false);
+                alert(`❌ إجابة غير دقيقة! الجواب الصحيح هو: ${currentQ.correct}`);
+            }
+            quizIndex++;
+            renderQuizQuestion();
+        }
+
+        function renderVictoryScreen() {
+            const container = document.getElementById('mainContainer');
+            const starsCount = Math.min(5, Math.max(1, Math.floor(score / 30)));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:45px 20px; background:linear-gradient(#e8eaf6, #ffffff); border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.15); border: 4px solid #3f51b5;">
+                    <h1 style="color:#1a237e; font-size:2.4em; margin-bottom:15px; font-weight:900;">🏆 وسام الإتقان لمضاعف الأرقام! 🏆</h1>
+                    <p style="font-size:1.4em; margin:20px 0; line-height:1.8; color:#1a237e;">
+                        مبارك مبروك يا بطل الأرقام المغوار! لقد اجتزت تحديات المضاعف المشترك الأصغر (م.م.أ) الواردة بكتابك المدرسي بنجاح منقطع النظير!
+                    </p>
+                    <div style="font-size:4em; margin:20px; letter-spacing:8px;">${'⭐'.repeat(starsCount)}</div>
+                    <h2 style="color:#1a237e; font-size:1.8em; margin-bottom:25px;">مجموع نقاطك الكلية المدهشة: <strong>${toEasternArabic(score)} نقطة</strong></h2>
+                    
+                    <button onclick="location.reload()" style="background:#1a237e; font-size:1.3em; padding:15px 45px; border-radius:50px;">
+                        تكرار المغامرة والتعلم 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            document.getElementById('guideBubble').textContent = "رائع! لقد أصبحت رسمياً بطل المضاعفات المشتركة الصغرى للأرقام! 🦊🏆";
+        }
+
+        function speakAgain() {
+            const currentBubble = document.getElementById('guideBubble').textContent;
+            alert("مفكر يقول لك: \n" + currentBubble);
+        }
+    </script>
+</body>
+</html>
