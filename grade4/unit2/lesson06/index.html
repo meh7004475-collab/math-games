@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة مختبر الأرقام: سر القوة عشرة ⚡</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+            color: #2c3e50;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+            text-align: right;
+        }
+        header {
+            background: #00838f;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        header h1 { font-size: 2.2em; margin-bottom: 8px; }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        
+        .character-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 110px;
+            z-index: 100;
+            cursor: pointer;
+        }
+        .guide-bubble {
+            position: fixed;
+            bottom: 140px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            max-width: 260px;
+            z-index: 101;
+            border: 3px solid #00838f;
+            font-weight: bold;
+        }
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 35px;
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+
+        .game-container {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+            min-height: 500px;
+        }
+        .stage-header {
+            background: #00acc1;
+            color: white;
+            padding: 15px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .place-value-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 35px 0;
+            direction: rtl; 
+        }
+        .digit-card {
+            background: #f4f6f7;
+            border: 2px solid #cfd8dc;
+            border-radius: 16px;
+            width: 90px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+        }
+        .digit-card.target-empty {
+            background: #fff9c4;
+            border: 3px dashed #fbc02d;
+            animation: pulse 1.5s infinite;
+        }
+        .digit-card .val { font-size: 2.6em; font-weight: bold; color: #263238; }
+        .digit-card.target-empty .val { color: #f57f17; }
+        .digit-card .label { font-size: 1.1em; color: #546e7a; margin-top: 5px; font-weight: bold; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        button {
+            background: #00b0ff;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            margin: 12px auto;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            display: block;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            background: #d50000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .choice-button {
+            background: #00838f;
+            width: 85%;
+            max-width: 650px;
+            border-radius: 30px;
+            text-align: right;
+            padding: 18px 30px;
+            margin: 10px auto;
+            color: white;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: block;
+            transition: 0.3s;
+        }
+        .choice-button:hover {
+            background: #d50000;
+        }
+
+        .book-table {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 1.3em;
+        }
+        .book-table th, .book-table td {
+            border: 2px solid #b2dfdb;
+            padding: 12px;
+        }
+        .book-table th { background-color: #00acc1; color: white; }
+
+        input[type="number"] {
+            padding: 12px;
+            border: 3px solid #b0bec5;
+            border-radius: 12px;
+            font-size: 1.6em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            width: 120px;
+            margin: 15px auto;
+            display: block;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 1.3em;
+            color: #546e7a;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ مغامرة مختبر الأرقام: سر القوة عشرة ⚡</h1>
+        <p>الدرس السادس: قابلية القسمة على ١٠ - الصف الرابع الابتدائي</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble">مرحباً بك يا بطل الرياضيات! لنكتشف معاً السر المذهل لمضاعفات العدد ١٠ الفخمة! 🦊</div>
+    <img class="character-box" src="https://via.placeholder.com/110x140/00838f/ffffff?text=🦊" alt="المرشد الذكي">
+
+    <div class="game-container" id="mainContainer"></div>
+
+    <script>
+        let score = 0;
+        let finalChallengeIndex = 0;
+
+        const easternDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => easternDigits[d]);
+        }
+
+        function playSound(success) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.setValueAtTime(success ? 900 : 350, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.stop(ctx.currentTime + 0.2);
+            } catch(e) { console.log("Audio contexts blocked"); }
+        }
+
+        function shuffleChoices(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.onload = function() {
+            stage1_Introduction();
+        };
+
+        function stage1_Introduction() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: استكشاف مضاعفات الـ ١٠ 🔍</div>
+                <h3 style="text-align:center; margin-bottom:20px;">لاحظ النمط في نواتج الضرب والقسمة الواردة في كتابك المدرسي:</h3>
+                <p style="font-size:1.3em; text-align:center; line-height:1.8; color:#37474f;">
+                    ١٠ × ٢ = <b>${toEasternArabic(20)}</b> <br>
+                    ١٠ × ٤ = <b>${toEasternArabic(40)}</b> <br>
+                    ١٠ × ١٢ = <b>${toEasternArabic(120)}</b> <br>
+                    ١٠ × ٢٣٤ = <b>${toEasternArabic(2340)}</b>
+                </p>
+                <p style="font-size:1.4em; text-align:center; margin-top:20px; color:#00838f; font-weight:bold;">
+                    ما هو رقم الآحاد المشترك والثابت في كل هذه المضاعفات؟
+                </p>
+                <input type="number" id="stage1Input" placeholder="؟" min="0" max="9">
+                <button onclick="checkStage1()">تأكيد الملاحظة</button>
+            `;
+        }
+
+        function checkStage1() {
+            const ans = document.getElementById('stage1Input').value.trim();
+            if (ans === '0' || ans === '٠') {
+                score += 30;
+                playSound(true);
+                alert("ممتاز! لقد لاحظت السر الأول بنجاح. رقم الآحاد دائماً صفر!");
+                stage2_TheRule();
+            } else {
+                playSound(false);
+                alert("انظر جيداً للآحاد في الأعداد: ٢٠، ٤٠، ١٢٠، ٢٣٤٠... ما هو الرقم الموجود في أول خانة من اليمين؟");
+            }
+        }
+
+        function stage2_TheRule() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: القاعدة الذهبية لـ ١٠ 📜</div>
+                <div style="background:#e8f5e9; padding:20px; border-radius:15px; border-right:8px solid #2e7d32; margin-bottom:25px;">
+                    <h2 style="color:#2e7d32; margin-bottom:10px;">قاعدة الكتاب المدرسي:</h2>
+                    <p style="font-size:1.5em; font-weight:bold; line-height:1.8;">
+                        يقبل العدد القسمة على ١٠ إذا كان رقم آحاده <span style="color:#c62828;">صفراً</span>.
+                    </p>
+                </div>
+                <h3>تطبيق مباشر: هل يقبل العدد ٧٥٠ القسمة على ١٠؟ ولماذا؟</h3>
+                <button class="choice-button" onclick="checkStage2(true)">نعم، لأن رقم آحاده يساوي صفراً</button>
+                <button class="choice-button" onclick="checkStage2(false)">لا، لأن العدد مكون من ثلاثة أرقام</button>
+                <button class="choice-button" onclick="checkStage2(false)">نعم، لأن مجموع أرقامه يساوي ١٢</button>
+            `;
+            document.getElementById('guideBubble').textContent = "تذكر دائماً: عينك على خانة الآحاد فقط عند الاختبار للعدد ١٠! 🦊";
+        }
+
+        function checkStage2(isCorrect) {
+            if (isCorrect) {
+                score += 30;
+                playSound(true);
+                alert("صحّيحة ومطابقة تماماً لقاعدة الكتاب! ٧٥٠ آحاده صفر.");
+                stage3_SortingChallenge();
+            } else {
+                playSound(false);
+                alert("تذكر القاعدة: لا يهمنا طول العدد ولا مجموع الأرقام، المقياس الوحيد هو أن يكون الآحاد صفراً!");
+            }
+        }
+
+        function stage3_SortingChallenge() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: فرز الأرقام الذكي 🧩</div>
+                <h3 style="text-align:center; margin-bottom:20px;">أي من الأعداد الآتية مقتبسة من مثال الكتاب "يقبل القسمة على ١٠"؟</h3>
+                <p style="text-align:center; font-size:1.6em; font-weight:bold; letter-spacing:5px; color:#ef6c00; margin-bottom:25px;">
+                    ${toEasternArabic(45)} ، ${toEasternArabic(50)} ، ${toEasternArabic(350)} ، ${toEasternArabic(700)} ، ${toEasternArabic(775)}
+                </p>
+                <button class="choice-button" onclick="checkStage3(true)">الأعداد: ٥٠ ، ٣٥٠ ، ٧٠٠</button>
+                <button class="choice-button" onclick="checkStage3(false)">الأعداد: ٤٥ ، ٧٧٥</button>
+                <button class="choice-button" onclick="checkStage3(false)">جميع الأعداد السابقة تقبل</button>
+            `;
+        }
+
+        function checkStage3(isCorrect) {
+            if (isCorrect) {
+                score += 40;
+                playSound(true);
+                alert("إجابة مثالية ومطابقة لحل الكتاب المعتمد! الأعداد ٤٥ و ٧٧٥ لا تقبل لأن آحادها ليس صفراً.");
+                stage4_FixingPlaceValues();
+            } else {
+                playSound(false);
+                alert("راجع خانة الآحاد لكل عدد، الكتاب يقول أن ٥٠ و ٣٥٠ و ٧٠٠ فقط هي المقبولة لأن آحادها صفر!");
+            }
+        }
+
+        function stage4_FixingPlaceValues() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٤: معمل تركيب الخانات الصحيح 🛠️</div>
+                <h3 style="text-align:center;">ضع الرقم المناسب في المربع الخالي (خانة الآحاد) ليصبح هذا العدد يقبل القسمة على ١٠ فوراً:</h3>
+                
+                <div class="place-value-container">
+                    <div class="digit-card target-empty">
+                        <div class="val">؟</div>
+                        <div class="label">الآحاد</div>
+                    </div>
+                    <div class="digit-card">
+                        <div class="val">${toEasternArabic(8)}</div>
+                        <div class="label">العشرات</div>
+                    </div>
+                    <div class="digit-card">
+                        <div class="val">${toEasternArabic(3)}</div>
+                        <div class="label">المئات</div>
+                    </div>
+                </div>
+
+                <input type="number" id="stage4Input" placeholder="؟" min="0" max="9">
+                <button onclick="checkStage4()">حقن الرقم في الآحاد</button>
+            `;
+            document.getElementById('guideBubble').textContent = "الخانات مرتبة من اليمين لليسار بشكل هندسي رائع، ما الرقم الوحيد الذي ينقذ الآحاد؟ 🦊";
+        }
+
+        function checkStage4() {
+            const ans = document.getElementById('stage4Input').value.trim();
+            if (ans === '0' || ans === '٠') {
+                score += 50;
+                playSound(true);
+                alert("✨ مدهش ومصيب! ليصبح العدد ٣٨٠، وهو يقبل القسمة على ١٠!");
+                stage5_ExerciseTable();
+            } else {
+                playSound(false);
+                alert("خطأ! لكي يقبل أي عدد القسمة على ١٠، يجب أن تضع في خانة الآحاد الرقم المخصص للقاعدة وهو الصفر!");
+            }
+        }
+
+        function stage5_ExerciseTable() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٥: حل تمرين (٦) من الكتاب صـ ٣٤ 📊</div>
+                <h3 style="text-align:center; margin-bottom:15px;">أكمل البيانات المفقودة للجدول المدرسي الحقيقي لتحديد قابلية القسمة:</h3>
+                
+                <table class="book-table">
+                    <tr>
+                        <th>العدد</th>
+                        <th>يقبل القسمة على ١٠</th>
+                    </tr>
+                    <tr>
+                        <td>${toEasternArabic(10)}</td>
+                        <td>نعم</td>
+                    </tr>
+                    <tr>
+                        <td>${toEasternArabic(45)}</td>
+                        <td><span style="color:#c62828; font-weight:bold;">لا</span></td>
+                    </tr>
+                    <tr>
+                        <td>${toEasternArabic(85)}</td>
+                        <td>لا</td>
+                    </tr>
+                    <tr>
+                        <td>${toEasternArabic(450)}</td>
+                        <td style="color:#2e7d32; font-weight:bold;">؟؟؟</td>
+                    </tr>
+                </table>
+
+                <h4 style="text-align:center; margin-top:15px;">ما هي القيمة الصحيحة للعدد ٤٥٠ في تمرين الكتاب؟</h4>
+                <button class="choice-button" onclick="checkStage5(true)">نعم (لأن آحاده صفراً)</button>
+                <button class="choice-button" onclick="checkStage5(false)">لا (لأن آحاده خمسة)</button>
+                
+                <div class="score-display">نقاطك الحالية: ${toEasternArabic(score)}</div>
+            `;
+        }
+
+        function checkStage5(isCorrect) {
+            if (isCorrect) {
+                score += 50;
+                playSound(true);
+                alert("✅ رائع! الجدول اكتمل بنجاح والآن أنت جاهز ومستعد للمحرك الشامل الحاسم!");
+                goToNextEnginePart();
+            } else {
+                playSound(false);
+                alert("تأمل العدد ٤٥٠، الرقم الأول من اليمين (الآحاد) هو صفر! إذن الجواب الصحيح هو نعم.");
+            }
+        }
+
+        function goToNextEnginePart() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#00838f; color:white;">الانتقال إلى ميدان التحدي الحاسم 🏆</div>
+                <h2 style="text-align:center; margin:35px 0; color:#006064;">أنت بطل رائع ومستعد تماماً!</h2>
+                <p style="font-size:1.4em; text-align:center; margin-bottom:30px; line-height:1.8;">
+                    سندخل الآن الاختبار النهائي الكبير المكون من <span style="color:#d50000; font-weight:bold;">${toEasternArabic(15)} سؤالاً ذكياً</span>.<br>
+                    لقد قمنا بخلط الخيارات عشوائياً في كل سؤال لكي تفكر وتطبق القاعدة بنفسك!
+                </p>
+                <button onclick="startFinalQuiz10()" style="background:#00838f; font-size:1.3em; padding:16px 45px;">بدء التحدي الكبير 🚀</button>
+            `;
+            document.getElementById('guideBubble').textContent = "الخيارات مبعثرة وذكية جداً الآن، ركز على خانة الآحاد دائماً لتفوز! 🦊";
+        }
+
+        const quizDatabase10 = [
+            { q: "يقبل العدد القسمة على ١٠ إذا كان رقم آحاده:", choices: ["صفراً (٠)", "خمسة (٥)", "عدداً زوجياً"], correct: "صفراً (٠)" },
+            { q: "من واقع أمثلة الكتاب: أي الأعداد التالية يقبل القسمة على ١٠؟", choices: ["٣٥٠ (لأن آحاده صفر)", "٤٥ (لأن آحاده خمسة)", "٧٧٥ (لأن آحاده خمسة)"], correct: "٣٥٠ (لأن آحاده صفر)" },
+            { q: "من جدول تمرين الكتاب: هل العدد ٤٥٠ يقبل القسمة على ١٠؟", choices: ["نعم، لأن رقم آحاده صفر", "لا، لأن آحاده ليس صفراً", "يقبل القسمة على ٥ فقط"], correct: "نعم، لأن رقم آحاده صفر" },
+            { q: "لماذا لا يقبل العدد ٧٧٥ القسمة على ١٠ في درس اليوم؟", choices: ["لأن رقم آحاده يساوي ٥ وليس صفراً", "لأن العدد فردي", "لأن مجموع أرقامه ١٩"], correct: "لأن رقم آحاده يساوي ٥ وليس صفراً" },
+            { q: "أي من الأعداد التالية يعتبر من مضاعفات العدد ١٠ الكلية؟", choices: ["٨٠", "٨٥", "١٥"], correct: "٨٠" },
+            { q: "ما هو ناتج قسمة العدد ٣٧٨٠٠ على ١٠ المذكور في الجدول؟", choices: ["٣٧٨٠", "٣٧٨", "٣٧٨٠٠"], correct: "٣٧٨٠" },
+            { q: "إذا كان العدد هو ٢٣٤٠، فما هو رقم آحاده? ", choices: ["٠ (صفر)", "٤ (أربعة)", "٣ (ثلاثة)"], correct: "٠ (صفر)" },
+            { q: "ضع أصغر رقم في المربع ليقبل العدد ( ⬜ ٦ ) القسمة على ١٠ ونضعه في الآحاد:", choices: ["٠ ليصبح ٦٠", "١ ليصبح ٦١", "٥ ليصبح ٦٥"], correct: "٠ ليصبح ٦٠" },
+            { q: "من واقع جدول الكتاب: الأعداد ٨٥ و ٢٢٥ لا تقبل القسمة على ١٠ لأن:", choices: ["رقم آحادها لا يساوي الصفر", "أعداد مكونة من ٣ أرقام", "أعداد زوجية"], correct: "رقم آحادها لا يساوي الصفر" },
+            { q: "العدد ١٢٠ يقبل القسمة على ١٠ لأن ناتج قسمته يساوي عدد بدون باق وهو:", choices: ["١٢", "١٢٠", "١٠"], correct: "١٢" },
+            { q: "تحدي ذكي: هل العدد ٥٠ يقبل القسمة على ١٠؟", choices: ["نعم، لأن آحاده صفر وناتج القسمة ٥", "لا، لا يقبل", "يقبل فقط إذا كان في جدول الـ ٣"], correct: "نعم، لأن آحاده صفر وناتج القسمة ٥" },
+            { q: "أي الخيارات التالية يمثل عددين يقبلان القسمة على ١٠ معاً؟", choices: ["٢٠ و ١٠٠", "٤٥ و ٥٠", "٨٥ و ٧٠٠"], correct: "٢٠ و ١٠٠" },
+            { q: "ما هو الشرط الوحيد والأساسي لكي يقبل أي عدد القسمة على ١٠؟", choices: ["أن تنظر لخانة الآحاد وتجدها صفراً", "أن يكون المجموع زوجياً", "أن يبدأ العدد برقم ٥"], correct: "أن تنظر لخانة الآحاد وتجدها صفراً" },
+            { q: "تمرين الكتاب: الجدول صـ ٣٤ يوضح أن العدد ٤٥:", choices: ["لا يقبل القسمة على ١٠", "يقبل القسمة على ١٠", "من مضاعفات الـ ١٠"], correct: "لا يقبل القسمة على ١٠" },
+            { q: "السؤال الذهبي: إذا كان لديك العدد ٧٠٠، فهل يقبل القسمة على ١٠؟", choices: ["نعم، لأن أول رقم من اليمين هو صفر", "لا، لأن فيه صفرين", "يقبل القسمة على ١٠٠ فقط"], correct: "نعم، لأن أول رقم من اليمين هو صفر" }
+        ];
+
+        function startFinalQuiz10() {
+            finalChallengeIndex = 0;
+            renderQuizQuestion10();
+        }
+
+        function renderQuizQuestion10() {
+            const container = document.getElementById('mainContainer');
+            if (finalChallengeIndex < quizDatabase10.length) {
+                const currentQ = quizDatabase10[finalChallengeIndex];
+                const shuffled = shuffleChoices([...currentQ.choices]);
+
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#e65100; color:white;">المرحلة النهائية: تحدي العباقرة - السؤال (${toEasternArabic(finalChallengeIndex + 1)} من ${toEasternArabic(quizDatabase10.length)})</div>
+                    <p style="text-align:center; font-size:1.6em; margin:25px; font-weight:bold; color:#004d40;">${currentQ.q}</p>
+                    
+                    <div id="choicesBlock">
+                        ${shuffled.map(choice => `
+                            <button class="choice-button" onclick="submitFinalAnswer10('${choice.replace(/'/g, "\\'")}')">${choice}</button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="score-display">النقاط المحرزة حالياً: ${toEasternArabic(score)}</div>
+                `;
+                document.getElementById('guideBubble').textContent = `أنت بطل خارق! ركز جيداً في السؤال رقم ${toEasternArabic(finalChallengeIndex + 1)}! 🦊`;
+            } else {
+                endGameVictory10();
+            }
+        }
+
+        function submitFinalAnswer10(selected) {
+            const currentQ = quizDatabase10[finalChallengeIndex];
+            if (selected === currentQ.correct) {
+                score += 30;
+                playSound(true);
+                alert("✅ إجابة رياضية عبقرية ومطابقة للقاعدة!");
+            } else {
+                playSound(false);
+                alert(`❌ ركز على الآحاد يا بطل! الإجابة الصحيحة هي: ${currentQ.correct}`);
+            }
+            finalChallengeIndex++;
+            renderQuizQuestion10();
+        }
+
+        function endGameVictory10() {
+            const container = document.getElementById('mainContainer');
+            const starsCount = Math.min(5, Math.floor(score / 90));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:55px 20px; background:linear-gradient(#e0f2f1, #fff9c4); border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+                    <h1 style="color:#00796b; font-size:2.8em; margin-bottom:15px;">🎉 بطل القوة عشرة الأسطوري! 🎉</h1>
+                    <p style="font-size:1.6em; margin:20px 0; line-height:1.9; color:#263238;">
+                        تهانينا الحارة يا ذكي! لقد أنهيت الدرس السادس (قابلية القسمة على ١٠) بالكامل بنجاح ساحق!
+                    </p>
+                    <div style="font-size:4.5em; margin:20px; letter-spacing:12px;">${'⭐'.repeat(starsCount === 0 ? 1 : starsCount)}</div>
+                    <h2 style="color:#e65100; font-size:2em;">رصيدك النهائي الفاخر: <strong>${toEasternArabic(score)} نقطة</strong></h2>
+                    <br>
+                    <button onclick="location.reload()" style="background:#e65100; font-size:1.3em; padding:18px 45px; border-radius:50px;">
+                        إعادة مغامرة الاستكشاف 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            document.getElementById('guideBubble').textContent = "عمل أسطوري مذهل ومثالي! لقد نلت الوسام الذهبي لدرس قابلية القسمة على ١٠! 🦊";
+        }
+    </script>
+</body>
+</html>
