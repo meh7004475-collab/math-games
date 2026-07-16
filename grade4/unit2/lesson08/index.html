@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة فرسان الأرقام: القاسم المشترك الأكبر (ق.م.أ) 🏆</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #efebe9, #d7ccc8);
+            color: #4e342e;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            text-align: right;
+        }
+
+        header {
+            background: #5d4037;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-bottom: 5px solid #8d6e63;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* الشخصية التفاعلية */
+        .character-box {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 100px;
+            z-index: 100;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .character-box:hover {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .guide-bubble {
+            position: fixed;
+            bottom: 130px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            max-width: 280px;
+            z-index: 101;
+            border: 3px solid #5d4037;
+            font-weight: bold;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 35px;
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+
+        /* حاوية اللعبة الرئيسية */
+        .game-container {
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+            min-height: 480px;
+            position: relative;
+        }
+
+        .stage-header {
+            background: #8d6e63;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        /* تصاميم العناصر التفاعلية */
+        .interactive-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .number-card {
+            background: #f5f5f5;
+            border: 2px solid #d7ccc8;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            color: #4e342e;
+        }
+
+        .number-card:hover {
+            background: #efebe9;
+            transform: scale(1.05);
+        }
+
+        .number-card.selected {
+            background: #8d6e63 !important;
+            color: white !important;
+            border-color: #5d4037;
+        }
+
+        .equation-box {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            direction: rtl; /* اتجاه عربي صحيح تماماً */
+            line-height: 2.2;
+            background: #efebe9;
+            padding: 15px;
+            border-radius: 15px;
+            color: #5d4037;
+        }
+
+        /* الأزرار وتفاعلاتها */
+        button {
+            background: #8d6e63;
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            margin: 15px auto;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            display: block;
+            box-shadow: 0 4px 10px rgba(141,110,99,0.3);
+        }
+
+        button:hover {
+            background: #5d4037;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(93,64,55,0.4);
+        }
+
+        .choice-button {
+            background: #5d4037;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 20px;
+            text-align: right;
+            padding: 15px 25px;
+            margin: 10px auto;
+            color: white;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: block;
+            transition: 0.2s;
+        }
+
+        .choice-button:hover {
+            background: #3e2723;
+            border-color: #d7ccc8;
+            transform: scale(1.01);
+        }
+
+        /* المدخلات وقوالب ملء الفراغات من اليمين إلى اليسار */
+        .fill-blank-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 25px 0;
+            direction: rtl;
+        }
+
+        .factor-line {
+            display: flex;
+            align-items: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            direction: rtl;
+            background: #fdfbfb;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #efebe9;
+            width: 100%;
+            max-width: 400px;
+            justify-content: space-between;
+        }
+
+        .factor-line input {
+            width: 50px;
+            height: 50px;
+            font-size: 0.9em;
+            text-align: center;
+            border: 2px dashed #8d6e63;
+            border-radius: 8px;
+            color: #d32f2f;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            outline: none;
+            background: white;
+        }
+
+        .factor-line input:focus {
+            border-color: #5d4037;
+            background: #efebe9;
+        }
+
+        input[type="text"].normal-input {
+            padding: 12px;
+            border: 3px solid #d7ccc8;
+            border-radius: 12px;
+            font-size: 1.4em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            width: 180px;
+            margin: 15px auto;
+            display: block;
+            color: #4e342e;
+            background: white;
+            outline: none;
+        }
+        
+        input[type="text"].normal-input:focus {
+            border-color: #8d6e63;
+        }
+
+        /* لوحة النقاط والتأثيرات البصرية */
+        .score-display {
+            text-align: center;
+            font-size: 1.3em;
+            color: #4e342e;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success-flash {
+            color: #2e7d32;
+            font-weight: bold;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏆 فرسان الأرقام: لغز القاسم المشترك الأكبر (ق.م.أ) 🏆</h1>
+        <p>الدرس الثامن: القاسم المشترك الأكبر (ق.م.أ) - المنهج التفاعلي المطور</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble">أهلاً بك يا فارس الأرقام! أنا صديقك الذكي "مفكر"، دعنا نتعلم كيف نفكك الأعداد إلى قواسمها ونقتنص القاسم المشترك الأكبر! 🦊</div>
+    <svg class="character-box" id="characterImage" viewBox="0 0 100 100" onclick="speakAgain()">
+        <circle cx="50" cy="50" r="45" fill="#5d4037"/>
+        <polygon points="50,25 30,55 70,55" fill="#ffb74d" />
+        <circle cx="40" cy="48" r="4" fill="#ffffff"/>
+        <circle cx="40" cy="48" r="2" fill="#000000"/>
+        <circle cx="60" cy="48" r="4" fill="#ffffff"/>
+        <circle cx="60" cy="48" r="2" fill="#000000"/>
+        <polygon points="50,55 45,62 55,62" fill="#d32f2f"/>
+        <path d="M 35 70 Q 50 80 65 70" stroke="#ffffff" stroke-width="4" fill="none"/>
+    </svg>
+
+    <div class="game-container" id="mainContainer"></div>
+
+    <script>
+        let score = 0;
+        let quizIndex = 0;
+        let selectedStage1Factors = [];
+
+        // الأرقام الهندية بالكامل للالتزام بالهوية والمنهج المعتمد
+        const easternDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => easternDigits[d]);
+        }
+
+        // محول الأرقام المدخلة للتوافق مع الإدخالات المتنوعة
+        function parseInputNumber(str) {
+            let result = '';
+            for (let char of str) {
+                let idx = easternDigits.indexOf(char);
+                if (idx !== -1) {
+                    result += idx;
+                } else if (/[0-9]/.test(char)) {
+                    result += char;
+                }
+            }
+            return parseInt(result, 10);
+        }
+
+        // مولد الأصوات التفاعلية المدمج
+        function playSound(success) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                if (success) {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                }
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) { 
+                console.log("Audio block bypass"); 
+            }
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.onload = function() {
+            stage1_FactorDiscovery();
+        };
+
+        // المرحلة ١ المصلحة: المعادلات مكتوبة من اليمين لليسار بشكل صحيح رياضياً
+        function stage1_FactorDiscovery() {
+            selectedStage1Factors = [];
+            const container = document.getElementById('mainContainer');
+            
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: صائد قواسم العدد ${toEasternArabic(15)} 🎯</div>
+                <p style="font-size:1.3em; text-align:center; margin-bottom:20px; font-weight:bold;">
+                    انقر على البطاقات التي تمثل قواسم (أو عوامل) العدد <span style="color:#d32f2f;">${toEasternArabic(15)}</span> المذكورة بكتابك:
+                </p>
+                
+                <div class="equation-box">
+                    ${toEasternArabic(15)} ÷ ${toEasternArabic(5)} = ${toEasternArabic(3)} <br>
+                    ${toEasternArabic(15)} ÷ ${toEasternArabic(3)} = ${toEasternArabic(5)}
+                </div>
+
+                <div class="interactive-row">
+                    <div class="number-card" onclick="toggleFactorCard(this, 1)">${toEasternArabic(1)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 2)">${toEasternArabic(2)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 3)">${toEasternArabic(3)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 4)">${toEasternArabic(4)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 5)">${toEasternArabic(5)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 6)">${toEasternArabic(6)}</div>
+                    <div class="number-card" onclick="toggleFactorCard(this, 15)">${toEasternArabic(15)}</div>
+                </div>
+
+                <button onclick="checkStage1()" style="margin-top:25px;">تحقق من القواسم المحددة ✔️</button>
+            `;
+            document.getElementById('guideBubble').textContent = "اضغط على الأرقام الأربعة التي يقبل العدد ١٥ القسمة عليها بدون باقٍ من اليمين لليسار! 🦊";
+        }
+
+        function toggleFactorCard(card, val) {
+            playSound(true);
+            if (card.classList.contains('selected')) {
+                card.classList.remove('selected');
+                selectedStage1Factors = selectedStage1Factors.filter(item => item !== val);
+            } else {
+                card.classList.add('selected');
+                selectedStage1Factors.push(val);
+            }
+        }
+
+        function checkStage1() {
+            const correctFactors = [1, 3, 5, 15];
+            const isMatch = selectedStage1Factors.length === correctFactors.length && 
+                            selectedStage1Factors.every(f => correctFactors.includes(f));
+            
+            if (isMatch) {
+                score += 30;
+                playSound(true);
+                alert("ممتاز جداً! لقد حددت قواسم العدد ١٥ بدقة بالغة وهي: ١، ٣، ٥، ١٥.");
+                stage2_CommonFactors();
+            } else {
+                playSound(false);
+                alert("أعد المحاولة يا بطل! تذكر أن قواسم العدد ١٥ هي الأعداد التي يقبل القسمة عليها تماماً وهي: ١، ٣، ٥، ١٥.");
+            }
+        }
+
+        // المرحلة ٢: إيجاد القاسم المشترك الأكبر للعددين ٣٠ و ٤٥ (تطبيق مثال صفحة ٣٧)
+        function stage2_CommonFactors() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: القاسم المشترك الأكبر لـ ${toEasternArabic(30)} و ${toEasternArabic(45)} 🔍</div>
+                <div style="background:#efebe9; padding:20px; border-radius:15px; border-right:8px solid #8d6e63; margin-bottom:20px;">
+                    <p style="font-size:1.2em; font-weight:bold; line-height:1.8;">
+                        قواسم العدد ${toEasternArabic(30)} هي: ${toEasternArabic(1)}، ${toEasternArabic(2)}، ${toEasternArabic(3)}، ${toEasternArabic(5)}، ${toEasternArabic(6)}، ${toEasternArabic(10)}، ${toEasternArabic(15)}، ${toEasternArabic(30)} <br>
+                        قواسم العدد ${toEasternArabic(45)} هي: ${toEasternArabic(1)}، ${toEasternArabic(3)}، ${toEasternArabic(5)}، ${toEasternArabic(9)}، ${toEasternArabic(15)}، ${toEasternArabic(45)}
+                    </p>
+                </div>
+                
+                <h3 style="text-align:center; margin-bottom:20px; color:#4e342e;">
+                    القواسم المشتركة بينهما هي: ${toEasternArabic(1)}، ${toEasternArabic(3)}، ${toEasternArabic(5)}، ${toEasternArabic(15)}.<br>
+                    ما هو أكبر هذه القواسم المشتركة (ق.م.أ)؟
+                </h3>
+                
+                <input type="text" id="stage2Input" class="normal-input" placeholder="اكتب ق.م.أ هنا">
+                <button onclick="checkStage2()">تحقق من النتيجة 🎯</button>
+            `;
+            document.getElementById('guideBubble').textContent = "ما هو أكبر رقم مشترك في القائمتين السابقتين؟ انظر جيداً واكتبه بالأرقام! 🦊";
+        }
+
+        function checkStage2() {
+            const val = document.getElementById('stage2Input').value.trim();
+            const parsed = parseInputNumber(val);
+            if (parsed === 15) {
+                score += 35;
+                playSound(true);
+                alert("رائع ومثالي! القاسم المشترك الأكبر (ق.م.أ) هو بالفعل ١٥!");
+                stage3_FactoringMethod();
+            } else {
+                playSound(false);
+                alert("انتبه! قارن بين الأرقام المشتركة: ١، ٣، ٥، ١٥.. أيهم الأكبر على الإطلاق؟ اكتب الرقم ١٥");
+            }
+        }
+
+        // المرحلة ٣ المصلحة: العوامل الرياضية الحقيقية مرتبة من اليمين لليسار تماماً
+        function stage3_FactoringMethod() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: تمرين تحليل العوامل الأولية ✏️</div>
+                <p style="font-size:1.25em; text-align:center; margin-bottom:20px; font-weight:bold;">
+                    أكمل المربعات المفقودة لتحليل الأعداد ${toEasternArabic(12)} و ${toEasternArabic(16)} لعواملها الأولية:
+                </p>
+                
+                <div class="fill-blank-container">
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(12)}:</span>
+                        <div>
+                            <span>٣ × </span>
+                            <input type="text" id="fact1_1" maxlength="1" placeholder="؟">
+                            <span> × </span>
+                            <input type="text" id="fact1_2" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+
+                    <div class="factor-line">
+                        <span>تحليل العدد ${toEasternArabic(16)}:</span>
+                        <div>
+                            <span>٢ × ٢ × ٢ × </span>
+                            <input type="text" id="fact2_1" maxlength="1" placeholder="؟">
+                        </div>
+                    </div>
+                </div>
+
+                <p style="text-align:center; font-size:1.2em; color:#5d4037; font-weight:bold; margin-top:15px;">
+                    القاسم المشترك الأكبر الناتج (ق.م.أ) هو: ${toEasternArabic(2)} × ${toEasternArabic(2)} = ...؟
+                </p>
+                <input type="text" id="finalGcdInput" class="normal-input" placeholder="اكتب الناتج هنا">
+
+                <button onclick="checkStage3()" style="margin-top:25px;">تأكيد وحساب التحليل ✔️</button>
+            `;
+            document.getElementById('guideBubble').textContent = "قم بملء الفراغات بالأرقام الصحيحة: تحليل ١٢ هو ٣ × ٢ × ٢، وتحليل ١٦ هو ٢ × ٢ × ٢ × ٢، والناتج المشترك هو ٤! 🦊";
+        }
+
+        function checkStage3() {
+            const f1_1 = parseInputNumber(document.getElementById('fact1_1').value.trim());
+            const f1_2 = parseInputNumber(document.getElementById('fact1_2').value.trim());
+            const f2_1 = parseInputNumber(document.getElementById('fact2_1').value.trim());
+            const gcd = parseInputNumber(document.getElementById('finalGcdInput').value.trim());
+
+            const isF1Correct = (f1_1 === 2 && f1_2 === 2);
+            const isF2Correct = (f2_1 === 2);
+
+            if (isF1Correct && isF2Correct && gcd === 4) {
+                score += 45;
+                playSound(true);
+                alert("عبقري مبدع! التحليل سليم وصحيح تماماً، وق.م.أ للقيمتين هو ٤!");
+                stage4_IntroToBigQuiz();
+            } else {
+                playSound(false);
+                alert("تأكد من كتابة الأرقام الصحيحة للتحليل: الفراغات الأولى هي ٢ و ٢، والفراغ الثاني هو ٢، وناتج ق.م.أ النهائي هو ٤!");
+            }
+        }
+
+        // المرحلة ٤: مدخل التحدي الشامل لـ ١٥ سؤالاً مبعثراً عشوائياً لدرس ق.م.أ
+        function stage4_IntroToBigQuiz() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#5d4037;">المرحلة الرابعة: تحدي فرسان (ق.م.أ) الـ ١٥ الشامل 🚀</div>
+                <h2 style="text-align:center; margin:25px 0; color:#3e2723;">أداء منقطع النظير!</h2>
+                <p style="font-size:1.4em; text-align:center; margin-bottom:30px; line-height:1.8;">
+                    أنت الآن أمام التحدي النهائي الكبير المكون من <span style="color:#d32f2f; font-weight:bold;">${toEasternArabic(15)} سؤالاً مبعثراً عشوائياً</span><br>
+                    مستوحاة بالكامل من تمارين الدرس الثامن (تمرین ٨) وأمثلة الكتاب!
+                </p>
+                <button onclick="startFinalQuiz()" style="font-size:1.3em; padding:15px 50px; border-radius:50px;">ابتدئ التحدي الأخير 🦊🔥</button>
+            `;
+            document.getElementById('guideBubble').textContent = "استعد جيداً لتصبح سيد القواسم المشتركة الكبرى! 🦊";
+        }
+
+        // بنك الـ ١٥ سؤالاً الشامل لدرس ق.م.أ
+        const quizDatabase = [
+            { q: "ما هي قواسم العدد ١٥ الواردة في الصفحة الأولى من الدرس؟", choices: ["٣، ٥، ١، ١٥", "٣، ٥، ٢، ١٥", "١، ٣، ٦، ١٥"], correct: "٣، ٥، ١، ١٥" },
+            { q: "من تمرين (٨) رقم ١: ما هو ق.م.أ للعددين ١٥ و ١٨؟", choices: ["٣", "٥", "٦"], correct: "٣" },
+            { q: "من تمرين (٨) رقم ٢: ما هو ق.م.أ للعددين ٢٠ و ٣٠؟", choices: ["١٠", "٥", "٢"], correct: "١٠" },
+            { q: "من تمرين (٨) رقم ٣: ما هو ق.م.أ للأعداد ٨، ١٢، ١٨؟", choices: ["٢", "٤", "٦"], correct: "٢" },
+            { q: "من تمرين (٨) رقم ٤: ما هو ق.م.أ للعددين ٥٠ و ٧٥؟", choices: ["٢٥", "١٥", "٥"], correct: "٢٥" },
+            { q: "من تمرين (٨) رقم ٥: ما هو ق.م.أ للأعداد ١٦، ٢٤، ٤٠؟", choices: ["٨", "٤", "١٦"], correct: "٨" },
+            { q: "ما هو القاسم المشترك الأكبر للأعداد ٢١، ٣٥، ٥٦ كما في مثال (١)؟", choices: ["٧", "١", "٣"], correct: "٧" },
+            { q: "أي مما يلي يمثل تعريف القاسم المشترك الأكبر (ق.م.أ)؟", choices: ["أكبر عدد تقبل هذه الأعداد القسمة عليه", "أصغر عدد تقبل هذه الأعداد القسمة عليه", "حاصل ضرب الأعداد ببعضها"], correct: "أكبر عدد تقبل هذه الأعداد القسمة عليه" },
+            { q: "ما هي ملحوظة الدرس الدائمة؟", choices: ["العدد ١ والعدد نفسه هما من قواسم أي عدد", "العدد ٠ والعدد نفسه هما من قواسم أي عدد", "الأعداد الزوجية تقسم كل شيء"], correct: "العدد ١ والعدد نفسه هما من قواسم أي عدد" },
+            { q: "ما هو القاسم المشترك الأكبر للأعداد ٣٠، ٦٠، ٧٥ كما في مثال (٢)؟", choices: ["١٥", "٥", "٣٠"], correct: "١٥" },
+            { q: "ما هي قواسم العدد ٢١ المدرجة في مثال (١)؟", choices: ["١، ٣، ٧، ٢١", "١، ٢، ٧، ٢١", "٣، ٧، ١٤، ٢١"], correct: "١، ٣، ٧، ٢١" },
+            { q: "في عملية تحليل الأعداد، ق.م.أ للعددين ٣٦ و ٥٤ هو حاصل ضرب:", choices: ["٢ × ٣ × ٣ = ١٨", "٢ × ٢ × ٣ = ١٢", "٣ × ٣ × ٣ = ٢٧"], correct: "٢ × ٣ × ٣ = ١٨" },
+            { q: "هل يعتبر العدد ٢ قاسم للعدد ٧٥؟", choices: ["لا، لأن ٧٥ فردي ولا يقبل القسمة على ٢", "نعم، لأنه يقبل", "نعم، في حالات معينة"], correct: "لا، لأن ٧٥ فردي ولا يقبل القسمة على ٢" },
+            { q: "ما هي القواسم المشتركة للأعداد ٣٠، ٦٠، ٧٥؟", choices: ["١، ٣، ٥، ١٥", "١، ٢، ٣، ٥", "٥، ١٠، ١٥، ٢٥"], correct: "١، ٣، ٥، ١٥" },
+            { q: "إذا كان قواسم الـ ١٨ هي: ٢، ٣، ٩، ٦، ١٨، ١. فما هو ق.م.أ للعددين ١٥ و ١٨؟", choices: ["٣", "١", "٩"], correct: "٣" }
+        ];
+
+        function startFinalQuiz() {
+            quizIndex = 0;
+            shuffleArray(quizDatabase);
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('mainContainer');
+            if (quizIndex < quizDatabase.length) {
+                const currentQ = quizDatabase[quizIndex];
+                const shuffledChoices = shuffleArray([...currentQ.choices]);
+
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#5d4037;">التحدي الكبير: سؤال (${toEasternArabic(quizIndex + 1)} من ${toEasternArabic(quizDatabase.length)})</div>
+                    <p style="text-align:center; font-size:1.5em; margin:25px; font-weight:bold; color:#3e2723; line-height:1.6;">${currentQ.q}</p>
+                    
+                    <div id="choicesBlock">
+                        ${shuffledChoices.map(choice => `
+                            <button class="choice-button" onclick="submitAnswer('${choice.replace(/'/g, "\\'")}')">${choice}</button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="score-display">نقاطك الذهبية الحالية: <span class="success-flash">${toEasternArabic(score)}</span></div>
+                `;
+                document.getElementById('guideBubble').textContent = `السؤال رقم ${toEasternArabic(quizIndex + 1)} في انتظار حلّك الذكي! 🦊`;
+            } else {
+                renderVictoryScreen();
+            }
+        }
+
+        function submitAnswer(selected) {
+            const currentQ = quizDatabase[quizIndex];
+            if (selected === currentQ.correct) {
+                score += 30;
+                playSound(true);
+                alert("✅ جواب ممتاز وصحيح تماماً! أنت رائع!");
+            } else {
+                playSound(false);
+                alert(`❌ إجابة غير دقيقة! الجواب الصحيح هو: ${currentQ.correct}`);
+            }
+            quizIndex++;
+            renderQuizQuestion();
+        }
+
+        function renderVictoryScreen() {
+            const container = document.getElementById('mainContainer');
+            const starsCount = Math.min(5, Math.max(1, Math.floor(score / 90)));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:45px 20px; background:linear-gradient(#efebe9, #ffffff); border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.15); border: 4px solid #8d6e63;">
+                    <h1 style="color:#5d4037; font-size:2.4em; margin-bottom:15px; font-weight:900;">🏆 وسام الإتقان الأعظم لـ (ق.م.أ)! 🏆</h1>
+                    <p style="font-size:1.4em; margin:20px 0; line-height:1.8; color:#3e2723;">
+                        مبارك مبروك يا بطل الأرقام المغوار! لقد اجتزت تحديات القاسم المشترك الأكبر المدرجة بكتابك المدرسي بنجاح منقطع النظير!
+                    </p>
+                    <div style="font-size:4em; margin:20px; letter-spacing:8px;">${'⭐'.repeat(starsCount)}</div>
+                    <h2 style="color:#3e2723; font-size:1.8em; margin-bottom:25px;">مجموع نقاطك الكلية المدهشة: <strong>${toEasternArabic(score)} نقطة</strong></h2>
+                    
+                    <button onclick="location.reload()" style="background:#5d4037; font-size:1.3em; padding:15px 45px; border-radius:50px;">
+                        تكرار المغامرة والتعلم 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            document.getElementById('guideBubble').textContent = "رائع! لقد أصبحت رسمياً بطل القواسم المشتركة الكبرى! 🦊🏆";
+        }
+
+        function speakAgain() {
+            const currentBubble = document.getElementById('guideBubble').textContent;
+            alert("مفكر يقول لك: \n" + currentBubble);
+        }
+    </script>
+</body>
+</html>
