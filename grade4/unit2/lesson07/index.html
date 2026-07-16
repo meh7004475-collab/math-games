@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مغامرة تحليل العدد إلى عوامله الأولية - الدرس السابع</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;700&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+            color: #2c3e50;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+            text-align: right;
+        }
+        header {
+            background: #2e7d32;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .character {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            z-index: 100;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .guide-bubble {
+            position: fixed;
+            bottom: 150px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-width: 250px;
+            z-index: 101;
+            display: none;
+            border: 2px solid #2e7d32;
+            text-align: right;
+        }
+        .guide-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 30px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent;
+            display: block;
+            width: 0;
+        }
+        .game-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            min-height: 450px;
+        }
+        .stage-header {
+            background: #00b0ff;
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        button {
+            background: #1565c0;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            margin: 8px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: scale(1.03);
+            background: #d84315;
+        }
+        .number-display {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #2e7d32;
+            background: #e8f5e9;
+            padding: 10px 25px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 15px 0;
+        }
+        .factor-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .factor-table td {
+            padding: 10px 25px;
+            text-align: center;
+        }
+        .factor-table td.number-col {
+            border-left: 4px solid #2e7d32;
+            text-align: left;
+            padding-left: 20px;
+        }
+        .factor-table td.prime-col {
+            text-align: right;
+            padding-right: 20px;
+            color: #c62828;
+        }
+        input[type="number"], input[type="text"] {
+            padding: 10px;
+            border: 2px solid #b0bec5;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            width: 130px;
+            margin: 5px;
+        }
+        .choice-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .choice-list li {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-right: 5px solid #1565c0;
+        }
+        .choice-list li:hover {
+            background: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🔢 مغامرة تحليل العدد إلى عوامله الأولية 🔢</h1>
+        <p>الدرس السابع - المنهج المدرسي المطور (خيارات ثلاثية عشوائية الترتيب)</p>
+    </header>
+
+    <div class="guide-bubble" id="guideBubble"></div>
+    <img id="guide" class="character" src="https://via.placeholder.com/120x150/2e7d32/ffffff?text=🦊" alt="المرشد" onclick="triggerGuideSpeech()">
+
+    <div class="game-container" id="mainContainer"></div>
+
+    <script>
+        let score = 0;
+        let finalChallengeIndex = 0;
+        let currentShuffledChoices = [];
+
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        function toEasternArabic(num) {
+            if (num === null || num === undefined) return '';
+            return num.toString().replace(/\d/g, d => arabicDigits[d]);
+        }
+
+        const guideMessages = [
+            "مرحباً بك يا عبقري! اليوم سنفكك الأعداد الكبيرة إلى مكوناتها الأولية السحرية! 🦊",
+            "نبدأ القسمة دائماً بالترتيب على أصغر عدد أولي وهو ٢، ثم ٣، ثم ٥... وهكذا!",
+            "التحليل العمودي يبدأ بوضع العدد يميناً والقاسم الأولي يساراً، خطوة بخطوة!",
+            "رائع! تذكر أن ضرب العوامل الأولية يعيدنا دائماً للعدد الأصلي!",
+            "الخيارات الآن مبعثرة وذكية! ركز جيداً قبل الضغط واحسب الإجابة بنفسك! 🧠"
+        ];
+
+        function updateGuide(text) {
+            const bubble = document.getElementById('guideBubble');
+            if (bubble) {
+                bubble.textContent = text;
+                bubble.style.display = 'block';
+            }
+        }
+
+        function triggerGuideSpeech() {
+            updateGuide("العوامل الأولية هي اللبنات الأساسية لبناء أي عدد في الكون! 🦊");
+        }
+
+        function playSound(isSuccess) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const audio = new AudioContext();
+                const oscillator = audio.createOscillator();
+                const gainNode = audio.createGain();
+                oscillator.frequency.setValueAtTime(isSuccess ? 900 : 350, audio.currentTime);
+                oscillator.type = 'sine';
+                oscillator.connect(gainNode);
+                gainNode.connect(audio.destination);
+                oscillator.start();
+                gainNode.gain.setValueAtTime(0.2, audio.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.3);
+                oscillator.stop(audio.currentTime + 0.3);
+            } catch(e) { console.log("Audio blocked"); }
+        }
+
+        function startGame() {
+            score = 0;
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ١: إثارة الفضول واكتشاف القواسم 🧐</div>
+                <div style="padding:10px;">
+                    <h2>ما هي قواسم أو عوامل العدد؟</h2>
+                    <p style="font-size:1.3em; line-height:2; margin:20px 0;">
+                        عرفنا سابقاً أن العدد يقبل القسمة على عدد آخر عندما <strong>لا يوجد باقي</strong>. ونقول إن المقسوم عليه هو قاسم للعدد.
+                        <br>فالعدد <strong>${toEasternArabic(8)}</strong> مثلاً يقبل القسمة على الأعداد: 
+                        <span class="number-display">${toEasternArabic(1)} ، ${toEasternArabic(2)} ، ${toEasternArabic(4)} ، ${toEasternArabic(8)}</span>
+                    </p>
+                    <h3 style="color:#c62828; margin:25px 0;">ولكن... ما هي العوامل الأولية؟ وكيف نحلل العدد إليها؟</h3>
+                    <button onclick="stage2_Exploration()" style="font-size:1.3em; padding:15px 40px;">لنكتشف المختبر الأولي 🚀</button>
+                </div>
+            `;
+            setTimeout(() => { updateGuide(guideMessages[0]); }, 200);
+        }
+
+        function stage2_Exploration() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٢: ترتيب الأعداد الأولية السحرية 🧪</div>
+                <h3>لتحليل العدد إلى عوامله الأولية، نتابع قسمة العدد على الأعداد الأولية بالترتيب تصاعدياً:</h3>
+                
+                <div style="background:#fff9db; padding:20px; border-radius:15px; margin:20px 0; text-align:center;">
+                    <p style="font-size:1.5em; font-weight:bold; color:#d84315;">
+                        الترتيب القياسي: ${toEasternArabic(2)} ⬅️ ${toEasternArabic(3)} ⬅️ ${toEasternArabic(5)} ⬅️ ${toEasternArabic(7)} ⬅️ ${toEasternArabic(11)} ...
+                    </p>
+                </div>
+
+                <p style="font-size:1.2em; margin-bottom:15px;">تحدي سريع: أي من الأعداد التالية يعتبر عدداً أولياً لا يقبل القسمة إلا على نفسه وعلى الواحد؟</p>
+                <div style="text-align:center;">
+                    <button onclick="checkPrimeChoice(6, false)">العدد ${toEasternArabic(6)}</button>
+                    <button onclick="checkPrimeChoice(5, true)">العدد ${toEasternArabic(5)}</button>
+                    <button onclick="checkPrimeChoice(9, false)">العدد ${toEasternArabic(9)}</button>
+                </div>
+                <div id="exploreFeedback" style="margin-top:20px; font-size:1.3em; font-weight:bold; text-align:center; min-height:40px;"></div>
+            `;
+            updateGuide(guideMessages[1]);
+        }
+
+        function checkPrimeChoice(num, isCorrect) {
+            const feedback = document.getElementById('exploreFeedback');
+            if(isCorrect) {
+                feedback.innerHTML = `<span style="color:#2e7d32;">✅ أحسنت! العدد ${toEasternArabic(num)} عدد أولي لأنه لا يقبل القسمة إلا على نفسه وعلى الواحد!</span>`;
+                playSound(true);
+                score += 15;
+                setTimeout(() => { stage3_Observation(); }, 2000);
+            } else {
+                feedback.innerHTML = `<span style="color:#c62828;">❌ حاول مجدداً! العدد ${toEasternArabic(num)} ليس أولياً (له قواسم أخرى).</span>`;
+                playSound(false);
+            }
+        }
+
+        function stage3_Observation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٣: منصة معمل التحليل من اليمين لليسار 🔎</div>
+                <h3>تأمل طريقة تحليل العدد <span style="color:#1565c0;">${toEasternArabic(60)}</span> الواردة في مثال الكتاب:</h3>
+                
+                <table class="factor-table">
+                    <tr><td class="number-col">${toEasternArabic(60)}</td><td class="prime-col">${toEasternArabic(2)}</td></tr>
+                    <tr><td class="number-col">${toEasternArabic(30)}</td><td class="prime-col">${toEasternArabic(2)}</td></tr>
+                    <tr><td class="number-col">${toEasternArabic(15)}</td><td class="prime-col">${toEasternArabic(3)}</td></tr>
+                    <tr><td class="number-col">${toEasternArabic(5)}</td><td class="prime-col">${toEasternArabic(5)}</td></tr>
+                    <tr><td class="number-col">${toEasternArabic(1)}</td><td style="color:#2e7d32;">(انتهى)</td></tr>
+                </table>
+
+                <div style="background:#e8f5e9; padding:15px; border-radius:10px; text-align:center; margin:20px 0; font-size:1.3em; font-weight:bold;">
+                    إذن العوامل الأولية للعدد ${toEasternArabic(60)} هي: ${toEasternArabic(2)} × ${toEasternArabic(2)} × ${toEasternArabic(3)} × ${toEasternArabic(5)} = ${toEasternArabic(60)}
+                </div>
+
+                <div style="text-align:center;">
+                    <button onclick="stage4_Conclusion()">التالي لصياغة استنتاج المفهوم ➡️</button>
+                </div>
+            `;
+            updateGuide(guideMessages[2]);
+        }
+        // المرحلة ٤: استنتاج المفهوم والتعريف المقرّر
+        function stage4_Conclusion() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٤: صياغة القاعدة الذهبية للتحليل 🧠</div>
+                <h3 style="color:#2c3e50;">أكمل الفراغ لتكتشف قاعدة التحليل الرسمية في كتابك:</h3>
+                <p style="font-size:1.4em; margin:30px 0; line-height:2;">
+                    عوامل العدد أو ........ هي الأعداد التي يقبل العدد القسمة عليها بدون باقٍ.
+                </p>
+                <input type="text" id="studentConclusionFactor" placeholder="اكتب (قواسمه) أو (مضاعفاته)" style="width:280px;">
+                <br>
+                <button onclick="checkConclusionFactor()">تحقق من إجابتك 💎</button>
+            `;
+        }
+
+        function checkConclusionFactor() {
+            const answer = document.getElementById('studentConclusionFactor').value.trim();
+            if (answer.includes('قواسم') || answer.includes('قواسمه')) {
+                score += 20;
+                playSound(true);
+                alert("🎉 ممتاز بارك الله فيك! نعم، عوامل العدد هي قواسمه، وفي هذا الدرس نحرص على تفكيك العدد لعوامله الأولية فقط.");
+                stage5_SimpleExplanation();
+            } else {
+                playSound(false);
+                alert("تذكر ما قرأناه في مقدمة الدرس: العدد يقبل القسمة على عدد آخر، ونقول إن المقسوم عليه هو...؟ جرب مرة أخرى!");
+            }
+        }
+
+        // المرحلة ٥: الشرح والتأصيل من أمثلة الكتاب (تحليل ٢١٠)
+        function stage5_SimpleExplanation() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٥: قاموس معمل الأعداد الأولية 📘</div>
+                <div style="background:#f5f6fa; padding:25px; border-radius:15px; text-align:right; line-height:2.4;">
+                    <h2 style="text-align:center; color:#2e7d32; margin-bottom:15px;">قاعدة التحليل المتتابع (من اليمين لليسار):</h2>
+                    <div style="background:#e8f5e9; padding:20px; border-radius:10px; margin-bottom:20px;">
+                        <p style="font-size:1.2em; color:#2d3436;">لتحليل العدد إلى عوامله الأولية نتابع قسمة العدد على الأعداد الأولية <span style="color:#c62828;">${toEasternArabic(2)} ، ${toEasternArabic(3)} ، ${toEasternArabic(5)} ، ${toEasternArabic(7)}</span> بالترتيب.</p>
+                    </div>
+                    <h3 style="color:#1565c0; margin-bottom:10px;">تأمل تحليل العدد الإضافي من الكتاب ${toEasternArabic(210)}:</h3>
+                    
+                    <table class="factor-table" style="font-size:1.3em; margin:10px auto;">
+                        <tr><td class="number-col">${toEasternArabic(210)}</td><td class="prime-col">${toEasternArabic(2)}</td></tr>
+                        <tr><td class="number-col">${toEasternArabic(105)}</td><td class="prime-col">${toEasternArabic(3)}</td></tr>
+                        <tr><td class="number-col">${toEasternArabic(35)}</td><td class="prime-col">${toEasternArabic(5)}</td></tr>
+                        <tr><td class="number-col">${toEasternArabic(7)}</td><td class="prime-col">${toEasternArabic(7)}</td></tr>
+                        <tr><td class="number-col">${toEasternArabic(1)}</td><td>(انتهى)</td></tr>
+                    </table>
+                    <p style="text-align:center; font-weight:bold; color:#2e7d32;">العوامل الأولية للعدد ${toEasternArabic(210)} هي: ${toEasternArabic(2)} × ${toEasternArabic(3)} × ${toEasternArabic(5)} × ${toEasternArabic(7)} = ${toEasternArabic(210)}</p>
+                </div>
+                <button onclick="stage6_InteractiveExample(1)">لننتقل لتحدي المربعات الخالية التفاعلي! 🚀</button>
+            `;
+            updateGuide(guideMessages[3]);
+        }
+
+        // المرحلة ٦: تدريب المربع الخالي (خطوات التحليل المرتبة من اليمين لليسار)
+        function stage6_InteractiveExample(step) {
+            const container = document.getElementById('mainContainer');
+            if(step === 1) {
+                container.innerHTML = `
+                    <div class="stage-header">المرحلة ٦: تحدي إكمال جدول التحليل للعدد ${toEasternArabic(420)} 📋</div>
+                    <h3>من واقع تمرين الكتاب: أكمل الفراغ بوضع القاسم الأولي الصحيح في جهة اليسار:</h3>
+                    
+                    <table class="factor-table">
+                        <tr>
+                            <td class="number-col">${toEasternArabic(420)}</td>
+                            <td class="prime-col">${toEasternArabic(2)}</td>
+                        </tr>
+                        <tr>
+                            <td class="number-col">${toEasternArabic(210)}</td>
+                            <td class="prime-col">
+                                <input type="number" id="primeInput1" placeholder="؟" style="width:70px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="number-col">${toEasternArabic(105)}</td>
+                            <td class="prime-col">${toEasternArabic(5)}</td>
+                        </tr>
+                    </table>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">تلميح: ما هو العدد الأولي الذي قسمنا عليه العدد ${toEasternArabic(210)} ليعطينا ${toEasternArabic(105)}؟</p>
+                    <button onclick="checkPrimeInput1()">تحقق من القاسم</button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="stage-header">تابع تحدي إكمال جدول التحليل للعدد ${toEasternArabic(420)} 📋</div>
+                    <h3>الآن، ما هو ناتج القسمة الصحيح الذي يوضع في جهة اليمين؟</h3>
+                    
+                    <table class="factor-table">
+                        <tr>
+                            <td class="number-col">${toEasternArabic(105)}</td>
+                            <td class="prime-col">${toEasternArabic(5)}</td>
+                        </tr>
+                        <tr>
+                            <td class="number-col">
+                                <input type="number" id="numberInput2" placeholder="؟" style="width:90px;">
+                            </td>
+                            <td class="prime-col">${toEasternArabic(7)}</td>
+                        </tr>
+                        <tr>
+                            <td class="number-col">${toEasternArabic(1)}</td>
+                            <td>(انتهى)</td>
+                        </tr>
+                    </table>
+                    
+                    <p style="font-size:1.2em; color:#7f8c8d; margin-top:15px;">تلميح: احسب ناتج قسمة ${toEasternArabic(105)} ÷ ${toEasternArabic(5)} واكتب النتيجة في خانة النواتج اليمنى.</p>
+                    <button onclick="checkNumberInput2()">تحقق من الناتج</button>
+                `;
+            }
+        }
+
+        function checkPrimeInput1() {
+            const val = document.getElementById('primeInput1').value;
+            if (val == '2' || val == '٢') {
+                score += 25;
+                playSound(true);
+                alert("✅ رائع وممتاز! نعم، ٢١٠ ÷ ٢ = ١٠٥، والقسمة تبدأ دائماً بالأعداد الأولية الصغيرة.");
+                stage6_InteractiveExample(2);
+            } else {
+                playSound(false);
+                alert("راجع جدول الضرب يا بطل... ما هو نصف العدد ٢١٠؟");
+            }
+        }
+
+        function checkNumberInput2() {
+            const val = document.getElementById('numberInput2').value;
+            if (val == '21' || val == '٢١') {
+                score += 25;
+                playSound(true);
+                alert("✅ عبقري مذهل! ناتج قسمة ١٠٥ على ٥ هو ٢١، والتي تقبل بدورها القسمة على ٧ لتعطي ١!");
+                stage7_GuidedPractice();
+            } else {
+                playSound(false);
+                alert("احسبها على مهل... ١٠٠ تقسيم ٥ يساوي ٢٠، و٥ تقسيم ٥ يساوي ١، فكم المجموع؟");
+            }
+        }
+
+        // المرحلة ٧: تدريب موجه لاكتشاف التحليل النهائي للعدد ٤٨
+        function stage7_GuidedPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٧: التدريب الموجه من تمرين (٧-أ) في الكتاب 🛠️</div>
+                <h3>إذا قمنا بتحليل العدد <strong>${toEasternArabic(48)}</strong> بالكامل، فما هو الشكل الصحيح لعوامله الأولية؟</h3>
+                
+                <ul class="choice-list">
+                    <li onclick="checkGuidedChoice(1)">${toEasternArabic(2)} × ${toEasternArabic(2)} × ${toEasternArabic(2)} × ${toEasternArabic(2)} × ${toEasternArabic(3)}</li>
+                    <li onclick="checkGuidedChoice(2)">${toEasternArabic(6)} × ${toEasternArabic(8)}</li>
+                    <li onclick="checkGuidedChoice(3)">${toEasternArabic(2)} × ${toEasternArabic(3)} × ${toEasternArabic(8)}</li>
+                </ul>
+                <p style="font-size:1.1em; color:#e67e22; font-weight:bold;">تنبيه الثعلب 🦊: الخيارات الأخرى تحتوي على أعداد غير أولية (مثل ٦ و ٨)، والتحليل يجب أن يحتوي على أعداد أولية فقط!</p>
+            `;
+        }
+
+        function checkGuidedChoice(choiceId) {
+            if(choiceId === 1) {
+                score += 30;
+                playSound(true);
+                alert("✅ إجابة احترافية من الطراز الأول! العوامل هي ٢×٢×٢×٢×٣ وكلها أعداد أولية ناتج ضربها ٤٨.");
+                stage8_IndependentPractice();
+            } else {
+                playSound(false);
+                alert("تذكر التنبيه! الأعداد ٦ أو ٨ ليست أعداداً أولية، يجب تفكيكها تماماً إلى أعداد أولية!");
+            }
+        }
+
+        // المرحلة ٨: تدريب فرز مستقل واكتشاف العوامل الأولية للعدد ٧٢
+        function stage8_IndependentPractice() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٨: ميدان الفرز المستقل (تحليل العدد ٧٢) 🎯</div>
+                <h3>من تمرين (٧-ج) في الكتاب: حلل العدد <strong>${toEasternArabic(72)}</strong>، واضغط على الأعداد التي تظهر ضمن عوامله الأولية:</h3>
+                
+                <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:15px; margin:30px 0;">
+                    <button onclick="selectFactor72(2, this, true)">العدد الأولي ${toEasternArabic(2)}</button>
+                    <button onclick="selectFactor72(4, this, false)">العدد ${toEasternArabic(4)}</button>
+                    <button onclick="selectFactor72(3, this, true)">العدد الأولي ${toEasternArabic(3)}</button>
+                    <button onclick="selectFactor72(9, this, false)">العدد ${toEasternArabic(9)}</button>
+                </div>
+                <div id="feedback72" style="min-height:50px; font-weight:bold; font-size:1.3em; text-align:center;"></div>
+                <button onclick="stage9_Challenge()" style="background:#2e7d32; color:white; display:block; margin:20px auto;">الانتقال إلى الاختبار النهائي الكبير ➡️</button>
+            `;
+            updateGuide(guideMessages[4]);
+        }
+
+        function selectFactor72(num, btn, isCorrect) {
+            const feedback = document.getElementById('feedback72');
+            if (isCorrect) {
+                feedback.innerHTML = `<p style="color:#2e7d32;">✅ صحيح! العدد ${toEasternArabic(num)} يظهر في تحليل ٧٢، حيث أن ٧٢ = ٢×٢×٢×٣×٣</p>`;
+                btn.style.background = "#2e7d32";
+                score += 15;
+                playSound(true);
+            } else {
+                feedback.innerHTML = `<p style="color:#c62828;">❌ خطأ! على الرغم من أن العدد ${toEasternArabic(num)} يقسم ٧٢، إلا أنه ليس عدداً أولياً وبالتالي لا يظهر في شجرة التحليل الأولي.</p>`;
+                btn.style.background = "#c62828";
+                playSound(false);
+            }
+        }
+        // المرحلة ٩: التحدي البرق الخاطف (تأكيد الفهم السريع)
+        function stage9_Challenge() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header">المرحلة ٩: التحدي البرق الخاطف ⚡</div>
+                <h3>اضغط على العبارة الصحيحة علمياً وفقاً لما تعلمته في درس التحليل:</h3>
+                <ol style="font-size:1.4em; line-height: 2.5; width: 100%; text-align: right; padding-right: 20px;">
+                    <li onclick="quickCheck7(this, true)" style="cursor:pointer; margin:10px 0; padding:5px; border-radius:5px;">تحليل العدد يعني كتابته على شكل حاصل ضرب عوامله الأولية فقط.</li>
+                    <li onclick="quickCheck7(this, false)" style="cursor:pointer; margin:10px 0; padding:5px; border-radius:5px;">يمكن أن يظهر العدد ٤ أو ٦ كعامل أولى في نهاية عملية التحليل.</li>
+                    <li onclick="quickCheck7(this, true)" style="cursor:pointer; margin:10px 0; padding:5px; border-radius:5px;">عند التحليل المتتابع، نقسم دائماً على الأعداد الأولية ٢، ٣، ٥، ٧ بالترتيب.</li>
+                </ol>
+                <br>
+                <button onclick="stage10_FinalFeedback()" style="background:#ff6b6b; color:white;">انتقل للاختبار النهائي الشامل ➡️</button>
+            `;
+        }
+
+        function quickCheck7(el, isCorrectAnswer) {
+            if (isCorrectAnswer) {
+                el.style.background = '#2ecc71';
+                el.style.color = 'white';
+                score += 15;
+                playSound(true);
+            } else {
+                el.style.background = '#e74c3c';
+                el.style.color = 'white';
+                playSound(false);
+                alert("تذكر: الأعداد ٤ و ٦ أعداد غير أولية ولها قواسم أخرى، لذا لا تظهر في التحليل الأولي!");
+            }
+        }
+
+        // المرحلة ١٠: التهنئة التمهيدية والتحضير للاختبار النهائي الكبير
+        function stage10_FinalFeedback() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = `
+                <div class="stage-header" style="background:#ff6b6b;">المرحلة ١٠: مبروك الوصول للمرحلة النهائية! 🎉</div>
+                <h2 style="text-align:center; margin:40px;">لقد أتقنت مهارة تفكيك الأعداد وعزل قواسمها الأولية بنجاح!</h2>
+                <p style="font-size:2em; text-align:center;">مجموع نقاطك التراكمي الحالي: <span style="color:#ff9f1c; font-weight:bold;">${toEasternArabic(score)}</span></p>
+                <br><br>
+                <button onclick="startFinalChallenge7()" style="background:#2c3e50; color:white; font-size:1.3em; padding:15px 40px;">بدء الاختبار النهائي الكبير (١٥ سؤالاً) 🎯</button>
+            `;
+        }
+
+        // بنك الأسئلة الشامل للدرس السابع يحتوي على ٣ خيارات لكل سؤال
+        const finalQuestionsSet7 = [
+            { q: "ما هي العوامل الأولية للعدد ٨؟", choices: ["٢ × ٢ × ٢", "٢ × ٤", "٢ × ٢ × ٢ × ١"], correct: "٢ × ٢ × ٢" },
+            { q: "من واقع الكتاب: العوامل الأولية للعدد ٢١٠ هي ٢ × ٣ × ٥ × ...؟", choices: ["٧", "١١", "٩"], correct: "٧" },
+            { q: "أي من الأعداد التالية يعتبر عدداً أولياً؟", choices: ["٧", "٩", "١٥"], correct: "٧" },
+            { q: "هل العدد ٤ قاسم أولي للعدد ٤٨؟", choices: ["لا، لأن ٤ عدد غير أولي ويمكن تحليله إلى ٢ × ٢", "نعم لأن ٤٨ تقبل القسمة عليه", "نعم لأنه عدد زوجي"], correct: "لا، لأن ٤ عدد غير أولي ويمكن تحليله إلى ٢ × ٢" },
+            { q: "عند تحليل العدد ١٤٤ (تمرين ٧-ب)، ما هو أول عدد أولي نقسم عليه؟", choices: ["العدد ٢ لأن آحاده زوجي", "العدد ٣", "العدد ٥"], correct: "العدد ٢ لأن آحاده زوجي" },
+            { q: "إذا ضربنا جميع العوامل الأولية لعدد ما في بعضها، فإن الناتج يكون:", choices: ["العدد الأصلي نفسه", "العدد ١ دائماً", "ضعف العدد الأصلي"], correct: "العدد الأصلي نفسه" },
+            { q: "أي الخيارات يمثل تحليلاً صحيحاً لعوامل العدد ٦٠ الكلية؟", choices: ["٢ × ٢ × ٣ × ٥", "٤ × ٣ × ٥", "٢ × ٣ × ١٠"], correct: "٢ × ٢ × ٣ × ٥" },
+            { q: "تحليل العدد إلى عوامله الأولية يعني متابعة القسمة على الأعداد الأولية حتى نصل إلى الناتج النهائي في اليمين:", choices: ["١ (واحد)", "٠ (صفر)", "العدد نفسه"], correct: "١ (واحد)" },
+            { q: "من تمرين الكتاب: الأعداد الأولية للعدد ٤٦٢ تشتمل على العدد الأولي:", choices: ["١١", "٥", "٣"], correct: "١١" },
+            { q: "هل الأعداد (١ ، ٢ ، ٤ ، ٨) تسمى قواسم أو عوامل العدد ٨؟", choices: ["نعم، لأن ٨ تقبل القسمة عليها بدون باقٍ", "لا، هي مضاعفات العدد ٨", "هي عوامل أولية فقط"], correct: "نعم، لأن ٨ تقبل القسمة عليها بدون باقٍ" },
+            { q: "ما هو التحليل الأولي الصحيح للعدد المكون من (آحاد: ٢ | عشرات: ٤ | مئات: ٤) أي العدد ٤٤٢؟", choices: ["٢ × ٢٢١", "٢ × ٢ × ١٠٥", "٢ × ٣ × ٧"], correct: "٢ × ٢٢١" },
+            { q: "العدد الأولي الزوجي الوحيد في قائمة الأعداد هو:", choices: ["٢", "٤", "٦"], correct: "٢" },
+            { q: "من تمرين الكتاب: عند تحليل العدد ٦٣٠ (تمرين ٧-د)، فإن من عوامله الأولية:", choices: ["٧", "٤", "٨"], correct: "٧" },
+            { q: "لماذا لا نستخدم العدد ١ (واحد) أثناء كتابة العوامل الأولية للأعداد؟", choices: ["لأن الواحد عدد غير أولي وليس له إلا عامل واحد فقط", "لأن الصفر أفضل منه في الحساب", "لأن الواحد يغير قيمة عملية الضرب"], correct: "لأن الواحد عدد غير أولي وليس له إلا عامل واحد فقط" },
+            { q: "السؤال الذهبي: ما هو ناتج ضرب العوامل الأولية التالية: ٢ × ٣ × ٧؟", choices: ["٤٢", "٣٥", "٢١"], correct: "٤٢" }
+        ];
+
+        // خوارزمية فيشر-ياتس لخلط وترتيب الخيارات عشوائياً لمنع حفظ الأماكن
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startFinalChallenge7() {
+            finalChallengeIndex = 0;
+            renderChallengeQuestion7();
+        }
+
+        function renderChallengeQuestion7() {
+            const container = document.getElementById('mainContainer');
+            if (finalChallengeIndex < finalQuestionsSet7.length) {
+                const currentQ = finalQuestionsSet7[finalChallengeIndex];
+                
+                // نسخ الخيارات وخلطها بشكل عشوائي تماماً عند كل عرض للسؤال
+                currentShuffledChoices = shuffleArray([...currentQ.choices]);
+
+                container.innerHTML = `
+                    <div class="stage-header" style="background:#ff6b6b; color:white;">الاختبار النهائي الكبير - السؤال (${toEasternArabic(finalChallengeIndex + 1)} من ${toEasternArabic(15)})</div>
+                    <p style="text-align:center; font-size:1.6em; margin:30px; font-weight:bold; color:#2c3e50;">${currentQ.q}</p>
+                    <div id="quizChoicesContainer">
+                        ${currentShuffledChoices.map((choice, index) => `
+                            <button onclick="answerFinal7('${choice.replace(/'/g, "\\'")}')" style="font-size:1.2em; padding:15px 35px; background:#2e7d32; color:white; width:80%; max-width:600px; margin:10px auto; display:block;">${choice}</button>
+                        `).join('')}
+                    </div>
+                    <p style="margin-top:25px; color:#7f8c8d; font-size:1.1em; text-align:center;">النقاط المحرزة حالياً: ${toEasternArabic(score)}</p>
+                `;
+            } else {
+                completeGame7();
+            }
+        }
+
+        function answerFinal7(studentAnswer) {
+            const currentQ = finalQuestionsSet7[finalChallengeIndex];
+            if (studentAnswer === currentQ.correct) {
+                score += 20;
+                playSound(true);
+                alert("✅ أحسنت! تطبيق رائع لقواعد التحليل وقواسم الأعداد.");
+            } else {
+                playSound(false);
+                alert(`❌ الإجابة تحتاج مراجعة! الإجابة الصحيحة هي: ${currentQ.correct}`);
+            }
+            finalChallengeIndex++;
+            renderChallengeQuestion7();
+        }
+
+        function completeGame7() {
+            const container = document.getElementById('mainContainer');
+            const totalStars = Math.min(5, Math.floor(score / 90));
+            
+            container.innerHTML = `
+                <div style="text-align:center; padding:60px 20px; background:linear-gradient(#e8f5e9, #fff9db); border-radius:25px; box-shadow:0 10px 20px rgba(0,0,0,0.15);">
+                    <h1 style="font-size:2.8em; color:#2e7d32;">🎉 بطل معمل الأعداد الأولية الفذ! 🎉</h1>
+                    <p style="font-size:1.7em; margin:25px 0; color:#2c3e50; line-height:1.8;">
+                        تهانينا الفائقة! لقد أتممت الدرس السابع (تحليل العدد إلى عوامله الأولية) كاملاً وحللت كافة مسائل الجداول العمودية بالخيارات الثلاثية الذكية والمبعثرة عشوائياً.
+                    </p>
+                    <div style="font-size:4.5em; margin:20px; letter-spacing:10px;">${'⭐'.repeat(totalStars === 0 ? 1 : totalStars)}</div>
+                    <p style="font-size:1.8em; color:#2c3e50;">رصيدك النهائي الفاخر: <strong>${toEasternArabic(score)} نقطة</strong></p>
+                    <br>
+                    <button onclick="startGame()" style="background:#d84315; color:white; padding:20px 45px; font-size:1.4em; border-radius:50px;">
+                        إعادة مغامرة الاستكشاف 🔄
+                    </button>
+                </div>
+            `;
+            playSound(true);
+            updateGuide("عمل أسطوري يا بطل! لقد حصلت على الأوسمة الكاملة لدرس تحليل الأعداد! 🦊");
+        }
+
+        window.onload = function() {
+            startGame();
+        };
+    </script>
+</body>
+</html>
