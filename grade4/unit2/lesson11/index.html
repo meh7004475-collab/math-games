@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قسمة على عدد من ٣ أرقام</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap');
+:root{
+  --primary:#1B5E20;--primary-m:#2E7D32;--primary-l:#E8F5E9;
+  --blue:#1565C0;--blue-l:#E3F2FD;
+  --orange:#E65100;--orange-l:#FFF3E0;
+  --red:#C62828;--red-l:#FFEBEE;
+  --purple:#6A1B9A;--purple-l:#F3E5F5;
+  --teal:#00897B;--teal-l:#E0F2F1;
+  --gold:#F9A825;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tajawal','Segoe UI',sans-serif;background:linear-gradient(135deg,#E8F5E9,#E3F2FD,#FFF3E0);min-height:100vh;direction:rtl;}
+
+.hdr{background:linear-gradient(135deg,#1B5E20,#2E7D32);color:white;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 15px rgba(27,94,32,.4);position:sticky;top:0;z-index:200;}
+.hdr-title{font-size:1.1rem;font-weight:900;}
+.score-pill{background:var(--gold);color:#1B5E20;border-radius:25px;padding:6px 16px;font-weight:900;font-size:1rem;display:flex;align-items:center;gap:6px;transition:transform .2s;}
+
+.prog-wrap{padding:10px 18px 0;background:rgba(255,255,255,.35);}
+.prog-label{font-size:.8rem;color:#444;font-weight:700;margin-bottom:3px;}
+.prog-bar{background:rgba(255,255,255,.5);border-radius:12px;height:14px;overflow:hidden;}
+.prog-fill{background:linear-gradient(90deg,#66BB6A,#1B5E20);height:100%;border-radius:12px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.stage-dots{display:flex;gap:6px;justify-content:center;margin-top:5px;padding-bottom:8px;}
+.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .3s;}
+.dot.done{background:#66BB6A;}
+.dot.active{background:var(--gold);transform:scale(1.4);}
+
+.gmain{max-width:740px;margin:0 auto;padding:14px;}
+.card{background:white;border-radius:24px;padding:22px;box-shadow:0 8px 28px rgba(27,94,32,.12);margin-bottom:14px;border:3px solid rgba(102,187,106,.25);animation:slideIn .45s cubic-bezier(.34,1.56,.64,1);}
+@keyframes slideIn{from{opacity:0;transform:translateY(22px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+.stage-hdr{border-radius:16px;padding:12px 18px;text-align:center;font-size:1.1rem;font-weight:900;color:white;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,.2);}
+.sh-green{background:linear-gradient(135deg,#1B5E20,#2E7D32);}
+.sh-blue{background:linear-gradient(135deg,#0D47A1,#1565C0);}
+.sh-orange{background:linear-gradient(135deg,#BF360C,#E65100);}
+.sh-purple{background:linear-gradient(135deg,#4A148C,#6A1B9A);}
+.sh-teal{background:linear-gradient(135deg,#004D40,#00897B);}
+
+.fox-wrap{display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,#FFF8E1,#FFFDE7);border-radius:18px;padding:14px 16px;margin-bottom:16px;border:2px solid var(--gold);box-shadow:0 4px 12px rgba(249,168,37,.15);}
+.fox-svg{flex-shrink:0;width:62px;}
+.fox-txt{font-size:.95rem;line-height:1.8;font-weight:600;color:#4E342E;}
+.fox-txt strong{color:#1B5E20;}
+
+.btn{border:none;border-radius:50px;font-family:'Tajawal',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;padding:12px 24px;transition:all .22s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.btn:active{transform:scale(.92);}
+.btn:hover{transform:translateY(-2px);}
+.btn-green{background:linear-gradient(135deg,#1B5E20,#2E7D32);color:white;}
+.btn-blue{background:linear-gradient(135deg,#0D47A1,#1565C0);color:white;}
+.btn-orange{background:linear-gradient(135deg,#BF360C,#E65100);color:white;}
+.btn-gold{background:linear-gradient(135deg,#F57F00,var(--gold));color:white;}
+.btn-teal{background:linear-gradient(135deg,#004D40,#00897B);color:white;}
+
+.choices{display:flex;flex-direction:column;gap:10px;margin:12px 0;}
+.choice-btn{background:#F1F8E9;color:#1B5E20;border:2.5px solid #A5D6A7;border-radius:16px;padding:12px 18px;font-size:.95rem;font-weight:700;cursor:pointer;text-align:right;transition:all .2s;font-family:'Tajawal',sans-serif;}
+.choice-btn:hover{background:var(--primary-l);transform:translateX(-4px);}
+.choice-btn.correct{background:var(--primary-l);border-color:var(--primary-m);color:#1B5E20;}
+.choice-btn.wrong{background:var(--red-l);border-color:var(--red);color:var(--red);}
+
+.fb{border-radius:16px;padding:14px 18px;font-size:1rem;font-weight:700;text-align:center;margin-top:14px;display:none;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{0%{transform:scale(.6);opacity:0;}60%{transform:scale(1.06);}100%{transform:scale(1);opacity:1;}}
+.fb.ok{background:var(--primary-l);border:2px solid var(--primary-m);color:#1B5E20;display:block;}
+.fb.err{background:var(--red-l);border:2px solid var(--red);color:var(--red);display:block;}
+
+/* LONG DIVISION DISPLAY */
+.ldiv-wrap{background:#F8FFF8;border-radius:18px;padding:20px;margin:14px 0;border:2px solid #A5D6A7;font-family:'Tajawal',monospace;}
+.ldiv-inner{display:flex;align-items:flex-start;justify-content:center;gap:0;direction:ltr;}
+.ldiv-divisor{font-size:1.3rem;font-weight:900;color:#1B5E20;padding:4px 8px 0 0;border-left:3px solid #2E7D32;margin-left:0;}
+.ldiv-right{border-top:3px solid #2E7D32;padding:4px 8px;min-width:180px;}
+.ldiv-quotient{font-size:1.3rem;font-weight:900;color:var(--blue);text-align:right;margin-bottom:4px;}
+.ldiv-dividend{font-size:1.3rem;font-weight:900;color:#333;}
+.ldiv-steps{margin-top:10px;text-align:right;}
+.ldiv-step{font-size:1rem;font-weight:700;color:#555;margin:4px 0;direction:ltr;}
+.ldiv-step.sub{color:var(--red);border-bottom:1px solid #ddd;padding-bottom:2px;}
+.ldiv-step.rem{color:var(--orange);font-weight:900;}
+.ldiv-step.bring{color:var(--purple);font-style:italic;}
+
+/* STEP-BY-STEP */
+.step-reveal{border-radius:14px;padding:13px;margin:8px 0;cursor:pointer;border:2.5px solid;transition:all .2s;}
+.step-reveal:hover{transform:translateX(-4px);}
+.step-green{background:#F1F8E9;border-color:#A5D6A7;color:#1B5E20;}
+.step-blue{background:var(--blue-l);border-color:#90CAF9;color:#0D47A1;}
+.step-orange{background:var(--orange-l);border-color:#FFAB40;color:#BF360C;}
+.step-purple{background:var(--purple-l);border-color:#CE93D8;color:#4A148C;}
+.step-detail{display:none;background:rgba(255,255,255,.8);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.9rem;font-weight:700;direction:ltr;text-align:left;}
+
+/* DRILL CARD */
+.drill-card{background:#F8FFF8;border-radius:16px;padding:16px;border:2px solid #A5D6A7;margin-bottom:12px;}
+.drill-title{font-weight:800;font-size:1rem;color:#1B5E20;margin-bottom:10px;text-align:center;}
+.drill-eq{font-size:1.3rem;font-weight:900;color:#333;text-align:center;direction:ltr;margin-bottom:12px;background:var(--primary-l);border-radius:10px;padding:10px;}
+.drill-inputs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.inp-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.inp-label{font-size:.78rem;font-weight:700;color:#555;}
+.drill-inp{border:3px solid #2E7D32;border-radius:10px;padding:8px;font-size:1.1rem;font-family:'Tajawal',sans-serif;font-weight:900;color:#1B5E20;text-align:center;width:90px;outline:none;background:white;}
+.drill-inp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(249,168,37,.2);}
+.drill-inp.ok{border-color:#2E7D32;background:var(--primary-l);color:#1B5E20;}
+.drill-inp.err{border-color:var(--red);background:var(--red-l);color:var(--red);}
+
+/* GENERAL REVIEW */
+.gen-card{background:#F8F9FF;border-radius:16px;padding:16px;border:2px solid #BBDEFB;margin-bottom:12px;}
+.gen-title{font-weight:800;font-size:.95rem;color:var(--blue);margin-bottom:10px;}
+.gen-inp{border:2.5px solid var(--blue);border-radius:10px;padding:8px 12px;font-size:1.05rem;font-family:'Tajawal',sans-serif;font-weight:900;color:var(--blue);text-align:center;width:140px;outline:none;}
+.gen-inp.ok{border-color:#2E7D32;background:var(--primary-l);color:#1B5E20;}
+.gen-inp.err{border-color:var(--red);background:var(--red-l);color:var(--red);}
+
+.celeb{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:999;}
+.celeb.show{display:flex;}
+.celeb-card{background:white;border-radius:28px;padding:32px;text-align:center;max-width:380px;width:92%;animation:zoomB .55s cubic-bezier(.34,1.56,.64,1);}
+@keyframes zoomB{from{transform:scale(.2);opacity:0;}to{transform:scale(1);opacity:1;}}
+.celeb-stars{font-size:2.8rem;margin:8px 0;}
+.celeb-title{font-size:1.55rem;font-weight:900;color:#1B5E20;margin-bottom:6px;}
+.celeb-msg{font-size:1rem;color:#555;margin-bottom:20px;line-height:1.7;}
+
+.cf{position:fixed;width:12px;height:12px;opacity:0;animation:fall 3.2s ease-in forwards;border-radius:3px;z-index:1000;}
+@keyframes fall{0%{opacity:1;transform:translateY(-80px)rotateZ(0);}100%{opacity:0;transform:translateY(100vh)rotateZ(720deg);}}
+
+.intro{text-align:center;padding:20px 10px;}
+.intro-title{font-size:2rem;font-weight:900;color:#1B5E20;margin-bottom:8px;}
+.intro-sub{font-size:1rem;color:#555;margin-bottom:20px;line-height:1.9;}
+.stages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:9px;margin-bottom:20px;}
+.stage-item{background:white;border:2px solid #66BB6A;border-radius:14px;padding:11px 7px;font-size:.8rem;font-weight:700;color:#1B5E20;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,.08);}
+.si-icon{font-size:1.5rem;margin-bottom:4px;}
+
+input{font-family:'Tajawal','Segoe UI',sans-serif !important;}
+
+@media(max-width:480px){
+  .drill-inputs{gap:8px;}
+  .drill-inp{width:75px;font-size:1rem;}
+  .intro-title{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">➗ قسمة على ٣ أرقام</div>
+  <div class="score-pill" id="scoreBox">⭐ <span id="scoreDisp">٠</span></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label">التقدم: <span id="progLbl">لم تبدأ بعد</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  <div class="stage-dots" id="stageDots"></div>
+</div>
+
+<div class="gmain" id="gmain"></div>
+
+<div class="celeb" id="celebWrap">
+  <div class="celeb-card">
+    <div class="celeb-stars" id="cStars">🎉</div>
+    <div class="celeb-title" id="cTitle">رائع!</div>
+    <div class="celeb-msg" id="cMsg"></div>
+    <button class="btn btn-green" onclick="nextStage()">التالي ←</button>
+  </div>
+</div>
+
+<script>
+var stage=-1, score=0, TOTAL=10;
+
+function ar(n){return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});}
+function toWest(s){return String(s).replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d);});}
+function parseAr(v){return parseInt(toWest(String(v)),10);}
+
+function updProg(){
+  var pct=stage<0?0:Math.round(stage/TOTAL*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progLbl').textContent=stage<0?'لم تبدأ بعد':'المرحلة '+ar(stage)+' من '+ar(TOTAL);
+  document.getElementById('scoreDisp').textContent=ar(score);
+  var dots=document.getElementById('stageDots');
+  dots.innerHTML='';
+  for(var i=1;i<=TOTAL;i++){
+    var d=document.createElement('div');
+    d.className='dot'+(i<stage?' done':i===stage?' active':'');
+    dots.appendChild(d);
+  }
+}
+
+function addScore(n){
+  score+=n;
+  document.getElementById('scoreDisp').textContent=ar(score);
+  var b=document.getElementById('scoreBox');
+  b.style.transform='scale(1.3)';
+  setTimeout(function(){b.style.transform='scale(1)';},300);
+}
+
+function snd(t){
+  try{
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    if(t==='ok'){
+      o.frequency.setValueAtTime(523,ctx.currentTime);
+      o.frequency.setValueAtTime(659,ctx.currentTime+.12);
+      o.frequency.setValueAtTime(784,ctx.currentTime+.24);
+      g.gain.setValueAtTime(.28,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.55);
+      o.start();o.stop(ctx.currentTime+.55);
+    }else{
+      o.type='sawtooth';o.frequency.setValueAtTime(180,ctx.currentTime);
+      g.gain.setValueAtTime(.18,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.28);
+      o.start();o.stop(ctx.currentTime+.28);
+    }
+  }catch(e){}
+}
+
+function cfetti(){
+  var cols=['#2E7D32','#1565C0','#E65100','#6A1B9A','#F9A825','#00897B'];
+  for(var i=0;i<55;i++){
+    var el=document.createElement('div');
+    el.className='cf';
+    el.style.cssText='left:'+(Math.random()*100)+'vw;top:0;background:'+cols[Math.floor(Math.random()*cols.length)]+';animation-delay:'+(Math.random()*.8)+'s;animation-duration:'+(2+Math.random()*2)+'s;';
+    document.body.appendChild(el);
+    setTimeout(function(){el.remove();},5000);
+  }
+}
+
+function celeb(stars,title,msg){
+  document.getElementById('cStars').textContent=stars;
+  document.getElementById('cTitle').textContent=title;
+  document.getElementById('cMsg').textContent=msg;
+  document.getElementById('celebWrap').classList.add('show');
+  cfetti();snd('ok');
+}
+
+function nextStage(){
+  document.getElementById('celebWrap').classList.remove('show');
+  stage++;updProg();render();
+}
+
+function render(){
+  document.getElementById('gmain').innerHTML='';
+  var fns=[s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,sFinal];
+  if(stage<0){renderIntro();return;}
+  if(stage<fns.length)fns[stage]();
+  else sFinal();
+}
+
+function setHTML(h){document.getElementById('gmain').innerHTML='<div class="card">'+h+'</div>';}
+
+function fox(msg){
+  return '<div class="fox-wrap">'+
+    '<svg class="fox-svg" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">'+
+    '<ellipse cx="40" cy="75" rx="28" ry="20" fill="#FF8C42"/>'+
+    '<polygon points="20,45 10,15 30,35" fill="#FF8C42"/>'+
+    '<polygon points="60,45 70,15 50,35" fill="#FF8C42"/>'+
+    '<polygon points="22,43 14,18 28,35" fill="white"/>'+
+    '<polygon points="58,43 66,18 52,35" fill="white"/>'+
+    '<ellipse cx="40" cy="50" rx="25" ry="28" fill="#FF8C42"/>'+
+    '<ellipse cx="40" cy="58" rx="18" ry="16" fill="#FFDAB9"/>'+
+    '<circle cx="30" cy="44" r="5" fill="#333"/>'+
+    '<circle cx="50" cy="44" r="5" fill="#333"/>'+
+    '<circle cx="31" cy="43" r="2" fill="white"/>'+
+    '<circle cx="51" cy="43" r="2" fill="white"/>'+
+    '<ellipse cx="40" cy="57" rx="5" ry="3" fill="#E74C3C"/>'+
+    '<path d="M33 62 Q40 68 47 62" stroke="#E74C3C" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+    '<text x="40" y="95" text-anchor="middle" font-size="11" fill="#1B5E20" font-weight="bold" font-family="Tajawal">ثعلوب</text>'+
+    '</svg>'+
+    '<div class="fox-txt">'+msg+'</div></div>';
+}
+
+// ══ INTRO ══════════════════════════════════
+function renderIntro(){
+  stage=-1;
+  setHTML(
+    '<div class="intro">'+
+    '<div style="font-size:3rem;margin-bottom:8px;">🦊➗</div>'+
+    '<div class="intro-title">قسمة على ثلاثة أرقام</div>'+
+    '<div class="intro-sub">نفس خطوات القسمة على عددين!<br>ثعلوب سيُرشدك خطوة بخطوة 🦊</div>'+
+    '<div class="stages-grid">'+
+    '<div class="stage-item"><div class="si-icon">🧐</div>إثارة الفضول</div>'+
+    '<div class="stage-item"><div class="si-icon">📐</div>خطوات القسمة</div>'+
+    '<div class="stage-item"><div class="si-icon">🎯</div>مثال تمهيدي</div>'+
+    '<div class="stage-item"><div class="si-icon">📖</div>مثال (١) تفاعلي</div>'+
+    '<div class="stage-item"><div class="si-icon">📖</div>مثال (٢) تفاعلي</div>'+
+    '<div class="stage-item"><div class="si-icon">✏️</div>تمرين /١ و /٢</div>'+
+    '<div class="stage-item"><div class="si-icon">✏️</div>تمرين /٣ و /٤</div>'+
+    '<div class="stage-item"><div class="si-icon">✏️</div>تمرين /٥</div>'+
+    '<div class="stage-item"><div class="si-icon">🌟</div>تمرين عام</div>'+
+    '<div class="stage-item"><div class="si-icon">🏆</div>التحدي النهائي</div>'+
+    '</div>'+
+    '<button class="btn btn-green" onclick="stage=0;updProg();render();" style="font-size:1.15rem;padding:14px 32px;">ابدأ المغامرة 🚀</button>'+
+    '</div>'
+  );
+}
+
+// ══ S0 — إثارة الفضول ══════════════════════
+function s0(){
+  setHTML(
+    '<div class="stage-hdr sh-green">🧐 المرحلة الأولى: إثارة الفضول</div>'+
+    fox('هل تعلم أن قسمة أي عدد على ٣ أرقام تتبع نفس خطوات القسمة على رقمين؟<br>دعنا نكتشف معاً! 🔍')+
+    '<div style="background:var(--primary-l);border-radius:14px;padding:14px;margin:14px 0;border:2px solid #A5D6A7;">'+
+    '<div style="font-weight:800;color:#1B5E20;margin-bottom:10px;font-size:1rem;">🎯 ما الفرق بين هاتين العمليتين؟</div>'+
+    '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:12px 0;">'+
+    '<div style="background:white;border-radius:14px;padding:14px 20px;border:2.5px solid #A5D6A7;text-align:center;min-width:140px;">'+
+    '<div style="font-size:.8rem;font-weight:700;color:#555;margin-bottom:4px;">قسمة على رقمين</div>'+
+    '<div style="font-size:1.2rem;font-weight:900;color:#1B5E20;direction:ltr;">462 ÷ 11</div>'+
+    '</div>'+
+    '<div style="background:white;border-radius:14px;padding:14px 20px;border:2.5px solid var(--gold);text-align:center;min-width:140px;">'+
+    '<div style="font-size:.8rem;font-weight:700;color:#555;margin-bottom:4px;">قسمة على ثلاثة أرقام</div>'+
+    '<div style="font-size:1.2rem;font-weight:900;color:var(--orange);direction:ltr;">4627 ÷ 112</div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks0(0)">أ) الطريقة مختلفة تماماً لأن القاسم أكبر</button>'+
+    '<button class="choice-btn" onclick="picks0(1)">ب) نفس الخطوات! نبدأ بأول ٣ أرقام من المقسوم ✅</button>'+
+    '<button class="choice-btn" onclick="picks0(2)">ج) لا يمكن القسمة على ٣ أرقام</button>'+
+    '</div>'+
+    '</div>'+
+    '<div class="fb" id="fb0"></div>'
+  );
+}
+function picks0(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb0');
+  if(idx===1){
+    btns[1].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='🦊 ممتاز! نفس الخطوات تماماً — فقط نبدأ بأول ٣ أرقام من المقسوم بدلاً من ٢!';
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('🎉','اكتشفت المبدأ!','القسمة على ٣ أرقام = نفس الخطوات!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 لا! الطريقة واحدة — فقط نبدأ بأول ٣ أرقام من المقسوم!';
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ S1 — خطوات القسمة ══════════════════════
+function s1(){
+  setHTML(
+    '<div class="stage-hdr sh-blue">📐 المرحلة الثانية: خطوات القسمة</div>'+
+    fox('لقسمة أي عدد على عدد من ٣ أرقام اتبع هذه الخطوات!<br>انقر على كل خطوة لتكتشفها 👇')+
+    '<div style="display:flex;flex-direction:column;gap:8px;margin:14px 0;">'+
+    '<div class="step-reveal step-green" onclick="revealStep(\'st1\')">'+
+    '<strong>الخطوة ١:</strong> خذ أول ٣ أرقام من المقسوم — انقر!'+
+    '<div class="step-detail" id="st1">مثال: ٤٦٢٧ ÷ ١١٢ → نأخذ أول ٣ أرقام: ٤٦٢</div>'+
+    '</div>'+
+    '<div class="step-reveal step-blue" onclick="revealStep(\'st2\')">'+
+    '<strong>الخطوة ٢:</strong> نحدد كم مرة يدخل القاسم — انقر!'+
+    '<div class="step-detail" id="st2">كم مرة ١١٢ في ٤٦٢؟ → ٤ مرات (٤×١١٢=٤٤٨)</div>'+
+    '</div>'+
+    '<div class="step-reveal step-orange" onclick="revealStep(\'st3\')">'+
+    '<strong>الخطوة ٣:</strong> اضرب ثم اطرح — انقر!'+
+    '<div class="step-detail" id="st3">٤٦٢ - ٤٤٨ = ١٤ → هذا الباقي المؤقت</div>'+
+    '</div>'+
+    '<div class="step-reveal step-purple" onclick="revealStep(\'st4\')">'+
+    '<strong>الخطوة ٤:</strong> انزّل الرقم التالي — انقر!'+
+    '<div class="step-detail" id="st4">ننزّل ٧ → يصبح ١٤٧</div>'+
+    '</div>'+
+    '<div class="step-reveal step-green" onclick="revealStep(\'st5\')">'+
+    '<strong>الخطوة ٥:</strong> اقسم مجدداً واحسب الباقي النهائي — انقر!'+
+    '<div class="step-detail" id="st5">١٤٧ ÷ ١١٢ = ١ مرة → ١٤٧-١١٢ = ٣٥ (الباقي النهائي)<br>∴ ٤٦٢٧ ÷ ١١٢ = ٤١ والباقي ٣٥</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:#FFF9C4;border-radius:14px;padding:13px;border:2px solid var(--gold);">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:var(--orange);">🎯 في المثال ٤٦٢٧ ÷ ١١٢، كم مرة يدخل ١١٢ في ٤٦٢؟</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks1(0)">٣ مرات</button>'+
+    '<button class="choice-btn" onclick="picks1(1)">٤ مرات ✅ (٤×١١٢=٤٤٨)</button>'+
+    '<button class="choice-btn" onclick="picks1(2)">٥ مرات</button>'+
+    '</div></div>'+
+    '<div class="fb" id="fb1"></div>'
+  );
+}
+function revealStep(id){var el=document.getElementById(id);if(el)el.style.display='block';}
+function picks1(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb1');
+  if(idx===1){
+    btns[1].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! ٤×١١٢=٤٤٨ وهو أقرب عدد إلى ٤٦٢ دون تجاوزه!';
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('📐','فهمت الخطوات!','الآن نُطبّق على أمثلة حقيقية!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 جرّب: ٤×١١٢=٤٤٨ (أقل من ٤٦٢) ✓ | ٥×١١٢=٥٦٠ (أكبر من ٤٦٢) ✗';
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ S2 — المثال التمهيدي: ٤٦٢٧ ÷ ١١٢ ═══════
+function s2(){
+  setHTML(
+    '<div class="stage-hdr sh-green">🎯 المثال التمهيدي: ٤٦٢٧ ÷ ١١٢</div>'+
+    fox('هذا المثال من كتابك! راجع الخطوات معي خطوة بخطوة 📖')+
+    '<div class="ldiv-wrap">'+
+    '<div style="text-align:center;margin-bottom:8px;font-size:1rem;font-weight:700;color:#555;">عملية القسمة كاملة:</div>'+
+    '<div class="ldiv-inner">'+
+    '<div class="ldiv-divisor">'+ar(112)+'</div>'+
+    '<div class="ldiv-right">'+
+    '<div class="ldiv-quotient">'+ar(41)+'</div>'+
+    '<div class="ldiv-dividend">'+ar(4627)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="ldiv-steps">'+
+    '<div class="ldiv-step">خذ أول ٣ أرقام: <strong>'+ar(462)+'</strong></div>'+
+    '<div class="ldiv-step">'+ar(4)+'×'+ar(112)+' = '+ar(448)+'</div>'+
+    '<div class="ldiv-step sub">'+ar(462)+' - '+ar(448)+' = '+ar(14)+'</div>'+
+    '<div class="ldiv-step bring">↓ انزّل '+ar(7)+' → يصبح '+ar(147)+'</div>'+
+    '<div class="ldiv-step">'+ar(1)+'×'+ar(112)+' = '+ar(112)+'</div>'+
+    '<div class="ldiv-step sub">'+ar(147)+' - '+ar(112)+' = '+ar(35)+'</div>'+
+    '<div class="ldiv-step rem">∴ الخارج = '+ar(41)+' والباقي = '+ar(35)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:#FFF9C4;border-radius:14px;padding:13px;border:2px solid var(--gold);margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:var(--orange);">🎯 ما هو الباقي من قسمة ٤٦٢٧ ÷ ١١٢؟</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks2(0)">'+ar(41)+'</button>'+
+    '<button class="choice-btn" onclick="picks2(1)">'+ar(35)+' ✅</button>'+
+    '<button class="choice-btn" onclick="picks2(2)">'+ar(14)+'</button>'+
+    '</div></div>'+
+    '<div class="fb" id="fb2"></div>'
+  );
+}
+function picks2(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb2');
+  if(idx===1){
+    btns[1].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! ٤٦٢٧ ÷ ١١٢ = '+ar(41)+' والباقي '+ar(35);
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('🎯','أحسنت!','الآن نُطبّق على مثال (١) من الكتاب!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 الباقي = '+ar(147)+' - '+ar(112)+' = '+ar(35)+'. والخارج هو '+ar(41);
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ S3 — مثال (١): ٧٢٠١٥ ÷ ٢٠٤ ══════════════
+function s3(){
+  // verified: 72015 ÷ 204 = 353 باقي 3
+  setHTML(
+    '<div class="stage-hdr sh-blue">📖 مثال (١): ٧٢٠١٥ ÷ ٢٠٤</div>'+
+    fox('هذا مثال أصعب! المقسوم من ٥ أرقام!<br>انقر على كل خطوة لتكتشف الحل 🔍')+
+    '<div class="ldiv-wrap">'+
+    '<div style="text-align:center;margin-bottom:8px;font-size:1rem;font-weight:700;color:#555;">عملية القسمة:</div>'+
+    '<div class="ldiv-inner">'+
+    '<div class="ldiv-divisor">'+ar(204)+'</div>'+
+    '<div class="ldiv-right">'+
+    '<div class="ldiv-quotient">'+ar(353)+'</div>'+
+    '<div class="ldiv-dividend">'+ar(72015)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="ldiv-steps">'+
+    '<div class="step-reveal step-green" onclick="revealStep(\'e1s1\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ١: خذ ٧٢٠ ÷ ٢٠٤ — انقر</div>'+
+    '<div class="step-detail" id="e1s1">٣×٢٠٤=٦١٢ ← ٧٢٠-٦١٢=١٠٨ انزّل ١ → ١٠٨١</div>'+
+    '<div class="step-reveal step-blue" onclick="revealStep(\'e1s2\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ٢: ١٠٨١ ÷ ٢٠٤ — انقر</div>'+
+    '<div class="step-detail" id="e1s2">٥×٢٠٤=١٠٢٠ ← ١٠٨١-١٠٢٠=٦١ انزّل ٥ → ٦١٥</div>'+
+    '<div class="step-reveal step-orange" onclick="revealStep(\'e1s3\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ٣: ٦١٥ ÷ ٢٠٤ — انقر</div>'+
+    '<div class="step-detail" id="e1s3">٣×٢٠٤=٦١٢ ← ٦١٥-٦١٢=٣ (الباقي النهائي)</div>'+
+    '<div class="ldiv-step rem" style="margin-top:8px;">∴ '+ar(72015)+' ÷ '+ar(204)+' = '+ar(353)+' والباقي '+ar(3)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:#FFF9C4;border-radius:14px;padding:13px;border:2px solid var(--gold);margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:var(--orange);">🎯 ما هو خارج قسمة ٧٢٠١٥ ÷ ٢٠٤؟</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks3(0)">'+ar(350)+'</button>'+
+    '<button class="choice-btn" onclick="picks3(1)">'+ar(353)+' والباقي '+ar(3)+' ✅</button>'+
+    '<button class="choice-btn" onclick="picks3(2)">'+ar(355)+'</button>'+
+    '</div></div>'+
+    '<div class="fb" id="fb3"></div>'
+  );
+}
+function picks3(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb3');
+  if(idx===1){
+    btns[1].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='✅ ممتاز! '+ar(72015)+' ÷ '+ar(204)+' = '+ar(353)+' والباقي '+ar(3);
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('📖','مثال (١) مكتمل!','ننتقل لمثال (٢)!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 راجع الخطوات! '+ar(72015)+' ÷ '+ar(204)+' = '+ar(353)+' والباقي '+ar(3);
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ S4 — مثال (٢): ٩٧٠١٢ ÷ ٦١٣ ══════════════
+function s4(){
+  // verified: 97012 ÷ 613 = 158 والباقي 158
+  setHTML(
+    '<div class="stage-hdr sh-orange">📖 مثال (٢): ٩٧٠١٢ ÷ ٦١٣</div>'+
+    fox('هذا المثال الأصعب! القاسم والباقي كبيران!<br>انقر لتكشف الخطوات 🔍')+
+    '<div class="ldiv-wrap">'+
+    '<div class="ldiv-inner">'+
+    '<div class="ldiv-divisor">'+ar(613)+'</div>'+
+    '<div class="ldiv-right">'+
+    '<div class="ldiv-quotient">'+ar(158)+'</div>'+
+    '<div class="ldiv-dividend">'+ar(97012)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div class="ldiv-steps">'+
+    '<div class="step-reveal step-green" onclick="revealStep(\'e2s1\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ١: ٩٧٠ ÷ ٦١٣ — انقر</div>'+
+    '<div class="step-detail" id="e2s1">١×٦١٣=٦١٣ ← ٩٧٠-٦١٣=٣٥٧ انزّل ١ → ٣٥٧١</div>'+
+    '<div class="step-reveal step-blue" onclick="revealStep(\'e2s2\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ٢: ٣٥٧١ ÷ ٦١٣ — انقر</div>'+
+    '<div class="step-detail" id="e2s2">٥×٦١٣=٣٠٦٥ ← ٣٥٧١-٣٠٦٥=٥٠٦ انزّل ٢ → ٥٠٦٢</div>'+
+    '<div class="step-reveal step-orange" onclick="revealStep(\'e2s3\')" style="margin:4px 0;font-size:.9rem;">📌 الخطوة ٣: ٥٠٦٢ ÷ ٦١٣ — انقر</div>'+
+    '<div class="step-detail" id="e2s3">٨×٦١٣=٤٩٠٤ ← ٥٠٦٢-٤٩٠٤=١٥٨ (الباقي النهائي)</div>'+
+    '<div class="ldiv-step rem" style="margin-top:8px;">∴ '+ar(97012)+' ÷ '+ar(613)+' = '+ar(158)+' والباقي '+ar(158)+'</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:#FFF9C4;border-radius:14px;padding:13px;border:2px solid var(--gold);margin-top:12px;">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:var(--orange);">🎯 في ٩٧٠١٢ ÷ ٦١٣، رقم الخارج الأول هو؟</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks4(0)">٢</button>'+
+    '<button class="choice-btn" onclick="picks4(1)">١ ✅ (١×٦١٣=٦١٣ ≤ ٩٧٠)</button>'+
+    '<button class="choice-btn" onclick="picks4(2)">٣</button>'+
+    '</div></div>'+
+    '<div class="fb" id="fb4"></div>'
+  );
+}
+function picks4(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb4');
+  if(idx===1){
+    btns[1].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! ١×٦١٣=٦١٣ وهو أقل من ٩٧٠ ✓ | ٢×٦١٣=١٢٢٦ وهو أكبر ✗';
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('📖','مثال (٢) مكتمل!','الآن للتمارين من الكتاب!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 جرّب: ١×٦١٣=٦١٣≤٩٧٠ ✓ | ٢×٦١٣=١٢٢٦>٩٧٠ ✗';
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ S5 — تمرين /١ و /٢ ══════════════════════
+// Verified: 4279÷116=36 باقي 103 | 65397÷223=293 باقي 58
+function s5(){
+  renderDrills([
+    {dividend:4279,divisor:116,quotient:36,remainder:103},
+    {dividend:65397,divisor:223,quotient:293,remainder:58}
+  ],'✏️ تمرين (١١) — /١ و /٢',5);
+}
+
+// ══ S6 — تمرين /٣ و /٤ ══════════════════════
+// Verified: 49217÷402=122 باقي 173 | 92178÷342=269 باقي 180
+function s6(){
+  renderDrills([
+    {dividend:49217,divisor:402,quotient:122,remainder:173},
+    {dividend:92178,divisor:342,quotient:269,remainder:180}
+  ],'✏️ تمرين (١١) — /٣ و /٤',6);
+}
+
+// ══ S7 — تمرين /٥ ════════════════════════════
+// Verified: 32975÷224=147 باقي 47
+function s7(){
+  renderDrills([
+    {dividend:32975,divisor:224,quotient:147,remainder:47}
+  ],'✏️ تمرين (١١) — /٥',7);
+}
+
+function renderDrills(items,title,stgIdx){
+  var idx=0;
+  window._dItems=items;window._dIdx=0;window._dStg=stgIdx;
+  showDrill(0);
+}
+
+function showDrill(idx){
+  var items=window._dItems;
+  if(idx>=items.length){
+    setTimeout(function(){celeb('✏️','أتممت التمرين!','جميع العمليات صحيحة!');},400);
+    return;
+  }
+  var item=items[idx];
+  var labels=['أ','ب','ج','د','هـ'];
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="stage-hdr sh-green">✏️ احسب: '+ar(item.dividend)+' ÷ '+ar(item.divisor)+' — '+ar(idx+1)+'/'+ar(items.length)+'</div>'+
+    fox('تذكّر: خذ أول ٣ أرقام من المقسوم ثم قسّمها على القاسم 🔢')+
+    '<div class="drill-card">'+
+    '<div class="drill-eq">'+ar(item.dividend)+' ÷ '+ar(item.divisor)+' = ؟</div>'+
+    '<div class="drill-inputs">'+
+    '<div class="inp-wrap">'+
+    '<div class="inp-label">الخارج</div>'+
+    '<input id="dq" type="text" inputmode="numeric" class="drill-inp" placeholder="؟" oninput="liveChkD(\'dq\','+item.quotient+',this)">'+
+    '</div>'+
+    '<div style="font-size:1.5rem;font-weight:900;color:#555;padding-top:20px;">والباقي</div>'+
+    '<div class="inp-wrap">'+
+    '<div class="inp-label">الباقي</div>'+
+    '<input id="dr" type="text" inputmode="numeric" class="drill-inp" placeholder="؟" oninput="liveChkD(\'dr\','+item.remainder+',this)">'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:var(--primary-l);border-radius:10px;padding:9px;margin-top:10px;font-size:.82rem;font-weight:700;color:#1B5E20;">'+
+    '💡 تحقق: الخارج × القاسم + الباقي = المقسوم<br>'+
+    ar(item.quotient)+' × '+ar(item.divisor)+' + '+ar(item.remainder)+' = '+ar(item.quotient*item.divisor+item.remainder)+'  '+(item.quotient*item.divisor+item.remainder===item.dividend?'✅':'❓')+
+    '</div>'+
+    '</div>'+
+    '<div style="text-align:center;margin-top:12px;">'+
+    '<button class="btn btn-green" onclick="checkDrill()">✅ تحقق</button>'+
+    '</div>'+
+    '<div style="font-size:.78rem;color:#888;text-align:center;margin-top:6px;">السؤال '+ar(idx+1)+' من '+ar(items.length)+'</div>'+
+    '<div class="fb" id="fbD"></div>'+
+    '</div>';
+}
+
+function liveChkD(id,correct,el){
+  var v=parseAr(el.value);
+  el.value=el.value.replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});
+  if(isNaN(v))return;
+  el.className='drill-inp '+(v===correct?'ok':'err');
+}
+
+function checkDrill(){
+  var fb=document.getElementById('fbD');
+  var items=window._dItems;
+  var idx=window._dIdx;
+  var item=items[idx];
+  var q=parseAr(document.getElementById('dq').value);
+  var r=parseAr(document.getElementById('dr').value);
+  if(isNaN(q)||isNaN(r)){fb.className='fb err';fb.innerHTML='⚠️ أكمل الإجابتين!';return;}
+  if(q===item.quotient&&r===item.remainder){
+    fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! '+ar(item.dividend)+' ÷ '+ar(item.divisor)+' = '+ar(item.quotient)+' والباقي '+ar(item.remainder);
+    addScore(12);snd('ok');
+    window._dIdx++;
+    setTimeout(function(){showDrill(window._dIdx);},900);
+  }else{
+    fb.className='fb err';
+    var msg='❌ ';
+    if(q!==item.quotient)msg+='الخارج خطأ. ';
+    if(r!==item.remainder)msg+='الباقي خطأ. ';
+    msg+='تحقق: الخارج×القاسم+الباقي يجب = '+ar(item.dividend);
+    fb.innerHTML=msg;snd('err');
+  }
+}
+
+// ══ S8 — تمرين عام ════════════════════════════
+function s8(){
+  setHTML(
+    '<div class="stage-hdr sh-purple">🌟 التمرين العام</div>'+
+    fox('هذا التمرين يشمل ضرب وتحليل وق.م.أ وم.م.أ وقسمة!<br>أجب على جميع الأسئلة 💪')+
+
+    // /1 ضرب
+    '<div class="gen-card">'+
+    '<div class="gen-title">/١ اضرب: '+ar(971)+' × '+ar(125)+' = ؟</div>'+
+    '<div style="text-align:center;">'+
+    '<input id="g1" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g1\',121375,this)">'+
+    '</div></div>'+
+
+    // /3 GCD
+    '<div class="gen-card">'+
+    '<div class="gen-title">/٣ جد ق.م.أ للأعداد: '+ar(80)+' ، '+ar(16)+' ، '+ar(48)+'</div>'+
+    '<div style="text-align:center;">'+
+    '<input id="g3" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g3\',16,this)">'+
+    '</div></div>'+
+
+    // /4 LCM
+    '<div class="gen-card">'+
+    '<div class="gen-title">/٤ جد م.م.أ للأعداد: '+ar(56)+' ، '+ar(48)+' ، '+ar(32)+'</div>'+
+    '<div style="text-align:center;">'+
+    '<input id="g4" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g4\',672,this)">'+
+    '</div></div>'+
+
+    // /5a
+    '<div class="gen-card">'+
+    '<div class="gen-title">/٥ أ) خارج قسمة: '+ar(465)+' ÷ '+ar(15)+'</div>'+
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+
+    '<div class="inp-wrap"><div class="inp-label">الخارج</div><input id="g5aq" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g5aq\',31,this)"></div>'+
+    '<div style="font-size:1.2rem;padding-top:22px;color:#555;">باقي</div>'+
+    '<div class="inp-wrap"><div class="inp-label">الباقي</div><input id="g5ar" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g5ar\',0,this)"></div>'+
+    '</div></div>'+
+
+    // /5b
+    '<div class="gen-card">'+
+    '<div class="gen-title">/٥ ب) خارج قسمة: '+ar(49680)+' ÷ '+ar(432)+'</div>'+
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+
+    '<div class="inp-wrap"><div class="inp-label">الخارج</div><input id="g5bq" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g5bq\',115,this)"></div>'+
+    '<div style="font-size:1.2rem;padding-top:22px;color:#555;">باقي</div>'+
+    '<div class="inp-wrap"><div class="inp-label">الباقي</div><input id="g5br" type="text" inputmode="numeric" class="gen-inp" placeholder="؟" oninput="liveG(\'g5br\',0,this)"></div>'+
+    '</div></div>'+
+
+    '<div style="text-align:center;margin-top:14px;"><button class="btn btn-purple" onclick="checkGeneral()">✅ تحقق من التمرين العام</button></div>'+
+    '<div class="fb" id="fbGen"></div>'
+  );
+}
+
+function liveG(id,correct,el){
+  el.value=el.value.replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d];});
+  var v=parseAr(el.value);
+  if(isNaN(v))return;
+  el.className='gen-inp '+(v===correct?'ok':'err');
+}
+
+function checkGeneral(){
+  var fb=document.getElementById('fbGen');
+  // Verified answers: 971×125=121375, gcd=16, lcm=672, 465÷15=31r0, 49680÷432=115r0
+  var checks=[
+    {id:'g1',ans:121375,label:ar(971)+'×'+ar(125)+'='+ar(121375)},
+    {id:'g3',ans:16,label:'ق.م.أ='+ar(16)},
+    {id:'g4',ans:672,label:'م.م.أ='+ar(672)},
+    {id:'g5aq',ans:31,label:'خارج '+ar(465)+'÷'+ar(15)+'='+ar(31)},
+    {id:'g5ar',ans:0,label:'باقي '+ar(465)+'÷'+ar(15)+'='+ar(0)},
+    {id:'g5bq',ans:115,label:'خارج '+ar(49680)+'÷'+ar(432)+'='+ar(115)},
+    {id:'g5br',ans:0,label:'باقي '+ar(49680)+'÷'+ar(432)+'='+ar(0)}
+  ];
+  var wrong=[];
+  checks.forEach(function(c){
+    var v=parseAr(document.getElementById(c.id).value);
+    if(v!==c.ans)wrong.push(c.label);
+  });
+  if(wrong.length===0){
+    fb.className='fb ok';
+    fb.innerHTML='🎉 جميع إجابات التمرين العام صحيحة!';
+    addScore(25);snd('ok');
+    setTimeout(function(){celeb('🌟🌟','أتممت التمرين العام!','أنت الآن جاهز للتحدي النهائي!');},1100);
+  }else{
+    fb.className='fb err';
+    fb.innerHTML='❌ راجع: '+wrong.join(' | ');snd('err');
+  }
+}
+
+// ══ S9 — الخلاصة قبل التحدي ══════════════════
+function s9(){
+  setHTML(
+    '<div class="stage-hdr sh-teal">📝 ملخص القسمة على ٣ أرقام</div>'+
+    fox('قبل التحدي النهائي — راجع الخلاصة معي! 📋')+
+    '<div style="display:flex;flex-direction:column;gap:10px;margin:14px 0;">'+
+    '<div style="background:var(--primary-l);border-radius:14px;padding:13px;border-right:5px solid #2E7D32;">'+
+    '<div style="font-weight:800;color:#1B5E20;margin-bottom:5px;">✅ الخطوة ١</div>'+
+    '<div style="font-size:.9rem;font-weight:600;">خذ أول ٣ أرقام من المقسوم وقسّمها على القاسم</div>'+
+    '</div>'+
+    '<div style="background:var(--blue-l);border-radius:14px;padding:13px;border-right:5px solid #1565C0;">'+
+    '<div style="font-weight:800;color:#0D47A1;margin-bottom:5px;">✅ الخطوة ٢</div>'+
+    '<div style="font-size:.9rem;font-weight:600;">اضرب الرقم في الخارج × القاسم واطرح</div>'+
+    '</div>'+
+    '<div style="background:var(--orange-l);border-radius:14px;padding:13px;border-right:5px solid #E65100;">'+
+    '<div style="font-weight:800;color:#BF360C;margin-bottom:5px;">✅ الخطوة ٣</div>'+
+    '<div style="font-size:.9rem;font-weight:600;">انزّل الرقم التالي واقسم مجدداً</div>'+
+    '</div>'+
+    '<div style="background:var(--purple-l);border-radius:14px;padding:13px;border-right:5px solid #6A1B9A;">'+
+    '<div style="font-weight:800;color:#4A148C;margin-bottom:5px;">✅ التحقق</div>'+
+    '<div style="font-size:.9rem;font-weight:600;">الخارج × القاسم + الباقي = المقسوم</div>'+
+    '</div>'+
+    '</div>'+
+    '<div style="background:#FFF9C4;border-radius:14px;padding:13px;border:2px solid var(--gold);">'+
+    '<div style="font-weight:800;margin-bottom:9px;color:var(--orange);">🎯 للتحقق من ٤٦٢٧ ÷ ١١٢ = ٤١ والباقي ٣٥:</div>'+
+    '<div class="choices">'+
+    '<button class="choice-btn" onclick="picks9(0)">'+ar(41)+' × '+ar(112)+' + '+ar(35)+' = '+ar(41*112+35)+' ✅</button>'+
+    '<button class="choice-btn" onclick="picks9(1)">'+ar(41)+' + '+ar(112)+' + '+ar(35)+' = '+ar(41+112+35)+'</button>'+
+    '</div></div>'+
+    '<div class="fb" id="fb9"></div>'
+  );
+}
+function picks9(idx){
+  var btns=document.querySelectorAll('#gmain .choice-btn');
+  btns.forEach(function(b){b.disabled=true;});
+  var fb=document.getElementById('fb9');
+  if(idx===0){
+    btns[0].className='choice-btn correct';
+    fb.className='fb ok';
+    fb.innerHTML='✅ صحيح! '+ar(41)+' × '+ar(112)+' + '+ar(35)+' = '+ar(4627)+'  وهو نفس المقسوم!';
+    addScore(10);snd('ok');
+    setTimeout(function(){celeb('📝','جاهز للتحدي!','هيا نختبر معلوماتك كاملاً!');},1100);
+  }else{
+    btns[idx].className='choice-btn wrong';
+    fb.className='fb err';
+    fb.innerHTML='🦊 طريقة التحقق: الخارج × القاسم + الباقي = المقسوم!';
+    snd('err');btns.forEach(function(b){b.disabled=false;});btns[idx].disabled=true;
+  }
+}
+
+// ══ FINAL ══════════════════════════════════════
+var finalA={};
+function sFinal(){
+  // All answers pre-verified
+  var Qs=[
+    {q:'لقسمة ٤٦٢٧ ÷ ١١٢، نبدأ بقسمة أول:',opts:['رقمين: ٤٦','٣ أرقام: ٤٦٢','٤ أرقام: ٤٦٢٧','رقم واحد: ٤'],ans:1},
+    {q:'٤٦٢٧ ÷ ١١٢ = ؟',opts:[ar(41)+' والباقي '+ar(35),ar(42)+' والباقي '+ar(3),ar(40)+' والباقي '+ar(27),ar(41)+' والباقي '+ar(14)],ans:0},
+    {q:'٧٢٠١٥ ÷ ٢٠٤ = ؟',opts:[ar(350)+' والباقي '+ar(15),ar(353)+' والباقي '+ar(3),ar(354)+' والباقي '+ar(0),ar(352)+' والباقي '+ar(7)],ans:1},
+    {q:'٩٧٠١٢ ÷ ٦١٣ = ؟',opts:[ar(158)+' والباقي '+ar(100),ar(160)+' والباقي '+ar(52),ar(158)+' والباقي '+ar(158),ar(155)+' والباقي '+ar(77)],ans:2},
+    {q:'٤٢٧٩ ÷ ١١٦ = ؟',opts:[ar(36)+' والباقي '+ar(103),ar(37)+' والباقي '+ar(27),ar(35)+' والباقي '+ar(19),ar(36)+' والباقي '+ar(3)],ans:0},
+    {q:'٦٥٣٩٧ ÷ ٢٢٣ = ؟',opts:[ar(290)+' والباقي '+ar(87),ar(293)+' والباقي '+ar(58),ar(295)+' والباقي '+ar(2),ar(291)+' والباقي '+ar(174)],ans:1},
+    {q:'٤٩٢١٧ ÷ ٤٠٢ = ؟',opts:[ar(120)+' والباقي '+ar(377),ar(123)+' والباقي '+ar(29),ar(122)+' والباقي '+ar(173),ar(124)+' والباقي '+ar(9)],ans:2},
+    {q:'٩٢١٧٨ ÷ ٣٤٢ = ؟',opts:[ar(270)+' والباقي '+ar(258),ar(268)+' والباقي '+ar(342),ar(269)+' والباقي '+ar(180),ar(271)+' والباقي '+ar(96)],ans:2},
+    {q:'٣٢٩٧٥ ÷ ٢٢٤ = ؟',opts:[ar(147)+' والباقي '+ar(47),ar(146)+' والباقي '+ar(271),ar(148)+' والباقي '+ar(143),ar(147)+' والباقي '+ar(4)],ans:0},
+    {q:'٩٧١ × ١٢٥ = ؟',opts:[ar(121250),ar(121375),ar(120375),ar(121475)],ans:1},
+    {q:'ق.م.أ للأعداد ٨٠، ١٦، ٤٨ = ؟',opts:[ar(8),ar(16),ar(4),ar(48)],ans:1},
+    {q:'م.م.أ للأعداد ٥٦، ٤٨، ٣٢ = ؟',opts:[ar(336),ar(224),ar(672),ar(448)],ans:2},
+    {q:'٤٦٥ ÷ ١٥ = ؟',opts:[ar(30)+' والباقي '+ar(15),ar(31)+' والباقي '+ar(0),ar(32)+' والباقي '+ar(5),ar(31)+' والباقي '+ar(10)],ans:1},
+    {q:'٤٩٦٨٠ ÷ ٤٣٢ = ؟',opts:[ar(114)+' والباقي '+ar(432),ar(116)+' والباقي '+ar(48),ar(115)+' والباقي '+ar(0),ar(113)+' والباقي '+ar(264)],ans:2},
+    {q:'للتحقق من نتيجة قسمة، نحسب:',opts:['الخارج + القاسم + الباقي','الخارج × القاسم + الباقي = المقسوم','الخارج × المقسوم - الباقي','القاسم + المقسوم'],ans:1}
+  ];
+
+  var qHTML='';
+  Qs.forEach(function(q,i){
+    qHTML+='<div style="background:#F8FFF8;border-radius:14px;padding:13px;margin-bottom:10px;border:2px solid #C8E6C9;">';
+    qHTML+='<div style="font-weight:800;color:#1B5E20;margin-bottom:7px;font-size:.95rem;">سؤال '+ar(i+1)+': '+q.q+'</div>';
+    q.opts.forEach(function(opt,oi){
+      qHTML+='<label style="display:flex;align-items:center;gap:8px;cursor:pointer;background:white;border-radius:10px;padding:9px 12px;border:2px solid #C8E6C9;margin-bottom:5px;">';
+      qHTML+='<input type="radio" name="fq'+i+'" value="'+oi+'" style="width:16px;height:16px;accent-color:#1B5E20;" onchange="finalA['+i+']=parseInt(this.value)">';
+      qHTML+='<span style="font-size:.88rem;font-weight:600;direction:ltr;">'+opt+'</span></label>';
+    });
+    qHTML+='</div>';
+  });
+
+  document.getElementById('gmain').innerHTML=
+    '<div class="card">'+
+    '<div class="stage-hdr sh-green">🏆 التحدي النهائي — '+ar(Qs.length)+' سؤالاً</div>'+
+    fox('أثبت أنك أتقنت القسمة على ثلاثة أرقام! 🏆<br>أجب على جميع الأسئلة!')+
+    qHTML+
+    '<div style="text-align:center;margin-top:18px;"><button class="btn btn-gold" onclick="subFinal()" style="font-size:1.1rem;padding:14px 30px;">🏁 إنهاء التحدي</button></div>'+
+    '<div class="fb" id="fbFinal" style="margin-top:14px;"></div>'+
+    '</div>';
+  window._Qs=Qs;finalA={};
+}
+
+function subFinal(){
+  var fb=document.getElementById('fbFinal');
+  var Qs=window._Qs;
+  var correct=0,details='';
+  Qs.forEach(function(q,i){
+    var ok=finalA[i]===q.ans;
+    if(ok){correct++;details+='<div style="color:#1B5E20;font-size:.82rem;margin-bottom:2px;">✅ سؤال '+ar(i+1)+': صحيح</div>';}
+    else{details+='<div style="color:#C62828;font-size:.82rem;margin-bottom:2px;">❌ سؤال '+ar(i+1)+': '+q.opts[q.ans]+'</div>';}
+  });
+  var pct=Math.round(correct/Qs.length*100);
+  var stars=pct>=90?'⭐⭐⭐':pct>=70?'⭐⭐':'⭐';
+  addScore(correct*5);snd('ok');if(pct>=70)cfetti();
+  fb.className='fb ok';fb.style.display='block';
+  fb.innerHTML=
+    '<div style="font-size:1.5rem;text-align:center;margin-bottom:8px;">'+stars+'</div>'+
+    '<div style="font-size:1.15rem;font-weight:900;text-align:center;margin-bottom:12px;">🦊 أجبت بشكل صحيح على '+ar(correct)+' من '+ar(Qs.length)+' ('+ar(pct)+'%)</div>'+
+    '<div style="max-height:180px;overflow-y:auto;border-top:1px solid #ddd;padding-top:8px;">'+details+'</div>'+
+    '<div style="text-align:center;margin-top:14px;"><button class="btn btn-green" onclick="stage=-1;score=0;updProg();renderIntro();">🔄 العب مجدداً</button></div>';
+  setTimeout(function(){fb.scrollIntoView({behavior:'smooth'});},300);
+}
+
+renderIntro();
+</script>
+</body>
+</html>
