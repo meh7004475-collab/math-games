@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 القسمة على عدد من رقمين</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #E67E22;
+            --primary-light: #F0B27A;
+            --primary-dark: #A04000;
+            --accent: #2ECC71;
+            --green: #27AE60;
+            --green-light: #D5F5E3;
+            --red: #E74C3C;
+            --red-light: #FADBD8;
+            --bg: #FEF9E7;
+            --shadow: 0 8px 30px rgba(230, 126, 34, 0.15);
+            --orange-light: #FDEBD0;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #FEF9E7 0%, #FDEBD0 50%, #EBF5FB 100%);
+            min-height: 100vh;
+            color: #2C3E50;
+            direction: rtl;
+            overflow-x: hidden;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(160, 64, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+        .header-title span {
+            color: var(--accent);
+        }
+
+        .score-box {
+            background: var(--accent);
+            color: var(--primary-dark);
+            border-radius: 30px;
+            padding: 6px 20px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s;
+        }
+        .score-box.star {
+            transform: scale(1.2);
+        }
+
+        .progress-wrap {
+            padding: 12px 24px 4px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .progress-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            background: #FDEBD0;
+            border-radius: 12px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary-light), var(--primary-dark));
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.6s ease;
+        }
+
+        .game-main {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 16px 20px 100px;
+        }
+
+        .stage-card {
+            background: white;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            border: 3px solid #FDEBD0;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stage-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            border-radius: 30px;
+            padding: 4px 18px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .stage-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .mascot-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: #FEF9E7;
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            border: 2.5px solid var(--primary);
+        }
+
+        .mascot-svg {
+            flex-shrink: 0;
+            width: 64px;
+            height: 64px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+
+        .mascot-bubble {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .mascot-bubble .highlight {
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 16px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 12px 24px;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 16px rgba(230, 126, 34, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #27AE60, #1E8449);
+            color: white;
+            box-shadow: 0 4px 16px rgba(39, 174, 96, 0.35);
+        }
+        .btn-green:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            color: white;
+            box-shadow: 0 4px 16px rgba(231, 76, 60, 0.35);
+        }
+        .btn-red:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #F39C12, #D68910);
+            color: white;
+            box-shadow: 0 4px 16px rgba(243, 156, 18, 0.35);
+        }
+        .btn-orange:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-choice {
+            display: block;
+            width: 100%;
+            background: #FDEBD0;
+            color: var(--primary-dark);
+            border: 2.5px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: right;
+            margin-bottom: 10px;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+        .btn-choice:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+        .btn-choice.correct {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+        .btn-choice.wrong {
+            background: var(--red);
+            color: white;
+            border-color: var(--red);
+        }
+        .btn-choice:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 14px;
+            display: none;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .feedback.correct {
+            background: var(--green-light);
+            border: 2px solid var(--green);
+            color: #1A5632;
+            display: block;
+        }
+        .feedback.wrong {
+            background: var(--red-light);
+            border: 2px solid var(--red);
+            color: #7B241C;
+            display: block;
+        }
+        .feedback.info {
+            background: var(--orange-light);
+            border: 2px solid var(--primary);
+            color: var(--primary-dark);
+            display: block;
+        }
+
+        .num-input {
+            border: 3px solid var(--primary);
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: 800;
+            color: var(--primary-dark);
+            text-align: center;
+            width: 140px;
+            outline: none;
+            transition: all 0.3s;
+            background: white;
+        }
+        .num-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2);
+        }
+        .num-input-sm {
+            width: 100px;
+            padding: 10px 14px;
+            font-size: 1rem;
+        }
+        .num-input-lg {
+            width: 180px;
+            font-size: 1.5rem;
+            padding: 14px 20px;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .fw-900 {
+            font-weight: 900;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-12 {
+            margin-top: 12px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mb-12 {
+            margin-bottom: 12px;
+        }
+
+        .division-box {
+            background: var(--orange-light);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 12px 0;
+            text-align: center;
+            border: 2px solid var(--primary-light);
+        }
+
+        .division-display {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            padding: 10px;
+            direction: ltr;
+        }
+
+        .division-display .operator {
+            color: var(--primary);
+            margin: 0 8px;
+        }
+
+        .division-display .result {
+            color: var(--green);
+        }
+
+        .step-box {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 6px 0;
+            border-right: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .celebration {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .celebration.show {
+            display: flex;
+        }
+
+        .celebration-box {
+            background: white;
+            border-radius: 32px;
+            padding: 36px 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: zoomIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .celeb-stars {
+            font-size: 3rem;
+            margin: 10px 0;
+        }
+        .celeb-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+        .celeb-msg {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            animation: confettiFall 3.5s ease-in forwards;
+            border-radius: 2px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100px) rotateZ(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotateZ(720deg);
+            }
+        }
+
+        .intro-screen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+        .intro-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+        }
+        .intro-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+        .intro-subtitle {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .intro-stages {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .intro-stage-item {
+            background: linear-gradient(135deg, #FDEBD0, #FEF9E7);
+            border: 2px solid var(--primary-light);
+            border-radius: 16px;
+            padding: 14px 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-align: center;
+        }
+        .intro-stage-icon {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 600px) {
+            .game-header {
+                padding: 10px 16px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .header-title {
+                font-size: 1rem;
+                text-align: center;
+            }
+            .score-box {
+                justify-content: center;
+                font-size: 1rem;
+                padding: 4px 14px;
+            }
+            .game-main {
+                padding: 12px 12px 80px;
+            }
+            .stage-card {
+                padding: 16px;
+            }
+            .mascot-svg {
+                width: 48px;
+                height: 48px;
+            }
+            .intro-title {
+                font-size: 1.6rem;
+            }
+            .intro-stages {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            .division-display {
+                font-size: 1.8rem;
+            }
+            .num-input-lg {
+                width: 140px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="game-header">
+        <div class="header-title">🌟 القسمة على عدد من <span>رقمين</span></div>
+        <div class="score-box" id="scoreBox">
+            ⭐ <span id="scoreDisplay">٠</span>
+        </div>
+    </header>
+
+    <div class="progress-wrap">
+        <div class="progress-label">التقدم: <span id="progressLabel">لم تبدأ بعد</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+    </div>
+
+    <main class="game-main" id="gameMain"></main>
+
+    <div class="celebration" id="celebOverlay">
+        <div class="celebration-box">
+            <div class="celeb-stars" id="celebStars">⭐⭐⭐</div>
+            <div class="celeb-title" id="celebTitle">رائع!</div>
+            <div class="celeb-msg" id="celebMsg"></div>
+            <button class="btn btn-primary" onclick="nextStage()">👉 التالي</button>
+        </div>
+    </div>
+
+    <script>
+        // ════════════════════════════════════════════════
+        // المساعدات الأساسية
+        // ════════════════════════════════════════════════
+
+        const toAr = n => String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+
+        const parseAr = val => {
+            const s = String(val).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^0-9\-]/g, '');
+            return parseInt(s, 10);
+        };
+
+        // ════════════════════════════════════════════════
+        // حالة اللعبة
+        // ════════════════════════════════════════════════
+
+        let currentStage = -1;
+        let score = 0;
+        const TOTAL_STAGES = 6;
+
+        function updateProgress() {
+            const pct = currentStage < 0 ? 0 : Math.round((currentStage + 1) / TOTAL_STAGES * 100);
+            document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
+            document.getElementById('progressLabel').textContent =
+                currentStage < 0 ? 'لم تبدأ بعد' :
+                `المرحلة ${toAr(currentStage + 1)} من ${toAr(TOTAL_STAGES)}`;
+            document.getElementById('scoreDisplay').textContent = toAr(score);
+        }
+
+        function addScore(pts) {
+            score += pts;
+            document.getElementById('scoreDisplay').textContent = toAr(score);
+            const box = document.getElementById('scoreBox');
+            box.classList.add('star');
+            setTimeout(() => box.classList.remove('star'), 400);
+        }
+
+        // ════════════════════════════════════════════════
+        // مؤثرات صوتية
+        // ════════════════════════════════════════════════
+
+        function playSound(type) {
+            try {
+                const ctx = new(window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.connect(g);
+                g.connect(ctx.destination);
+                if (type === 'correct') {
+                    o.frequency.setValueAtTime(523, ctx.currentTime);
+                    o.frequency.setValueAtTime(659, ctx.currentTime + 0.12);
+                    o.frequency.setValueAtTime(784, ctx.currentTime + 0.24);
+                    g.gain.setValueAtTime(0.25, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                    o.start();
+                    o.stop(ctx.currentTime + 0.5);
+                } else if (type === 'wrong') {
+                    o.type = 'sawtooth';
+                    o.frequency.setValueAtTime(200, ctx.currentTime);
+                    g.gain.setValueAtTime(0.15, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+                    o.start();
+                    o.stop(ctx.currentTime + 0.35);
+                } else {
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(440, ctx.currentTime);
+                    g.gain.setValueAtTime(0.12, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    o.start();
+                    o.stop(ctx.currentTime + 0.2);
+                }
+            } catch (e) {}
+        }
+
+        // ════════════════════════════════════════════════
+        // احتفال
+        // ════════════════════════════════════════════════
+
+        function confetti() {
+            const colors = ['#E67E22', '#F0B27A', '#27AE60', '#2ECC71', '#E74C3C', '#F39C12'];
+            for (let i = 0; i < 50; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.cssText =
+                    `left:${Math.random()*100}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*0.8}s;animation-duration:${2+Math.random()*2}s;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;`;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 4000);
+            }
+        }
+
+        function showCeleb(title, msg, stars = '⭐⭐⭐') {
+            document.getElementById('celebTitle').textContent = title;
+            document.getElementById('celebMsg').textContent = msg;
+            document.getElementById('celebStars').textContent = stars;
+            document.getElementById('celebOverlay').classList.add('show');
+            confetti();
+            playSound('correct');
+        }
+
+        function nextStage() {
+            document.getElementById('celebOverlay').classList.remove('show');
+            currentStage++;
+            updateProgress();
+            renderStage();
+        }
+
+        // ════════════════════════════════════════════════
+        // شخصية المرشد
+        // ════════════════════════════════════════════════
+
+        function mascot() {
+            return `
+                <svg class="mascot-svg" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="30" cy="22" r="18" fill="#F39C12"/>
+                    <circle cx="22" cy="18" r="3.5" fill="#A04000"/>
+                    <circle cx="38" cy="18" r="3.5" fill="#A04000"/>
+                    <circle cx="23" cy="17" r="1.5" fill="white"/>
+                    <circle cx="39" cy="17" r="1.5" fill="white"/>
+                    <path d="M22 28 Q30 35 38 28" stroke="#A04000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="18" cy="22" rx="4.5" ry="3.5" fill="#E67E22" opacity="0.6"/>
+                    <ellipse cx="42" cy="22" rx="4.5" ry="3.5" fill="#E67E22" opacity="0.6"/>
+                    <path d="M20 40 Q30 44 40 40 L38 55 Q30 58 22 55 Z" fill="#E67E22"/>
+                    <circle cx="30" cy="6" r="4.5" fill="#F0B27A"/>
+                </svg>
+            `;
+        }
+
+        function mascotBubble(text) {
+            return `
+                <div class="mascot-wrap">
+                    ${mascot()}
+                    <div class="mascot-bubble">${text}</div>
+                </div>
+            `;
+        }
+
+        // ════════════════════════════════════════════════
+        // عرض المرحلة
+        // ════════════════════════════════════════════════
+
+        function renderStage() {
+            const main = document.getElementById('gameMain');
+            if (currentStage === -1) {
+                renderIntro(main);
+                return;
+            }
+            const stages = [
+                renderStage0,
+                renderStage1,
+                renderStage2,
+                renderStage3,
+                renderStage4,
+                renderStage5,
+            ];
+            if (currentStage < stages.length) {
+                stages[currentStage](main);
+            } else {
+                renderFinal(main);
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // الشاشة الافتتاحية
+        // ════════════════════════════════════════════════
+
+        function renderIntro(main) {
+            currentStage = -1;
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="intro-screen">
+                        <div class="intro-icon">🌟</div>
+                        <div class="intro-title">القسمة على عدد من <span style="color:var(--primary);">رقمين</span></div>
+                        <div class="intro-subtitle">
+                            مرحباً يا بطل! 🦊<br>
+                            في هذه المغامرة ستتعلم كيفية <strong>قسمة عدد على عدد من رقمين</strong><br>
+                            خطوة بخطوة!
+                        </div>
+                        <div class="intro-stages">
+                            <div class="intro-stage-item"><div class="intro-stage-icon">🔍</div>تذكر القسمة</div>
+                            <div class="intro-stage-item"><div class="intro-stage-icon">📚</div>خطوات القسمة</div>
+                            <div class="intro-stage-item"><div class="intro-stage-icon">🎯</div>مثال تفاعلي</div>
+                            <div class="intro-stage-item"><div class="intro-stage-icon">✍️</div>تدريب موجه</div>
+                            <div class="intro-stage-item"><div class="intro-stage-icon">🏃</div>تدريب مستقل</div>
+                            <div class="intro-stage-item"><div class="intro-stage-icon">🏆</div>التحدي النهائي</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="startGame()">
+                            🚀 ابدأ المغامرة!
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function startGame() {
+            currentStage = 0;
+            updateProgress();
+            renderStage();
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 0: تذكر القسمة
+        // ════════════════════════════════════════════════
+
+        function renderStage0(main) {
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="stage-badge">🔍 تذكر القسمة</div>
+                    <div class="stage-title">نتذكر معاً خطوات القسمة</div>
+                    ${mascotBubble('قبل أن نبدأ، دعنا نتذكر مكونات عملية القسمة! 🧮')}
+
+                    <div class="division-box">
+                        <div style="font-weight:900;font-size:1.1rem;color:var(--primary-dark);margin-bottom:10px;">
+                            أجزاء عملية القسمة
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0;">
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid var(--primary-light);">
+                                <div style="font-weight:900;color:var(--primary);">المقسوم</div>
+                                <div style="font-size:1.5rem;">٤٧٥</div>
+                                <div style="font-size:0.8rem;color:#888;">العدد المراد قسمته</div>
+                            </div>
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid var(--primary-light);">
+                                <div style="font-weight:900;color:var(--primary);">المقسوم عليه</div>
+                                <div style="font-size:1.5rem;">١٤</div>
+                                <div style="font-size:0.8rem;color:#888;">العدد الذي نقسم عليه</div>
+                            </div>
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid var(--primary-light);">
+                                <div style="font-weight:900;color:var(--primary);">خارج القسمة</div>
+                                <div style="font-size:1.5rem;">؟</div>
+                                <div style="font-size:0.8rem;color:#888;">الناتج</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background:#F4ECF7;border-radius:16px;padding:16px;margin-bottom:12px;">
+                        <div style="font-weight:800;margin-bottom:12px;color:var(--primary-dark);">
+                            🎯 أي من هذه المكونات هو العدد الذي نقسم عليه؟
+                        </div>
+                        <div class="flex-center gap-8">
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage0('dividend')">المقسوم</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage0('divisor')">المقسوم عليه</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage0('quotient')">خارج القسمة</button>
+                        </div>
+                    </div>
+                    <div class="feedback" id="s0fb"></div>
+                </div>
+            `;
+        }
+
+        function ansStage0(val) {
+            const fb = document.getElementById('s0fb');
+            const container = fb.parentElement;
+            const btns = container.querySelectorAll('.btn-choice');
+
+            if (val === 'divisor') {
+                btns.forEach(b => b.disabled = true);
+                btns[1].className = 'btn-choice correct';
+                fb.className = 'feedback correct';
+                fb.innerHTML = '✅ صحيح! المقسوم عليه هو العدد الذي نقسم عليه (١٤ في مثال ٤٧٥ ÷ ١٤)';
+                addScore(10);
+                playSound('correct');
+                setTimeout(() => showCeleb('🌟 فهمت المكونات!', 'المقسوم ← المقسوم عليه ← خارج القسمة'), 1200);
+            } else {
+                btns.forEach(b => {
+                    if (b.textContent.includes(val === 'dividend' ? 'المقسوم' : 'خارج')) {
+                        b.className = 'btn-choice wrong';
+                    }
+                });
+                fb.className = 'feedback wrong';
+                fb.innerHTML = `❌ ليس صحيحاً! المقسوم عليه هو العدد الذي نقسم عليه.`;
+                playSound('wrong');
+                setTimeout(() => {
+                    btns.forEach(b => {
+                        b.className = 'btn-choice';
+                        b.disabled = false;
+                    });
+                }, 1500);
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 1: خطوات القسمة
+        // ════════════════════════════════════════════════
+
+        let s1Step = 0;
+
+        function renderStage1(main) {
+            s1Step = 0;
+            renderS1UI(main);
+        }
+
+        function renderS1UI(main) {
+            const steps = [
+                { num: 1, text: 'ننظر إلى أول رقمين من المقسوم (٤٧)' },
+                { num: 2, text: 'نقسم ٤٧ ÷ ١٤ = ٣ (لأن ١٤ × ٣ = ٤٢)' },
+                { num: 3, text: 'نطرح ٤٢ من ٤٧ = ٥ (الباقي)' },
+                { num: 4, text: 'ننزل الرقم التالي (٥) ليصبح ٥٥' },
+                { num: 5, text: 'نقسم ٥٥ ÷ ١٤ = ٣ (لأن ١٤ × ٣ = ٤٢)' },
+                { num: 6, text: 'نطرح ٤٢ من ٥٥ = ١٣ (الباقي النهائي)' },
+            ];
+
+            let stepsHTML = steps.slice(0, s1Step + 1).map(s => `
+                <div class="step-box">
+                    <div class="step-number">${toAr(s.num)}</div>
+                    <div style="flex:1;font-weight:700;">${s.text}</div>
+                </div>
+            `).join('');
+
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="stage-badge">📚 خطوات القسمة</div>
+                    <div class="stage-title">تعلم خطوات القسمة خطوة بخطوة</div>
+                    ${mascotBubble('سنقسم <span class="highlight">٤٧٥ ÷ ١٤</span> معاً خطوة بخطوة! 👣')}
+
+                    <div class="division-box">
+                        <div class="division-display">
+                            <span style="color:var(--primary-dark);">٤٧٥</span>
+                            <span class="operator">÷</span>
+                            <span style="color:var(--primary);">١٤</span>
+                            <span class="operator">=</span>
+                            <span class="result">${s1Step >= 5 ? '٣٤' : '؟'}</span>
+                            ${s1Step >= 5 ? `<span style="font-size:1.2rem;color:#888;">(باقي ${toAr(13)})</span>` : ''}
+                        </div>
+                    </div>
+
+                    <div style="background:#F8F9FA;border-radius:16px;padding:16px;margin:12px 0;">
+                        ${stepsHTML}
+                        ${s1Step === 0 ? `
+                            <div style="text-align:center;padding:10px;color:#888;">
+                                👆 اضغط على "الخطوة التالية" لبدء التعلم
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="flex-center mt-12">
+                        ${s1Step < steps.length - 1 ? `
+                            <button class="btn btn-primary" onclick="s1NextStep()">
+                                ${s1Step === 0 ? '🚀 ابدأ الشرح' : '👉 الخطوة التالية'}
+                            </button>
+                        ` : `
+                            <div style="background:#D5F5E3;border-radius:12px;padding:12px;text-align:center;font-weight:900;color:#1A5632;">
+                                ✅ ناتج ٤٧٥ ÷ ١٤ = ٣٤ والباقي ١٣
+                            </div>
+                            <div class="mt-12 text-center">
+                                <button class="btn btn-green" onclick="s1Complete()">✅ لقد فهمت!</button>
+                            </div>
+                        `}
+                    </div>
+                    <div class="feedback" id="s1fb"></div>
+                </div>
+            `;
+        }
+
+        function s1NextStep() {
+            s1Step++;
+            renderS1UI(document.getElementById('gameMain'));
+            playSound('click');
+        }
+
+        function s1Complete() {
+            const fb = document.getElementById('s1fb');
+            fb.className = 'feedback correct';
+            fb.innerHTML = '✅ ممتاز! لقد فهمت خطوات القسمة على عدد من رقمين!';
+            addScore(15);
+            playSound('correct');
+            setTimeout(() => showCeleb('📚 فهمت الخطوات!', 'الآن جرب بنفسك!'), 1200);
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 2: مثال تفاعلي
+        // ════════════════════════════════════════════════
+
+        let s2Answers = {};
+
+        function renderStage2(main) {
+            s2Answers = {};
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="stage-badge">🎯 مثال تفاعلي</div>
+                    <div class="stage-title">أوجد ناتج ٦٤٧ ÷ ١٧</div>
+                    ${mascotBubble('الآن حان دورك! أوجد ناتج <span class="highlight">٦٤٧ ÷ ١٧</span> 🎯')}
+
+                    <div class="division-box">
+                        <div class="division-display">
+                            <span style="color:var(--primary-dark);">٦٤٧</span>
+                            <span class="operator">÷</span>
+                            <span style="color:var(--primary);">١٧</span>
+                            <span class="operator">=</span>
+                            <span style="color:var(--primary-dark);">؟</span>
+                        </div>
+                    </div>
+
+                    <div style="background:#F8F9FA;border-radius:16px;padding:16px;margin:12px 0;">
+                        <div style="font-weight:800;margin-bottom:12px;color:var(--primary-dark);">
+                            اختر الإجابة الصحيحة:
+                        </div>
+                        <div class="flex-center gap-8">
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage2(38)">٣٨</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage2(39)">٣٩</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage2(40)">٤٠</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage2(41)">٤١</button>
+                        </div>
+                        <div class="text-center text-muted mt-8">💡 تلميح: ١٧ × ٣٨ = ٦٤٦</div>
+                    </div>
+                    <div class="feedback" id="s2fb"></div>
+                </div>
+            `;
+        }
+
+        function ansStage2(val) {
+            const fb = document.getElementById('s2fb');
+            const container = fb.parentElement;
+            const btns = container.querySelectorAll('.btn-choice');
+
+            if (val === 38) {
+                btns.forEach(b => b.disabled = true);
+                btns[0].className = 'btn-choice correct';
+                fb.className = 'feedback correct';
+                fb.innerHTML = '✅ ممتاز! ٦٤٧ ÷ ١٧ = ٣٨ والباقي ١ (لأن ١٧ × ٣٨ = ٦٤٦)';
+                addScore(20);
+                playSound('correct');
+                setTimeout(() => showCeleb('🎯 أحسنت!', 'أوجدت ناتج القسمة بشكل صحيح!'), 1200);
+            } else {
+                btns.forEach(b => {
+                    if (b.textContent.includes(toAr(val))) {
+                        b.className = 'btn-choice wrong';
+                    }
+                });
+                fb.className = 'feedback wrong';
+                fb.innerHTML = `❌ ليس صحيحاً. حاول مرة أخرى! تذكّر: ١٧ × ٣٨ = ٦٤٦`;
+                playSound('wrong');
+                setTimeout(() => {
+                    btns.forEach(b => {
+                        b.className = 'btn-choice';
+                        b.disabled = false;
+                    });
+                }, 1500);
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 3: تدريب موجه
+        // ════════════════════════════════════════════════
+
+        function renderStage3(main) {
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="stage-badge">✍️ تدريب موجه</div>
+                    <div class="stage-title">أوجد ناتج ٦١٥ ÷ ١٥</div>
+                    ${mascotBubble('أكمل خطوات القسمة لإيجاد ناتج <span class="highlight">٦١٥ ÷ ١٥</span> ✍️')}
+
+                    <div class="division-box">
+                        <div class="division-display">
+                            <span style="color:var(--primary-dark);">٦١٥</span>
+                            <span class="operator">÷</span>
+                            <span style="color:var(--primary);">١٥</span>
+                            <span class="operator">=</span>
+                            <span style="color:var(--primary-dark);">؟</span>
+                        </div>
+                    </div>
+
+                    <div style="background:#F8F9FA;border-radius:16px;padding:16px;margin:12px 0;">
+                        <div style="font-weight:800;margin-bottom:12px;color:var(--primary-dark);">
+                            أكمل الفراغات:
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid #E8DAEF;text-align:center;">
+                                <div style="font-weight:700;font-size:0.9rem;color:#888;">أول خطوة</div>
+                                <div>نقسم ٦١ ÷ ١٥ = <input class="num-input num-input-sm" id="s3a" type="text" inputmode="numeric" placeholder="؟"></div>
+                            </div>
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid #E8DAEF;text-align:center;">
+                                <div style="font-weight:700;font-size:0.9rem;color:#888;">ثاني خطوة</div>
+                                <div>١٥ × ٤ = <input class="num-input num-input-sm" id="s3b" type="text" inputmode="numeric" placeholder="؟"></div>
+                            </div>
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid #E8DAEF;text-align:center;">
+                                <div style="font-weight:700;font-size:0.9rem;color:#888;">ثالث خطوة</div>
+                                <div>٦١ - ٦٠ = <input class="num-input num-input-sm" id="s3c" type="text" inputmode="numeric" placeholder="؟"></div>
+                            </div>
+                            <div style="background:white;border-radius:12px;padding:12px;border:2px solid #E8DAEF;text-align:center;">
+                                <div style="font-weight:700;font-size:0.9rem;color:#888;">الخطوة الأخيرة</div>
+                                <div>ننزل ٥ ← ١٥ ÷ ١٥ = <input class="num-input num-input-sm" id="s3d" type="text" inputmode="numeric" placeholder="؟"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-12">
+                        <button class="btn btn-primary" onclick="checkS3()">✅ تحقق</button>
+                    </div>
+                    <div class="feedback" id="s3fb"></div>
+                </div>
+            `;
+        }
+
+        function checkS3() {
+            const fb = document.getElementById('s3fb');
+            const answers = [
+                parseAr(document.getElementById('s3a').value),
+                parseAr(document.getElementById('s3b').value),
+                parseAr(document.getElementById('s3c').value),
+                parseAr(document.getElementById('s3d').value),
+            ];
+
+            const correct = [4, 60, 1, 1];
+
+            if (answers.some(isNaN)) {
+                fb.className = 'feedback wrong';
+                fb.innerHTML = '⚠️ أكمل جميع الفراغات!';
+                return;
+            }
+
+            let correctCount = 0;
+            answers.forEach((a, i) => {
+                if (a === correct[i]) correctCount++;
+            });
+
+            if (correctCount === 4) {
+                fb.className = 'feedback correct';
+                fb.innerHTML = '✅ ممتاز! ٦١٥ ÷ ١٥ = ٤١ (١٥ × ٤١ = ٦١٥)';
+                addScore(25);
+                playSound('correct');
+                setTimeout(() => showCeleb('✍️ أتقنت التدريب!', 'أكملت جميع الخطوات بشكل صحيح!'), 1200);
+            } else {
+                fb.className = 'feedback wrong';
+                fb.innerHTML = `❌ عندك ${toAr(4 - correctCount)} خطأ. حاول مرة أخرى!<br>💡 تذكّر: ١٥ × ٤ = ٦٠، ٦١ - ٦٠ = ١، ١٥ ÷ ١٥ = ١`;
+                playSound('wrong');
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 4: تدريب مستقل
+        // ════════════════════════════════════════════════
+
+        function renderStage4(main) {
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div class="stage-badge">🏃 تدريب مستقل</div>
+                    <div class="stage-title">أوجد ناتج ٤٦٠ ÷ ١٩</div>
+                    ${mascotBubble('الآن جرب بنفسك! أوجد ناتج <span class="highlight">٤٦٠ ÷ ١٩</span> 🏃')}
+
+                    <div class="division-box">
+                        <div class="division-display">
+                            <span style="color:var(--primary-dark);">٤٦٠</span>
+                            <span class="operator">÷</span>
+                            <span style="color:var(--primary);">١٩</span>
+                            <span class="operator">=</span>
+                            <span style="color:var(--primary-dark);">؟</span>
+                        </div>
+                    </div>
+
+                    <div style="background:#F8F9FA;border-radius:16px;padding:16px;margin:12px 0;">
+                        <div style="font-weight:800;margin-bottom:12px;color:var(--primary-dark);">
+                            اختر الإجابة الصحيحة:
+                        </div>
+                        <div class="flex-center gap-8">
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage4(22)">٢٢</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage4(23)">٢٣</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage4(24)">٢٤</button>
+                            <button class="btn-choice" style="flex:1;text-align:center;" onclick="ansStage4(25)">٢٥</button>
+                        </div>
+                        <div class="text-center text-muted mt-8">💡 تلميح: ١٩ × ٢٤ = ٤٥٦</div>
+                    </div>
+                    <div class="feedback" id="s4fb"></div>
+                </div>
+            `;
+        }
+
+        function ansStage4(val) {
+            const fb = document.getElementById('s4fb');
+            const container = fb.parentElement;
+            const btns = container.querySelectorAll('.btn-choice');
+
+            if (val === 24) {
+                btns.forEach(b => b.disabled = true);
+                btns[2].className = 'btn-choice correct';
+                fb.className = 'feedback correct';
+                fb.innerHTML = '✅ ممتاز! ٤٦٠ ÷ ١٩ = ٢٤ والباقي ٤ (لأن ١٩ × ٢٤ = ٤٥٦)';
+                addScore(20);
+                playSound('correct');
+                setTimeout(() => showCeleb('🏃 أتقنت التدريب المستقل!', 'أنت جاهز للتحدي النهائي!'), 1200);
+            } else {
+                btns.forEach(b => {
+                    if (b.textContent.includes(toAr(val))) {
+                        b.className = 'btn-choice wrong';
+                    }
+                });
+                fb.className = 'feedback wrong';
+                fb.innerHTML = `❌ ليس صحيحاً. تذكّر: ١٩ × ٢٤ = ٤٥٦، والباقي ٤`;
+                playSound('wrong');
+                setTimeout(() => {
+                    btns.forEach(b => {
+                        b.className = 'btn-choice';
+                        b.disabled = false;
+                    });
+                }, 1500);
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 5: التحدي النهائي
+        // ════════════════════════════════════════════════
+
+        const CHALLENGE_QS = [
+            { q: 'ناتج ٤٧٥ ÷ ١٤ = ؟', opts: ['٣٣', '٣٤', '٣٥', '٣٦'], ans: 1 },
+            { q: 'ناتج ٦٤٧ ÷ ١٧ = ؟', opts: ['٣٧', '٣٨', '٣٩', '٤٠'], ans: 1 },
+            { q: 'ناتج ٦١٥ ÷ ١٥ = ؟', opts: ['٣٩', '٤٠', '٤١', '٤٢'], ans: 2 },
+            { q: 'ناتج ٤٦٠ ÷ ١٩ = ؟', opts: ['٢٢', '٢٣', '٢٤', '٢٥'], ans: 2 },
+            { q: 'في القسمة ٤٧٥ ÷ ١٤، ما هو الباقي؟', opts: ['١١', '١٢', '١٣', '١٤'], ans: 2 },
+        ];
+
+        let challengeAnswers = {};
+
+        function renderStage5(main) {
+            challengeAnswers = {};
+            let html = `
+                <div class="stage-card">
+                    <div class="stage-badge">🏆 التحدي النهائي</div>
+                    <div class="stage-title">اختبر مهاراتك في القسمة!</div>
+                    ${mascotBubble('الآن حان وقت التحدي! أجب على جميع الأسئلة 🏆')}
+            `;
+
+            CHALLENGE_QS.forEach((q, i) => {
+                html += `
+                    <div style="background:#F8F9FA;border-radius:16px;padding:16px;margin-bottom:12px;border:2px solid #FDEBD0;">
+                        <div style="font-weight:800;color:var(--primary-dark);margin-bottom:10px;">سؤال ${toAr(i + 1)}: ${q.q}</div>
+                `;
+
+                q.opts.forEach((opt, oi) => {
+                    html += `
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;background:white;border-radius:10px;padding:8px 14px;border:2px solid #E8DAEF;margin-bottom:4px;">
+                            <input type="radio" name="cq${i}" value="${oi}" style="width:18px;height:18px;accent-color:#E67E22;" onchange="challengeAnswers[${i}]=parseInt(this.value)">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            html += `
+                    <div class="text-center mt-12">
+                        <button class="btn btn-orange" onclick="checkChallenge()">🏁 إنهاء التحدي</button>
+                    </div>
+                    <div class="feedback" id="s5fb"></div>
+                </div>
+            `;
+
+            main.innerHTML = html;
+        }
+
+        function checkChallenge() {
+            const fb = document.getElementById('s5fb');
+            let correct = 0;
+            let details = '';
+
+            CHALLENGE_QS.forEach((q, i) => {
+                const ans = challengeAnswers[i];
+                let ok = ans === q.ans;
+
+                if (ok) {
+                    correct++;
+                    details += `<div style="color:#1A5632;">✅ سؤال ${toAr(i + 1)}: صحيح</div>`;
+                } else {
+                    details +=
+                        `<div style="color:#7B241C;">❌ سؤال ${toAr(i + 1)}: الإجابة الصحيحة ${q.opts[q.ans]}</div>`;
+                }
+            });
+
+            const pct = Math.round(correct / CHALLENGE_QS.length * 100);
+            const stars = pct >= 80 ? '⭐⭐⭐' : pct >= 60 ? '⭐⭐' : '⭐';
+            addScore(correct * 5);
+
+            fb.className = 'feedback correct';
+            fb.style.display = 'block';
+            fb.innerHTML = `
+                <div style="font-size:1.6rem;text-align:center;margin-bottom:6px;">${stars}</div>
+                <div style="font-size:1.2rem;font-weight:900;text-align:center;margin-bottom:10px;">
+                    أجبت بشكل صحيح على ${toAr(correct)} من ${toAr(CHALLENGE_QS.length)} (${toAr(pct)}%)
+                </div>
+                <div style="max-height:200px;overflow-y:auto;border-top:1px solid #ddd;padding-top:10px;">${details}</div>
+                <div class="text-center mt-12">
+                    <button class="btn btn-primary" onclick="resetGame()">🔄 العب مجدداً</button>
+                </div>
+            `;
+
+            if (pct >= 60) {
+                confetti();
+                playSound('correct');
+                setTimeout(() => showCeleb('🏆 أتممت التحدي!', `حصلت على ${toAr(pct)}% من الإجابات الصحيحة!`, stars), 500);
+            } else {
+                playSound('wrong');
+            }
+        }
+
+        // ════════════════════════════════════════════════
+        // المرحلة 6: النهاية
+        // ════════════════════════════════════════════════
+
+        function renderStage6(main) {
+            main.innerHTML = `
+                <div class="stage-card">
+                    <div style="text-align:center;padding:30px 10px;">
+                        <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
+                        <div style="font-size:2rem;font-weight:900;color:var(--primary-dark);margin-bottom:8px;">لقد أتممت المغامرة!</div>
+                        <div style="font-size:1.1rem;color:#555;line-height:1.8;margin-bottom:16px;">
+                            أصبحت الآن خبيراً في <strong>القسمة على عدد من رقمين</strong>! 🦊<br>
+                            تذكّر: اتبع الخطوات خطوة بخطوة وستصل إلى الناتج الصحيح!
+                        </div>
+                        <div style="font-size:3rem;margin:12px 0;">${score > 0 ? '⭐'.repeat(Math.min(5, Math.floor(score / 50))) : '🌟'}</div>
+                        <div style="font-size:1.3rem;font-weight:900;color:var(--primary);">نقاطك النهائية: ${toAr(score)}</div>
+                        <div class="mt-16">
+                            <button class="btn btn-primary" onclick="resetGame()" style="font-size:1.1rem;padding:14px 32px;">
+                                🔄 العب مجدداً
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            confetti();
+        }
+
+        // ════════════════════════════════════════════════
+        // إعادة تعيين اللعبة
+        // ════════════════════════════════════════════════
+
+        function resetGame() {
+            currentStage = -1;
+            score = 0;
+            updateProgress();
+            renderStage();
+        }
+
+        function renderFinal(main) {
+            renderStage6(main);
+        }
+
+        // ════════════════════════════════════════════════
+        // بدء اللعبة
+        // ════════════════════════════════════════════════
+
+        renderIntro(document.getElementById('gameMain'));
+        updateProgress();
+
+        // دعم الأرقام العربية في المدخلات
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('num-input')) {
+                const val = e.target.value;
+                const converted = val.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+                if (converted !== val) {
+                    const pos = e.target.selectionStart;
+                    e.target.value = converted;
+                    try { e.target.setSelectionRange(pos, pos); } catch (ex) {}
+                }
+            }
+        });
+    </script>
+</body>
+</html>
